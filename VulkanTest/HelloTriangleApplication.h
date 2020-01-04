@@ -30,13 +30,23 @@ class HelloTriangleApplication
 {
 
 public:
+
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		void* pUserData);
+
 	void run();
 
 private:
+
 	void initWindow();
 	void initVulkan();
 	void createInstance();
+	void setupDebugMessenger();
 	bool checkValidationLayerSupport();
+	std::vector<const char*> getRequiredExtensions();
 	void mainLoop();
 	void cleanup();
 
@@ -47,6 +57,6 @@ private:
 
 	// Vulkan
 	VkInstance instance;
-	
+	VkDebugUtilsMessengerEXT debugMessenger;
 
 };
