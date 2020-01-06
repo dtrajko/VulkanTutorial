@@ -290,8 +290,16 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
 	vkGetPhysicalDeviceProperties(device, &deviceProperties);
 	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
+	QueueFamilyIndices indices = findQueueFamilies(device);
+
 	return deviceProperties.deviceType ==
-		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader;
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader; // && indices.isComplete();
+}
+
+bool HelloTriangleApplication::isDeviceSuitableII(VkPhysicalDevice device)
+{
+	QueueFamilyIndices indices = findQueueFamilies(device);
+	return indices.isComplete();
 }
 
 int HelloTriangleApplication::rateDeviceSuitability(VkPhysicalDevice device)
@@ -353,6 +361,34 @@ void HelloTriangleApplication::printDeviceProperties(
 	std::cout << "\t" << "sparseBinding: " << deviceFeatures.sparseBinding << std::endl;
 	std::cout << "\t" << "..." << std::endl;
 	std::cout << "Physical device score: " << score << std::endl;
+}
+
+QueueFamilyIndices HelloTriangleApplication::findQueueFamilies(VkPhysicalDevice device)
+{
+	// Logic to find graphics queue family
+	QueueFamilyIndices indices = {};
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+	int i = 0;
+	for (const auto& queueFamily : queueFamilies)
+	{
+		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
+			indices.graphicsFamily = i;
+		}
+
+		if (indices.isComplete())
+		{
+			break;
+		}
+
+		i++;
+	}
+
+	return indices;
 }
 
 void HelloTriangleApplication::cleanup()

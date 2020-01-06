@@ -27,6 +27,26 @@ const std::vector<const char*> validationLayers =
 #endif // NDEBUG
 
 
+struct QueueFamilyIndices
+{
+	uint32_t graphicsFamily;
+
+	bool isComplete()
+	{
+		return graphicsFamily > -1;
+	}
+};
+
+struct QueueFamilyIndicesII {
+	// std::optional<uint32_t> graphicsFamily;
+
+	bool isComplete() {
+		// return graphicsFamily.has_value();
+		return false;
+	}
+};
+
+
 class HelloTriangleApplication
 {
 
@@ -67,11 +87,13 @@ private:
 	// physical devices
 	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice device);
+	bool isDeviceSuitableII(VkPhysicalDevice device);
 	int rateDeviceSuitability(VkPhysicalDevice device);
 	void printDeviceProperties(
 		VkPhysicalDeviceProperties deviceProperties,
 		VkPhysicalDeviceFeatures deviceFeatures,
 		int score);
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 	void mainLoop();
 	void cleanup();
