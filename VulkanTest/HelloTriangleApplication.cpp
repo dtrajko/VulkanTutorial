@@ -372,7 +372,17 @@ void HelloTriangleApplication::createLogicalDevice()
 
 void HelloTriangleApplication::createSurface()
 {
+	VkWin32SurfaceCreateInfoKHR createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	HWND hwnd = glfwGetWin32Window(window);
+	createInfo.hwnd = hwnd;
+	HINSTANCE hinstance = GetModuleHandle(nullptr);
+	createInfo.hinstance = hinstance;
 
+	if (vkCreateWin32SurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create a window surface!");
+	}
 }
 
 void HelloTriangleApplication::mainLoop()
@@ -444,6 +454,7 @@ void HelloTriangleApplication::cleanup()
 		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 	}
 
+	vkDestroySurfaceKHR(instance, surface, nullptr);
 	vkDestroyInstance(instance, nullptr);
 
 	glfwDestroyWindow(window);
