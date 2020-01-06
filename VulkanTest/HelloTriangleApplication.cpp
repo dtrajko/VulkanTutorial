@@ -12,6 +12,35 @@ VKAPI_ATTR VkBool32 VKAPI_CALL HelloTriangleApplication::debugCallback(
 	return VK_FALSE;
 }
 
+VkResult HelloTriangleApplication::CreateDebugUtilsMessengerEXT(
+	VkInstance instance,
+	const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+	const VkAllocationCallbacks* pAllocator,
+	VkDebugUtilsMessengerEXT* pDebugMessenger)
+{
+	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+	if (func != nullptr)
+	{
+		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+	}
+	else
+	{
+		return VK_ERROR_EXTENSION_NOT_PRESENT;
+	}
+}
+
+void HelloTriangleApplication::DestroyDebugUtilsMessengerEXT(
+	VkInstance instance,
+	VkDebugUtilsMessengerEXT debugMessenger,
+	const VkAllocationCallbacks* pAllocator)
+{
+	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+	if (func != nullptr)
+	{
+		func(instance, debugMessenger, pAllocator);
+	}
+}
+
 void HelloTriangleApplication::run()
 {
 	initWindow();
@@ -34,6 +63,7 @@ void HelloTriangleApplication::initVulkan()
 {
 	createInstance();
 	setupDebugMessenger();
+	pickPhysicalDevice();
 }
 
 void HelloTriangleApplication::createInstance()
@@ -91,21 +121,37 @@ void HelloTriangleApplication::createInstance()
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensionsInstance.data());
 
 	std::cout << "Available Vulkan extensions: " << std::endl;
+	std::cout << std::endl;
 
 	for (const auto& extension : extensionsInstance)
 	{
 		std::cout << "\t" << extension.extensionName << std::endl;
 	}
-}
 
-void HelloTriangleApplication::setupDebugMessenger()
-{
-	if (!enableValidationLayers)
+	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
+	if (enableValidationLayers)
 	{
-		return;
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
+
+		populateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+	}
+	else
+	{
+		createInfo.enabledLayerCount = 0;
+		createInfo.pNext = nullptr;
 	}
 
-	VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create instance!");
+	}
+}
+
+void HelloTriangleApplication::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+{
+	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	createInfo.messageSeverity =
 		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -116,7 +162,18 @@ void HelloTriangleApplication::setupDebugMessenger()
 		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	createInfo.pfnUserCallback = debugCallback;
-	createInfo.pUserData = nullptr; // Optional
+}
+
+void HelloTriangleApplication::setupDebugMessenger()
+{
+	if (!enableValidationLayers)
+	{
+		return;
+	}
+
+	VkDebugUtilsMessengerCreateInfoEXT createInfo;
+	populateDebugMessengerCreateInfo(createInfo);
+	// createInfo.pUserData = nullptr; // Optional
 
 	if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
 	{
@@ -170,6 +227,102 @@ std::vector<const char*> HelloTriangleApplication::getRequiredExtensions()
 	return extensions;
 }
 
+void HelloTriangleApplication::pickPhysicalDevice()
+{
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	int physicalDeviceScore = 0;
+
+	if (deviceCount == 0)
+	{
+		throw std::runtime_error("Failed to find GPUs with Vulkan support!");
+	}
+
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+	for (const auto& device : devices)
+	{
+		if (isDeviceSuitable(device))
+		{
+			physicalDevice = device;
+			break;
+		}
+	}
+
+	if (physicalDevice == VK_NULL_HANDLE)
+	{
+		throw std::runtime_error("Failed to find a suitable GPU!");
+	}
+
+	// Use an ordered map to automatically sord candidates by increasing score
+	std::multimap<int, VkPhysicalDevice> candidates;
+
+	for (const auto& device : devices)
+	{
+		int score = rateDeviceSuitability(device);
+		candidates.insert(std::make_pair(score, device));
+	}
+
+	// Check if the best candidate is suitable at all
+	if (candidates.rbegin()->first > 0)
+	{
+		physicalDevice = candidates.rbegin()->second;
+		physicalDeviceScore = candidates.rbegin()->first;
+	}
+	else
+	{
+		throw std::runtime_error("Failed to find a suitable GPU!");
+	}
+
+	VkPhysicalDeviceProperties deviceProperties;
+	vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
+
+	std::cout << std::endl;
+	std::cout << "-- The selected physical device: " << deviceProperties.deviceName
+		<< " [Score: " << physicalDeviceScore << "]" << std::endl;
+}
+
+bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
+{
+	VkPhysicalDeviceProperties deviceProperties;
+	VkPhysicalDeviceFeatures deviceFeatures;
+	vkGetPhysicalDeviceProperties(device, &deviceProperties);
+	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+	return deviceProperties.deviceType ==
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader;
+}
+
+int HelloTriangleApplication::rateDeviceSuitability(VkPhysicalDevice device)
+{
+	VkPhysicalDeviceProperties deviceProperties;
+	VkPhysicalDeviceFeatures deviceFeatures;
+	vkGetPhysicalDeviceProperties(device, &deviceProperties);
+	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+	int score = 0;
+
+	// Discrete GPUs have a significant performance advantage
+	if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+	{
+		score += 1000;
+	}
+
+	// Maximum possible size of textures affects graphics quality
+	score += deviceProperties.limits.maxImageDimension2D;
+
+	// Application can't function without geometry shaders
+	if (!deviceFeatures.geometryShader)
+	{
+		score = 0;
+	}
+
+	printDeviceProperties(deviceProperties, deviceFeatures, score);
+
+	return score;
+}
+
 void HelloTriangleApplication::mainLoop()
 {
 	while (!glfwWindowShouldClose(window))
@@ -178,8 +331,37 @@ void HelloTriangleApplication::mainLoop()
 	}
 }
 
+void HelloTriangleApplication::printDeviceProperties(
+	VkPhysicalDeviceProperties deviceProperties,
+	VkPhysicalDeviceFeatures deviceFeatures,
+	int score)
+{
+	std::cout << std::endl;
+	std::cout << "Device Properties" << std::endl;
+	std::cout << "\t" << "deviceID: " << deviceProperties.deviceID << std::endl;
+	std::cout << "\t" << "apiVersion: " << deviceProperties.apiVersion << std::endl;
+	std::cout << "\t" << "deviceName: " << deviceProperties.deviceName << std::endl;
+	std::cout << "\t" << "deviceType: " << deviceProperties.deviceType << std::endl;
+	std::cout << "\t" << "driverVersion: " << deviceProperties.driverVersion << std::endl;
+	std::cout << "\t" << "limits.bufferImageGranularity: " << deviceProperties.limits.bufferImageGranularity << std::endl;
+	std::cout << "\t" << "limits.discreteQueuePriorities: " << deviceProperties.limits.discreteQueuePriorities << std::endl;
+	std::cout << "\t" << "limits.framebufferColorSampleCounts: " << deviceProperties.limits.framebufferColorSampleCounts << std::endl;
+	std::cout << "\t" << "..." << std::endl;
+	std::cout << "\t" << "vendorID: " << deviceProperties.vendorID << std::endl;
+	std::cout << "Device Features" << std::endl;
+	std::cout << "\t" << "geometryShader: " << deviceFeatures.geometryShader << std::endl;
+	std::cout << "\t" << "sparseBinding: " << deviceFeatures.sparseBinding << std::endl;
+	std::cout << "\t" << "..." << std::endl;
+	std::cout << "Physical device score: " << score << std::endl;
+}
+
 void HelloTriangleApplication::cleanup()
 {
+	if (enableValidationLayers)
+	{
+		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+	}
+
 	vkDestroyInstance(instance, nullptr);
 
 	glfwDestroyWindow(window);

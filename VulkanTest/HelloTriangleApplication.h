@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 #include <cstring>
+#include <map>
 
 
 const int WIDTH = 1280;
@@ -26,24 +27,6 @@ const std::vector<const char*> validationLayers =
 #endif // NDEBUG
 
 
-VkResult CreateDebugUtilsMessengerEXT(
-	VkInstance instance,
-	const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-	const VkAllocationCallbacks* pAllocator,
-	VkDebugUtilsMessengerEXT* pDebugMessenger)
-{
-	auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-	if (func != nullptr)
-	{
-		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-	}
-	else
-	{
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
-	}
-}
-
-
 class HelloTriangleApplication
 {
 
@@ -55,6 +38,17 @@ public:
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData);
 
+	static VkResult CreateDebugUtilsMessengerEXT(
+		VkInstance instance,
+		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+		const VkAllocationCallbacks* pAllocator,
+		VkDebugUtilsMessengerEXT* pDebugMessenger);
+
+	static void DestroyDebugUtilsMessengerEXT(
+		VkInstance instance,
+		VkDebugUtilsMessengerEXT debugMessenger,
+		const VkAllocationCallbacks* pAllocator);
+
 	void run();
 
 private:
@@ -62,9 +56,23 @@ private:
 	void initWindow();
 	void initVulkan();
 	void createInstance();
+	std::vector<const char*> getRequiredExtensions();
+
+	// debug / validation layers
+	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	void setupDebugMessenger();
 	bool checkValidationLayerSupport();
-	std::vector<const char*> getRequiredExtensions();
+
+
+	// physical devices
+	void pickPhysicalDevice();
+	bool isDeviceSuitable(VkPhysicalDevice device);
+	int rateDeviceSuitability(VkPhysicalDevice device);
+	void printDeviceProperties(
+		VkPhysicalDeviceProperties deviceProperties,
+		VkPhysicalDeviceFeatures deviceFeatures,
+		int score);
+
 	void mainLoop();
 	void cleanup();
 
@@ -76,5 +84,6 @@ private:
 	// Vulkan
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
 };
