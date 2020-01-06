@@ -86,6 +86,12 @@ private:
 		int score);
 	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
+	// logical device
+	void createLogicalDevice();
+
+	// Window surface
+	void createSurface();
+
 	void mainLoop();
 	void cleanup();
 
@@ -97,7 +103,16 @@ private:
 	// Vulkan
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
+
+	// Vulkan physical devices
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 	std::optional<uint32_t> graphicsFamily;
+
+	// Vulkan logical device
+	VkDevice device;
+	VkQueue graphicsQueue;
+
+	// Vulkan window surface
+	VkSurfaceKHR surface;
 
 };
