@@ -293,13 +293,7 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
 	QueueFamilyIndices indices = findQueueFamilies(device);
 
 	return deviceProperties.deviceType ==
-		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader; // && indices.isComplete();
-}
-
-bool HelloTriangleApplication::isDeviceSuitableII(VkPhysicalDevice device)
-{
-	QueueFamilyIndices indices = findQueueFamilies(device);
-	return indices.isComplete();
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader && indices.isComplete();
 }
 
 int HelloTriangleApplication::rateDeviceSuitability(VkPhysicalDevice device)

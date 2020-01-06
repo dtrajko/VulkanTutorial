@@ -10,6 +10,7 @@
 #include <vector>
 #include <cstring>
 #include <map>
+#include <optional>
 
 
 const int WIDTH = 1280;
@@ -29,20 +30,11 @@ const std::vector<const char*> validationLayers =
 
 struct QueueFamilyIndices
 {
-	uint32_t graphicsFamily;
+	std::optional<uint32_t> graphicsFamily;
 
 	bool isComplete()
 	{
-		return graphicsFamily > -1;
-	}
-};
-
-struct QueueFamilyIndicesII {
-	// std::optional<uint32_t> graphicsFamily;
-
-	bool isComplete() {
-		// return graphicsFamily.has_value();
-		return false;
+		return graphicsFamily.has_value();
 	}
 };
 
@@ -87,7 +79,6 @@ private:
 	// physical devices
 	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice device);
-	bool isDeviceSuitableII(VkPhysicalDevice device);
 	int rateDeviceSuitability(VkPhysicalDevice device);
 	void printDeviceProperties(
 		VkPhysicalDeviceProperties deviceProperties,
@@ -107,5 +98,6 @@ private:
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	std::optional<uint32_t> graphicsFamily;
 
 };
