@@ -118,7 +118,10 @@ void HelloTriangleApplication::setupDebugMessenger()
 	createInfo.pfnUserCallback = debugCallback;
 	createInfo.pUserData = nullptr; // Optional
 
-
+	if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to set up debug messenger!");
+	}
 }
 
 bool HelloTriangleApplication::checkValidationLayerSupport()
