@@ -287,15 +287,33 @@ void HelloTriangleApplication::pickPhysicalDevice()
 
 bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
 {
-	VkPhysicalDeviceProperties deviceProperties;
-	VkPhysicalDeviceFeatures deviceFeatures;
-	vkGetPhysicalDeviceProperties(device, &deviceProperties);
-	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-
 	QueueFamilyIndices indices = findQueueFamilies(device);
 
-	return deviceProperties.deviceType ==
-		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader && indices.isComplete();
+	bool extensionsSupported = checkDeviceExtensionSupport(device);
+
+	return indices.isComplete() && extensionsSupported;
+}
+
+bool HelloTriangleApplication::checkDeviceExtensionSupport(VkPhysicalDevice device)
+{
+	uint32_t extensionCount;
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+	std::cout << std::endl;
+	std::cout << "Device Extension Support: " << std::endl;
+
+	for (const auto& extension : availableExtensions)
+	{
+		requiredExtensions.erase(extension.extensionName);
+		std::cout << "\t" << "extensionName: " << extension.extensionName << std::endl;
+	}
+
+	return requiredExtensions.empty();
 }
 
 int HelloTriangleApplication::rateDeviceSuitability(VkPhysicalDevice device)
