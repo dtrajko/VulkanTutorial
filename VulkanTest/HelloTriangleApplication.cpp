@@ -291,7 +291,18 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
 
 	bool extensionsSupported = checkDeviceExtensionSupport(device);
 
-	return indices.isComplete() && extensionsSupported;
+	bool swapChainAdequate = false;
+	SwapChainSupportDetails swapChainSupport;
+
+	if (extensionsSupported)
+	{
+		swapChainSupport = querySwapChainSupport(device);
+		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentationModes.empty();
+	}
+
+	printSwapChainSupport(swapChainAdequate, swapChainSupport);
+
+	return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
 
 bool HelloTriangleApplication::checkDeviceExtensionSupport(VkPhysicalDevice device)
@@ -403,6 +414,36 @@ void HelloTriangleApplication::createSurface()
 	}
 }
 
+SwapChainSupportDetails HelloTriangleApplication::querySwapChainSupport(VkPhysicalDevice device)
+{
+	SwapChainSupportDetails details;
+
+	// Step 1
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+	// Step 2
+	uint32_t formatCount;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+
+	if (formatCount != 0)
+	{
+		details.formats.resize(formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+	}
+
+	// Step 3
+	uint32_t presentationModeCount;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentationModeCount, nullptr);
+
+	if (presentationModeCount != 0)
+	{
+		details.presentationModes.resize(presentationModeCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentationModeCount, details.presentationModes.data());
+	}
+
+	return details;
+}
+
 void HelloTriangleApplication::mainLoop()
 {
 	while (!glfwWindowShouldClose(window))
@@ -433,6 +474,23 @@ void HelloTriangleApplication::printDeviceProperties(
 	std::cout << "\t" << "sparseBinding: " << deviceFeatures.sparseBinding << std::endl;
 	std::cout << "\t" << "..." << std::endl;
 	std::cout << "Physical device score: " << score << std::endl;
+}
+
+void HelloTriangleApplication::printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport)
+{
+	std::cout << std::endl;
+	std::cout << "SwapChain Support: " << std::endl;
+	std::cout << "\t" << "swapChainAdequate: " << (swapChainAdequate ? "YES" : "NO") << std::endl;
+	std::cout << "\t" << "Number of Formats: " << swapChainSupport.formats.size() << std::endl;
+	for (VkSurfaceFormatKHR format : swapChainSupport.formats)
+	{
+		std::cout << "\t\t" << "Format: " << format.format << std::endl;
+	}
+	std::cout << "\t" << "Number of Presentation Modes: " << swapChainSupport.presentationModes.size() << std::endl;
+	for (VkPresentModeKHR presentationMode : swapChainSupport.presentationModes)
+	{
+		std::cout << "\t\t" << "Format: " << presentationMode << std::endl;
+	}
 }
 
 QueueFamilyIndices HelloTriangleApplication::findQueueFamilies(VkPhysicalDevice device)

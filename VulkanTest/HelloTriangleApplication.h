@@ -47,6 +47,13 @@ struct QueueFamilyIndices
 	}
 };
 
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentationModes;
+};
+
 
 class HelloTriangleApplication
 {
@@ -84,7 +91,6 @@ private:
 	void setupDebugMessenger();
 	bool checkValidationLayerSupport();
 
-
 	// physical devices
 	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice device);
@@ -101,6 +107,10 @@ private:
 
 	// Window surface
 	void createSurface();
+
+	// Swap chain support
+	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+	void printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport);
 
 	void mainLoop();
 	void cleanup();

@@ -1,0 +1,133 @@
+Available Vulkan extensions:
+
+        VK_KHR_surface
+        VK_KHR_win32_surface
+        VK_KHR_external_memory_capabilities
+        VK_KHR_external_semaphore_capabilities
+        VK_KHR_external_fence_capabilities
+        VK_KHR_get_physical_device_properties2
+        VK_KHR_get_surface_capabilities2
+        VK_KHR_device_group_creation
+        VK_EXT_debug_report
+        VK_EXT_debug_utils
+        VK_EXT_swapchain_colorspace
+        VK_NV_external_memory_capabilities
+
+Device Extension Support:
+        extensionName: VK_KHR_8bit_storage
+        extensionName: VK_KHR_16bit_storage
+        extensionName: VK_KHR_bind_memory2
+        extensionName: VK_KHR_create_renderpass2
+        extensionName: VK_KHR_dedicated_allocation
+        extensionName: VK_KHR_depth_stencil_resolve
+        extensionName: VK_KHR_descriptor_update_template
+        extensionName: VK_KHR_device_group
+        extensionName: VK_KHR_draw_indirect_count
+        extensionName: VK_KHR_driver_properties
+        extensionName: VK_KHR_external_fence
+        extensionName: VK_KHR_external_fence_win32
+        extensionName: VK_KHR_external_memory
+        extensionName: VK_KHR_external_memory_win32
+        extensionName: VK_KHR_external_semaphore
+        extensionName: VK_KHR_external_semaphore_win32
+        extensionName: VK_KHR_get_memory_requirements2
+        extensionName: VK_KHR_image_format_list
+        extensionName: VK_KHR_maintenance1
+        extensionName: VK_KHR_maintenance2
+        extensionName: VK_KHR_maintenance3
+        extensionName: VK_KHR_multiview
+        extensionName: VK_KHR_push_descriptor
+        extensionName: VK_KHR_relaxed_block_layout
+        extensionName: VK_KHR_sampler_mirror_clamp_to_edge
+        extensionName: VK_KHR_sampler_ycbcr_conversion
+        extensionName: VK_KHR_shader_atomic_int64
+        extensionName: VK_KHR_shader_draw_parameters
+        extensionName: VK_KHR_shader_float16_int8
+        extensionName: VK_KHR_shader_float_controls
+        extensionName: VK_KHR_storage_buffer_storage_class
+        extensionName: VK_KHR_swapchain
+        extensionName: VK_KHR_swapchain_mutable_format
+        extensionName: VK_KHR_variable_pointers
+        extensionName: VK_KHR_vulkan_memory_model
+        extensionName: VK_KHR_win32_keyed_mutex
+        extensionName: VK_EXT_blend_operation_advanced
+        extensionName: VK_EXT_conditional_rendering
+        extensionName: VK_EXT_conservative_rasterization
+        extensionName: VK_EXT_depth_range_unrestricted
+        extensionName: VK_EXT_descriptor_indexing
+        extensionName: VK_EXT_discard_rectangles
+        extensionName: VK_EXT_external_memory_host
+        extensionName: VK_EXT_hdr_metadata
+        extensionName: VK_EXT_inline_uniform_block
+        extensionName: VK_EXT_post_depth_coverage
+        extensionName: VK_EXT_sample_locations
+        extensionName: VK_EXT_sampler_filter_minmax
+        extensionName: VK_EXT_scalar_block_layout
+        extensionName: VK_EXT_shader_subgroup_ballot
+        extensionName: VK_EXT_shader_subgroup_vote
+        extensionName: VK_EXT_shader_viewport_index_layer
+        extensionName: VK_EXT_transform_feedback
+        extensionName: VK_EXT_vertex_attribute_divisor
+        extensionName: VK_NV_clip_space_w_scaling
+        extensionName: VK_NV_dedicated_allocation
+        extensionName: VK_NV_device_diagnostic_checkpoints
+        extensionName: VK_NV_external_memory
+        extensionName: VK_NV_external_memory_win32
+        extensionName: VK_NV_fill_rectangle
+        extensionName: VK_NV_fragment_coverage_to_color
+        extensionName: VK_NV_framebuffer_mixed_samples
+        extensionName: VK_NV_geometry_shader_passthrough
+        extensionName: VK_NV_sample_mask_override_coverage
+        extensionName: VK_NV_shader_subgroup_partitioned
+        extensionName: VK_NV_viewport_array2
+        extensionName: VK_NV_viewport_swizzle
+        extensionName: VK_NV_win32_keyed_mutex
+        extensionName: VK_NVX_device_generated_commands
+        extensionName: VK_NVX_multiview_per_view_attributes
+        extensionName: VK_NV_ray_tracing
+
+SwapChain Support:
+        swapChainAdequate: YES
+        Number of Formats: 2
+                Format: 44
+                Format: 50
+        Number of Presentation Modes: 3
+                presentationMode: 2
+                presentationMode: 3
+                presentationMode: 1
+
+Device Properties
+        deviceID: 7200
+        apiVersion: 4198495
+        deviceName: GeForce GTX 1060
+        deviceType: 2
+        driverVersion: 1783332864
+        limits.bufferImageGranularity: 1024
+        limits.discreteQueuePriorities: 2
+        limits.framebufferColorSampleCounts: 15
+        ...
+        vendorID: 4318
+Device Features
+        geometryShader: 1
+        sparseBinding: 1
+        ...
+Physical device score: 33768
+
+Device Properties
+        deviceID: 16027
+        apiVersion: 4198470
+        deviceName: Intel(R) UHD Graphics 630
+        deviceType: 1
+        driverVersion: 267162
+        limits.bufferImageGranularity: 1
+        limits.discreteQueuePriorities: 2
+        limits.framebufferColorSampleCounts: 31
+        ...
+        vendorID: 32902
+Device Features
+        geometryShader: 1
+        sparseBinding: 1
+        ...
+Physical device score: 16384
+
+-- The selected physical device: GeForce GTX 1060 [Score: 33768]
