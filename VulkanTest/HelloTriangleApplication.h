@@ -1,10 +1,7 @@
 #pragma once
 
-#define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -14,6 +11,7 @@
 #include <cstring>
 #include <map>
 #include <optional>
+#include <set>
 
 
 const int WIDTH = 1280;
@@ -34,10 +32,11 @@ const std::vector<const char*> validationLayers =
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
+	std::optional<uint32_t> presentationFamily;
 
 	bool isComplete()
 	{
-		return graphicsFamily.has_value();
+		return graphicsFamily.has_value() && presentationFamily.has_value();
 	}
 };
 
@@ -117,5 +116,8 @@ private:
 
 	// Vulkan window surface
 	VkSurfaceKHR surface;
+
+	// Presentation queue
+	VkQueue presentationQueue;
 
 };
