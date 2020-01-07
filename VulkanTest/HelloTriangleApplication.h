@@ -12,6 +12,8 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <cstdint>
+#include <algorithm>
 
 
 const int WIDTH = 1280;
@@ -113,6 +115,7 @@ private:
 	void printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 	void mainLoop();
 	void cleanup();
