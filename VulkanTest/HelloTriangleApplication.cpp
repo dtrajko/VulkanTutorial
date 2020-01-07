@@ -371,7 +371,6 @@ void HelloTriangleApplication::createLogicalDevice()
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
-	createInfo.enabledExtensionCount = 0;
 
 	if (enableValidationLayers)
 	{
@@ -382,6 +381,9 @@ void HelloTriangleApplication::createLogicalDevice()
 	{
 		createInfo.enabledLayerCount = 0;
 	}
+
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 	// create a logical device
 	if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
