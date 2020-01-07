@@ -112,6 +112,7 @@ private:
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 	void printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 
 	void mainLoop();
 	void cleanup();
