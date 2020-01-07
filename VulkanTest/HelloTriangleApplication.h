@@ -122,6 +122,9 @@ private:
 	void createSwapChain();
 	void createImageViews();
 
+	// Render pass
+	void createRenderPass();
+
 	// Graphics pipeline
 	void createGraphicsPipeline();
 	VkShaderModule createShaderModule(const std::vector<char>& code);
@@ -159,7 +162,11 @@ private:
 	VkExtent2D swapChainExtent;
 	std::vector<VkImageView> swapChainImageViews;
 
+	// Render pass
+	VkRenderPass renderPass;
+
 	// Graphics pipeline
 	VkPipelineLayout pipelineLayout;
+	VkPipeline graphicsPipeline;
 
 };
