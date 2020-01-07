@@ -14,6 +14,7 @@
 #include <set>
 #include <cstdint>
 #include <algorithm>
+#include <fstream>
 
 
 const int WIDTH = 1280;
@@ -79,6 +80,8 @@ public:
 		VkDebugUtilsMessengerEXT debugMessenger,
 		const VkAllocationCallbacks* pAllocator);
 
+	static std::vector<char> readFile(const std::string& filename);
+
 	void run();
 
 private:
@@ -117,6 +120,11 @@ private:
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 	void createSwapChain();
+	void createImageViews();
+
+	// Graphics pipeline
+	void createGraphicsPipeline();
+	VkShaderModule createShaderModule(const std::vector<char>& code);
 
 	void mainLoop();
 	void cleanup();
@@ -149,5 +157,9 @@ private:
 	std::vector<VkImage> swapChainImages;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
+	std::vector<VkImageView> swapChainImageViews;
+
+	// Graphics pipeline
+	VkPipelineLayout pipelineLayout;
 
 };

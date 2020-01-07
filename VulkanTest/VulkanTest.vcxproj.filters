@@ -30,4 +30,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="shaders\shader_vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\shader_fragment.glsl" />
+  </ItemGroup>
 </Project>
