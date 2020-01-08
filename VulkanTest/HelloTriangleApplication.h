@@ -129,6 +129,13 @@ private:
 	void createGraphicsPipeline();
 	VkShaderModule createShaderModule(const std::vector<char>& code);
 
+	// Framebuffers
+	void createFramebuffers();
+
+	// Command pools
+	void createCommandPool();
+	void createCommandBuffers();
+
 	void mainLoop();
 	void cleanup();
 
@@ -168,5 +175,12 @@ private:
 	// Graphics pipeline
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
+
+	// Framebuffers
+	std::vector<VkFramebuffer> swapChainFramebuffers;
+
+	// Command pool
+	VkCommandPool commandPool;
+	std::vector<VkCommandBuffer> commandBuffers;
 
 };
