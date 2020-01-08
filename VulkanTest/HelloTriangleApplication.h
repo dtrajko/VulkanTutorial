@@ -20,6 +20,8 @@
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 
+const int MAX_FRAMES_IN_FLIGHT = 2;
+
 const std::vector<const char*> validationLayers =
 {
 	"VK_LAYER_KHRONOS_validation"
@@ -136,7 +138,12 @@ private:
 	void createCommandPool();
 	void createCommandBuffers();
 
+	// Semaphores (for synchronizing swap chain events)
+	void createSyncObjects();
+
 	void mainLoop();
+	void drawFrame();
+
 	void cleanup();
 
 private:
@@ -183,4 +190,10 @@ private:
 	VkCommandPool commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
 
+	// Semaphores (for synchronizing swap chain events)
+	std::vector<VkSemaphore> imageAvailableSemaphores;
+	std::vector<VkSemaphore> renderFinishedSemaphores;
+	std::vector<VkFence> inFlightFences;
+	std::vector<VkFence> imagesInFlight;
+	size_t currentFrame = 0;
 };
