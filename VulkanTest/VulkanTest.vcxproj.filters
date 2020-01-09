@@ -35,5 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader_fragment.glsl" />
+    <None Include="shaders\shader_fragment.spv" />
+    <None Include="shaders\shader_vertex.spv" />
   </ItemGroup>
 </Project>
