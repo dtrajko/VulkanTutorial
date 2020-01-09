@@ -84,6 +84,8 @@ public:
 
 	static std::vector<char> readFile(const std::string& filename);
 
+	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+
 	void run();
 
 private:
@@ -123,6 +125,8 @@ private:
 	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 	void createSwapChain();
 	void createImageViews();
+	void cleanupSwapChain();
+	void recreateSwapChain();
 
 	// Render pass
 	void createRenderPass();
@@ -196,4 +200,7 @@ private:
 	std::vector<VkFence> inFlightFences;
 	std::vector<VkFence> imagesInFlight;
 	size_t currentFrame = 0;
+
+	// used to recreate the swap chain
+	bool framebufferResized = false;
 };
