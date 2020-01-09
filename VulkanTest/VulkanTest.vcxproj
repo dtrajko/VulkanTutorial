@@ -93,12 +93,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HelloTriangleApplication.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="18_vertex_buffer.cpp" />
     <ClCompile Include="main_test.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="HelloTriangleApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\shader_vertex.glsl" />

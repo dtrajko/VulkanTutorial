@@ -678,6 +678,7 @@ void HelloTriangleApplication::createVertexBuffer()
 	bufferInfo.size = sizeof(vertices[0]) * vertices.size();
 	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	bufferInfo.flags = 0; // Optional
 
 	if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS)
 	{

@@ -1,6 +1,5 @@
 #include "HelloTriangleApplication.h"
 
-
 int main()
 {
 	HelloTriangleApplication app;
