@@ -93,7 +93,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="18_vertex_buffer.cpp" />
+    <ClCompile Include="HelloTriangleApplication.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +104,9 @@
     <None Include="shaders\shader_fragment.glsl" />
     <None Include="shaders\shader_fragment.spv" />
     <None Include="shaders\shader_vertex.spv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HelloTriangleApplication.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

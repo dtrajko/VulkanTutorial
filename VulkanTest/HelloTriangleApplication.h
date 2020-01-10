@@ -133,6 +133,65 @@ public:
 
 private:
 
+	// GLFW
+	GLFWwindow* window;
+
+	// Vulkan
+	VkInstance instance;
+	VkDebugUtilsMessengerEXT debugMessenger;
+
+	// Vulkan window surface
+	VkSurfaceKHR surface;
+
+	// Vulkan physical devices
+	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	// std::optional<uint32_t> graphicsFamily;
+
+	// Vulkan logical device
+	VkDevice device;
+	VkQueue graphicsQueue;
+
+	// Presentation queue
+	VkQueue presentQueue;
+
+	// Swap chain
+	VkSwapchainKHR swapChain;
+	std::vector<VkImage> swapChainImages;
+	VkFormat swapChainImageFormat;
+	VkExtent2D swapChainExtent;
+	std::vector<VkImageView> swapChainImageViews;
+
+	// Framebuffers
+	std::vector<VkFramebuffer> swapChainFramebuffers;
+
+	// Render pass
+	VkRenderPass renderPass;
+
+	// Graphics pipeline
+	VkPipelineLayout pipelineLayout;
+	VkPipeline graphicsPipeline;
+
+	// Command pool
+	VkCommandPool commandPool;
+
+	// Vertex buffers
+	VkBuffer vertexBuffer;
+	VkDeviceMemory vertexBufferMemory;
+
+	std::vector<VkCommandBuffer> commandBuffers;
+
+	// Semaphores (for synchronizing swap chain events)
+	std::vector<VkSemaphore> imageAvailableSemaphores;
+	std::vector<VkSemaphore> renderFinishedSemaphores;
+	std::vector<VkFence> inFlightFences;
+	std::vector<VkFence> imagesInFlight;
+	size_t currentFrame = 0;
+
+	// used to recreate the swap chain
+	bool framebufferResized = false;
+
+private:
+
 	void initWindow();
 	void initVulkan();
 	void createInstance();
@@ -197,61 +256,4 @@ private:
 
 	void cleanup();
 
-private:
-
-	// GLFW
-	GLFWwindow* window;
-
-	// Vulkan
-	VkInstance instance;
-	VkDebugUtilsMessengerEXT debugMessenger;
-
-	// Vulkan physical devices
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-	std::optional<uint32_t> graphicsFamily;
-
-	// Vulkan logical device
-	VkDevice device;
-	VkQueue graphicsQueue;
-
-	// Vulkan window surface
-	VkSurfaceKHR surface;
-
-	// Presentation queue
-	VkQueue presentQueue;
-
-	// Swap chain
-	VkSwapchainKHR swapChain;
-	std::vector<VkImage> swapChainImages;
-	VkFormat swapChainImageFormat;
-	VkExtent2D swapChainExtent;
-	std::vector<VkImageView> swapChainImageViews;
-
-	// Render pass
-	VkRenderPass renderPass;
-
-	// Graphics pipeline
-	VkPipelineLayout pipelineLayout;
-	VkPipeline graphicsPipeline;
-
-	// Framebuffers
-	std::vector<VkFramebuffer> swapChainFramebuffers;
-
-	// Command pool
-	VkCommandPool commandPool;
-	std::vector<VkCommandBuffer> commandBuffers;
-
-	// Semaphores (for synchronizing swap chain events)
-	std::vector<VkSemaphore> imageAvailableSemaphores;
-	std::vector<VkSemaphore> renderFinishedSemaphores;
-	std::vector<VkFence> inFlightFences;
-	std::vector<VkFence> imagesInFlight;
-	size_t currentFrame = 0;
-
-	// used to recreate the swap chain
-	bool framebufferResized = false;
-
-	// Vertex buffers
-	VkBuffer vertexBuffer;
-	VkDeviceMemory vertexBufferMemory;
 };
