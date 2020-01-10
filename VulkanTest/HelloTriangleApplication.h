@@ -2,7 +2,11 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 #include <stdexcept>
@@ -17,6 +21,7 @@
 #include <algorithm>
 #include <fstream>
 #include <array>
+#include <chrono>
 
 
 const int WIDTH = 1280;
@@ -92,11 +97,29 @@ struct Vertex
 	}
 };
 
-const std::vector<Vertex> vertices =
+struct UniformBufferObject
+{
+	alignas(16) glm::mat4 model;
+	alignas(16) glm::mat4 view;
+	alignas(16) glm::mat4 proj;
+};
+
+const std::vector<Vertex> vertices_triangle =
 {
 	{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
 	{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },
 	{ {-0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f } },
+};
+
+const std::vector<Vertex> vertices = {
+	{ {-0.5f, -0.5f}, { 1.0f, 0.0f, 0.0f } },
+	{ { 0.5f, -0.5f}, { 0.0f, 1.0f, 0.0f } },
+	{ { 0.5f,  0.5f}, { 0.0f, 0.0f, 1.0f } },
+	{ {-0.5f,  0.5f}, { 1.0f, 1.0f, 1.0f } }
+};
+
+const std::vector<uint16_t> indices = {
+	0, 1, 2, 2, 3, 0
 };
 
 
@@ -167,17 +190,31 @@ private:
 	// Render pass
 	VkRenderPass renderPass;
 
+	// Descriptors
+	VkDescriptorSetLayout descriptorSetLayout;
+	VkDescriptorPool descriptorPool;
+	std::vector<VkDescriptorSet> descriptorSets;
+
 	// Graphics pipeline
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-	// Command pool
-	VkCommandPool commandPool;
-
-	// Vertex buffers
+	// Vertex buffer
 	VkBuffer vertexBuffer;
 	VkDeviceMemory vertexBufferMemory;
 
+	// Index buffer
+	VkBuffer indexBuffer;
+	VkDeviceMemory indexBufferMemory;
+
+	// Uniform buffers
+	std::vector<VkBuffer> uniformBuffers;
+	std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+	// Command pool
+	VkCommandPool commandPool;
+
+	// Command buffers
 	std::vector<VkCommandBuffer> commandBuffers;
 
 	// Semaphores (for synchronizing swap chain events)
@@ -189,6 +226,7 @@ private:
 
 	// used to recreate the swap chain
 	bool framebufferResized = false;
+
 
 private:
 
@@ -247,9 +285,24 @@ private:
 	// Semaphores (for synchronizing swap chain events)
 	void createSyncObjects();
 
-	// Vertex buffers
+	// Vertex buffer
 	void createVertexBuffer();
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+		VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+	// Index buffer
+	void createIndexBuffer();
+
+	// Uniform buffers
+	void createUniformBuffers();
+	void updateUniformBuffer(uint32_t currentImage);
+
+	// Descriptors
+	void createDescriptorSetLayout();
+	void createDescriptorPool();
+	void createDescriptorSets();
 
 	void mainLoop();
 	void drawFrame();
