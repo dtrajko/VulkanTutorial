@@ -186,6 +186,7 @@ private:
 
 	// Framebuffers
 	std::vector<VkFramebuffer> swapChainFramebuffers;
+	bool framebufferResized = false; // used to recreate the swap chain
 
 	// Render pass
 	VkRenderPass renderPass;
@@ -224,8 +225,11 @@ private:
 	std::vector<VkFence> imagesInFlight;
 	size_t currentFrame = 0;
 
-	// used to recreate the swap chain
-	bool framebufferResized = false;
+	// Textures
+	VkImage textureImage;
+	VkDeviceMemory textureImageMemory;
+	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
+		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 
 
 private:
@@ -281,6 +285,9 @@ private:
 	// Command pools
 	void createCommandPool();
 	void createCommandBuffers();
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	// Semaphores (for synchronizing swap chain events)
 	void createSyncObjects();
@@ -291,6 +298,7 @@ private:
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 		VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 	// Index buffer
 	void createIndexBuffer();
@@ -303,6 +311,9 @@ private:
 	void createDescriptorSetLayout();
 	void createDescriptorPool();
 	void createDescriptorSets();
+
+	// Texture mapping
+	void createTextureImage();
 
 	void mainLoop();
 	void drawFrame();
