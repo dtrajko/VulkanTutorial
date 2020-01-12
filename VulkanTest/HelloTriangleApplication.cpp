@@ -231,12 +231,12 @@ void HelloTriangleApplication::createLogicalDevice()
 	}
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
-
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
@@ -1232,9 +1232,12 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
+	VkPhysicalDeviceFeatures supportedFeatures;
+	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
 	printSwapChainSupport(swapChainAdequate, swapChainSupport);
 
-	return indices.isComplete() && extensionsSupported && swapChainAdequate;
+	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
 bool HelloTriangleApplication::checkDeviceExtensionSupport(VkPhysicalDevice device)
