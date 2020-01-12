@@ -228,8 +228,8 @@ private:
 	// Textures
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
-	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
-		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	VkImageView textureImageView;
+	VkSampler textureSampler;
 
 
 private:
@@ -314,6 +314,11 @@ private:
 
 	// Texture mapping
 	void createTextureImage();
+	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
+		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	void createTextureImageView();
+	VkImageView createImageView(VkImage image, VkFormat format);
+	void createTextureSampler();
 
 	void mainLoop();
 	void drawFrame();
