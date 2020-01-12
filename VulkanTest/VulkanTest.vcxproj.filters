@@ -15,23 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HelloTriangleApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="shaders\shader_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader_fragment.glsl" />
     <None Include="shaders\shader_fragment.spv" />
     <None Include="shaders\shader_vertex.spv" />
+    <None Include="shaders\shader.vert" />
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\frag.spv" />
+    <None Include="shaders\vert.spv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="HelloTriangleApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HelloTriangleApplication.h">

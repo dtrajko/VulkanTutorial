@@ -5,27 +5,34 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_ENABLE_EXPERIMENTAL
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
-#include <functional>
-#include <cstdlib>
+#include <algorithm>
+#include <chrono>
 #include <vector>
 #include <cstring>
-#include <map>
+#include <cstdlib>
+#include <cstdint>
+#include <array>
 #include <optional>
 #include <set>
-#include <cstdint>
-#include <algorithm>
-#include <fstream>
-#include <array>
-#include <chrono>
+#include <unordered_map>
+#include <functional>
+#include <map>
 
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
+
+const std::string MODEL_PATH = "models/chalet.obj";
+const std::string TEXTURE_PATH = "textures/chalet.jpg";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -68,7 +75,7 @@ struct SwapChainSupportDetails
 
 struct Vertex
 {
-	glm::vec2 pos;
+	glm::vec3 pos;
 	glm::vec3 color;
 	glm::vec2 texCoord;
 
@@ -86,7 +93,7 @@ struct Vertex
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
 		attributeDescriptions[1].binding = 0;
@@ -101,7 +108,25 @@ struct Vertex
 
 		return attributeDescriptions;
 	}
+
+	bool operator==(const Vertex& other) const
+	{
+		return pos == other.pos && color == other.color && texCoord == other.texCoord;
+	}
 };
+
+namespace std
+{
+	template<> struct hash<Vertex>
+	{
+		size_t operator()(Vertex const& vertex) const
+		{
+			return ((hash<glm::vec3>()(vertex.pos) ^
+				(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
+				(hash<glm::vec2>()(vertex.texCoord) << 1);
+		}
+	};
+}
 
 struct UniformBufferObject
 {
@@ -112,19 +137,19 @@ struct UniformBufferObject
 
 const std::vector<Vertex> vertices_triangle =
 {
-	{ { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
-	{ { 0.5f,  0.5f }, { 0.0f, 1.0f, 0.0f } },
-	{ {-0.5f,  0.5f }, { 0.0f, 0.0f, 1.0f } },
+	{ { 0.0f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+	{ { 0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+	{ {-0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
 };
 
-const std::vector<Vertex> vertices = {
-	{ {-0.5f, -0.5f}, { 1.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-	{ { 0.5f, -0.5f}, { 0.0f, 1.0f, 0.0f }, {0.0f, 0.0f} },
-	{ { 0.5f,  0.5f}, { 0.0f, 0.0f, 1.0f }, {0.0f, 1.0f} },
-	{ {-0.5f,  0.5f}, { 1.0f, 1.0f, 1.0f }, {1.0f, 1.0f} }
+const std::vector<Vertex> vertices_quad = {
+	{ {-0.5f, -0.5f, 0.0f}, { 1.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+	{ { 0.5f, -0.5f, 0.0f}, { 0.0f, 1.0f, 0.0f }, {0.0f, 0.0f} },
+	{ { 0.5f,  0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f }, {0.0f, 1.0f} },
+	{ {-0.5f,  0.5f, 0.0f}, { 1.0f, 1.0f, 1.0f }, {1.0f, 1.0f} }
 };
 
-const std::vector<uint16_t> indices = {
+const std::vector<uint16_t> indices_quad = {
 	0, 1, 2, 2, 3, 0
 };
 
@@ -206,6 +231,10 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
+	// Model data
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+
 	// Vertex buffer
 	VkBuffer vertexBuffer;
 	VkDeviceMemory vertexBufferMemory;
@@ -236,6 +265,11 @@ private:
 	VkDeviceMemory textureImageMemory;
 	VkImageView textureImageView;
 	VkSampler textureSampler;
+
+	// Depth resources
+	VkImage depthImage;
+	VkDeviceMemory depthImageMemory;
+	VkImageView depthImageView;
 
 
 private:
@@ -323,8 +357,17 @@ private:
 	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
 		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	void createTextureImageView();
-	VkImageView createImageView(VkImage image, VkFormat format);
+	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	void createTextureSampler();
+
+	// Depth resources
+	void createDepthResources();
+	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	VkFormat findDepthFormat();
+	bool hasStencilComponent(VkFormat format);
+
+	// Models
+	void loadModel();
 
 	void mainLoop();
 	void drawFrame();
