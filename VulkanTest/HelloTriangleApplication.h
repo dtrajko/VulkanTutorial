@@ -267,7 +267,6 @@ private:
 	size_t currentFrame = 0;
 
 	// Textures
-	uint32_t mipLevels;
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
 	VkImageView textureImageView;
@@ -278,6 +277,14 @@ private:
 	VkDeviceMemory depthImageMemory;
 	VkImageView depthImageView;
 
+	// Mipmaps
+	uint32_t mipLevels;
+
+	// Multisampling (MSAA)
+	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+	VkImage colorImage;
+	VkDeviceMemory colorImageMemory;
+	VkImageView colorImageView;
 
 private:
 
@@ -361,8 +368,9 @@ private:
 
 	// Texture mapping
 	void createTextureImage();
-	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkFormat format, VkImageTiling tiling,
-		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
+		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
+		VkImage& image, VkDeviceMemory& imageMemory);
 	void createTextureImageView();
 	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 	void createTextureSampler();
@@ -373,6 +381,10 @@ private:
 	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 	VkFormat findDepthFormat();
 	bool hasStencilComponent(VkFormat format);
+
+	// Multisampling (MSAA)
+	VkSampleCountFlagBits getMaxUsableSampleCount();
+	void createColorResources();
 
 	// Models
 	void loadModel();
