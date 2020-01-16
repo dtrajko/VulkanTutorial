@@ -30,6 +30,7 @@
 #include "engine/Debug.h"
 #include "engine/Loader.h"
 #include "engine/Buffer.h"
+#include "engine/PhysicalDevice.h"
 
 
 const int WIDTH = 1280;
@@ -111,7 +112,7 @@ private:
 	VkSurfaceKHR surface;
 
 	// Vulkan physical devices
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+	VkPhysicalDevice hPhysicalDevice = VK_NULL_HANDLE;
 	// std::optional<uint32_t> graphicsFamily;
 
 	// Vulkan logical device
@@ -192,6 +193,7 @@ private:
 	// Refactoring
 	Loader loader;
 	Buffer buffer;
+	PhysicalDevice physicalDevice;
 
 
 private:
@@ -255,10 +257,7 @@ private:
 	void createSyncObjects();
 
 	// Vertex buffer
-	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-		VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void createVertexBuffer();
-	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
