@@ -105,6 +105,7 @@
     <None Include="shaders\vert.spv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\CommandBuffer.cpp" />
     <ClCompile Include="engine\Buffer.cpp" />
     <ClCompile Include="engine\Debug.cpp" />
     <ClCompile Include="HelloTriangleApplication.cpp" />
@@ -115,6 +116,7 @@
     <ClCompile Include="engine\Surface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\CommandBuffer.h" />
     <ClInclude Include="engine\Buffer.h" />
     <ClInclude Include="engine\Debug.h" />
     <ClInclude Include="engine\Vertex.h" />

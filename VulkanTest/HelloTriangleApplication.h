@@ -32,6 +32,7 @@
 #include "engine/Buffer.h"
 #include "engine/PhysicalDevice.h"
 #include "engine/Surface.h"
+#include "engine/CommandBuffer.h"
 
 
 const int WIDTH = 1280;
@@ -143,9 +144,6 @@ private:
 	std::vector<VkBuffer> uniformBuffers;
 	std::vector<VkDeviceMemory> uniformBuffersMemory;
 
-	// Command pool
-	VkCommandPool commandPool;
-
 	// Command buffers
 	std::vector<VkCommandBuffer> commandBuffers;
 
@@ -181,6 +179,7 @@ private:
 	Buffer buffer;
 	PhysicalDevice physicalDevice;
 	Surface surface;
+	CommandBuffer commandBuffer;
 
 
 private:
@@ -234,7 +233,6 @@ private:
 	// Command pools
 	void createCommandPool();
 	void createCommandBuffers();
-	VkCommandBuffer beginSingleTimeCommands();
 	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 
