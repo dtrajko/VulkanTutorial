@@ -112,6 +112,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="engine\PhysicalDevice.cpp" />
+    <ClCompile Include="engine\Surface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Buffer.h" />
@@ -120,6 +121,7 @@
     <ClInclude Include="HelloTriangleApplication.h" />
     <ClInclude Include="engine\Loader.h" />
     <ClInclude Include="engine\PhysicalDevice.h" />
+    <ClInclude Include="engine\Surface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

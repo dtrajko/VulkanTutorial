@@ -31,6 +31,7 @@
 #include "engine/Loader.h"
 #include "engine/Buffer.h"
 #include "engine/PhysicalDevice.h"
+#include "engine/Surface.h"
 
 
 const int WIDTH = 1280;
@@ -57,17 +58,6 @@ const std::vector<const char*> deviceExtensions =
 	const bool enableValidationLayers = true;
 #endif // NDEBUG
 
-
-struct QueueFamilyIndices
-{
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
-
-	bool isComplete()
-	{
-		return graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
 
 struct SwapChainSupportDetails
 {
@@ -105,7 +95,7 @@ private:
 	VkDebugUtilsMessengerEXT debugMessenger;
 
 	// Vulkan window surface
-	VkSurfaceKHR surface;
+	VkSurfaceKHR surfaceKHR;
 
 	// Vulkan physical devices
 	VkPhysicalDevice hPhysicalDevice = VK_NULL_HANDLE;
@@ -190,6 +180,7 @@ private:
 	Loader loader;
 	Buffer buffer;
 	PhysicalDevice physicalDevice;
+	Surface surface;
 
 
 private:
@@ -213,7 +204,6 @@ private:
 		VkPhysicalDeviceProperties deviceProperties,
 		VkPhysicalDeviceFeatures deviceFeatures,
 		int score);
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 
 	// logical device
 	void createLogicalDevice();
@@ -226,7 +216,6 @@ private:
 	void printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport);
 	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 	void createSwapChain();
 	void createImageViews();
 	void cleanupSwapChain();

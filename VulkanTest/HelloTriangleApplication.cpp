@@ -163,7 +163,7 @@ void HelloTriangleApplication::setupDebugMessenger()
 
 void HelloTriangleApplication::createSurface()
 {
-	if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
+	if (glfwCreateWindowSurface(instance, window, nullptr, &surfaceKHR) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create a window surface!");
 	}
@@ -201,7 +201,7 @@ void HelloTriangleApplication::pickPhysicalDevice()
 
 void HelloTriangleApplication::createLogicalDevice()
 {
-	QueueFamilyIndices indices = findQueueFamilies(hPhysicalDevice);
+	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -256,7 +256,7 @@ void HelloTriangleApplication::createSwapChain()
 
 	VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+	VkExtent2D extent = surface.chooseSwapExtent(window, swapChainSupport.capabilities);
 
 	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 
@@ -270,7 +270,7 @@ void HelloTriangleApplication::createSwapChain()
 
 	VkSwapchainCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = surface;
+	createInfo.surface = surfaceKHR;
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -278,7 +278,7 @@ void HelloTriangleApplication::createSwapChain()
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = findQueueFamilies(hPhysicalDevice);
+	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	if (indices.graphicsFamily != indices.presentFamily)
@@ -616,7 +616,7 @@ void HelloTriangleApplication::createFramebuffers()
 
 void HelloTriangleApplication::createCommandPool()
 {
-	QueueFamilyIndices queueFamilyIndices = findQueueFamilies(hPhysicalDevice);
+	QueueFamilyIndices queueFamilyIndices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -1383,23 +1383,23 @@ std::vector<const char*> HelloTriangleApplication::getRequiredExtensions()
 	return extensions;
 }
 
-bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
+bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice)
 {
-	QueueFamilyIndices indices = findQueueFamilies(device);
+	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
-	bool extensionsSupported = checkDeviceExtensionSupport(device);
+	bool extensionsSupported = checkDeviceExtensionSupport(hPhysicalDevice);
 
 	bool swapChainAdequate = false;
 	SwapChainSupportDetails swapChainSupport;
 
 	if (extensionsSupported)
 	{
-		swapChainSupport = querySwapChainSupport(device);
+		swapChainSupport = querySwapChainSupport(hPhysicalDevice);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
 	VkPhysicalDeviceFeatures supportedFeatures;
-	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+	vkGetPhysicalDeviceFeatures(hPhysicalDevice, &supportedFeatures);
 
 	printSwapChainSupport(swapChainAdequate, swapChainSupport);
 
@@ -1462,26 +1462,26 @@ SwapChainSupportDetails HelloTriangleApplication::querySwapChainSupport(VkPhysic
 	SwapChainSupportDetails details;
 
 	// Step 1
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surfaceKHR, &details.capabilities);
 
 	// Step 2
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surfaceKHR, &formatCount, nullptr);
 
 	if (formatCount != 0)
 	{
 		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surfaceKHR, &formatCount, details.formats.data());
 	}
 
 	// Step 3
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surfaceKHR, &presentModeCount, nullptr);
 
 	if (presentModeCount != 0)
 	{
 		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surfaceKHR, &presentModeCount, details.presentModes.data());
 	}
 
 	return details;
@@ -1660,65 +1660,6 @@ VkPresentModeKHR HelloTriangleApplication::chooseSwapPresentMode(const std::vect
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D HelloTriangleApplication::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-{
-	if (capabilities.currentExtent.width != UINT32_MAX)
-	{
-		return capabilities.currentExtent;
-	}
-	else
-	{
-		int width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-
-		VkExtent2D actualExtent = {
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
-		};
-
-		actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
-		actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
-
-		return actualExtent;
-	}
-}
-
-QueueFamilyIndices HelloTriangleApplication::findQueueFamilies(VkPhysicalDevice device)
-{
-	// Logic to find graphics queue family
-	QueueFamilyIndices indices = {};
-	uint32_t queueFamilyCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-
-	int i = 0;
-	for (const auto& queueFamily : queueFamilies)
-	{
-		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-		{
-			indices.graphicsFamily = i;
-		}
-
-		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-
-		if (presentSupport)
-		{
-			indices.presentFamily = i;
-		}
-
-		if (indices.isComplete())
-		{
-			break;
-		}
-
-		i++;
-	}
-
-	return indices;
-}
-
 void HelloTriangleApplication::cleanupSwapChain()
 {
 	vkDestroyImageView(device, colorImageView, nullptr);
@@ -1789,7 +1730,7 @@ void HelloTriangleApplication::cleanup()
 		Debug::DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 	}
 
-	vkDestroySurfaceKHR(instance, surface, nullptr);
+	vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);
 	vkDestroyInstance(instance, nullptr);
 
 	glfwDestroyWindow(window);
