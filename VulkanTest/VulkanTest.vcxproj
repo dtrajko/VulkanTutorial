@@ -105,11 +105,13 @@
     <None Include="shaders\vert.spv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Debug.cpp" />
     <ClCompile Include="HelloTriangleApplication.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Debug.h" />
     <ClInclude Include="HelloTriangleApplication.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

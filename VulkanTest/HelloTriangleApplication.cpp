@@ -7,46 +7,6 @@
 #include "HelloTriangleApplication.h"
 
 
-VKAPI_ATTR VkBool32 VKAPI_CALL HelloTriangleApplication::debugCallback(
-	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-	VkDebugUtilsMessageTypeFlagsEXT messageType,
-	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-	void* pUserData)
-{
-	std::cerr << "Vulkan validation layer: " << pCallbackData->pMessage << std::endl;
-
-	return VK_FALSE;
-}
-
-VkResult HelloTriangleApplication::CreateDebugUtilsMessengerEXT(
-	VkInstance instance,
-	const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-	const VkAllocationCallbacks* pAllocator,
-	VkDebugUtilsMessengerEXT* pDebugMessenger)
-{
-	auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-	if (func != nullptr)
-	{
-		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-	}
-	else
-	{
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
-	}
-}
-
-void HelloTriangleApplication::DestroyDebugUtilsMessengerEXT(
-	VkInstance instance,
-	VkDebugUtilsMessengerEXT debugMessenger,
-	const VkAllocationCallbacks* pAllocator)
-{
-	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-	if (func != nullptr)
-	{
-		func(instance, debugMessenger, pAllocator);
-	}
-}
-
 std::vector<char> HelloTriangleApplication::readFile(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
@@ -175,7 +135,7 @@ void HelloTriangleApplication::setupDebugMessenger()
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);
 
-	if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
+	if (Debug::CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to set up debug messenger!");
 	}
@@ -874,6 +834,53 @@ void HelloTriangleApplication::createTextureSampler()
 
 }
 
+void HelloTriangleApplication::loadModel()
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str()))
+	{
+		throw std::runtime_error(warn + err);
+	}
+
+	std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+
+	for (const auto& shape : shapes)
+	{
+		for (const auto& index : shape.mesh.indices)
+		{
+			Vertex vertex = {};
+
+			vertex.pos =
+			{
+				attrib.vertices[3 * static_cast<uint64_t>(index.vertex_index) + 0],
+				attrib.vertices[3 * static_cast<uint64_t>(index.vertex_index) + 1],
+				attrib.vertices[3 * static_cast<uint64_t>(index.vertex_index) + 2],
+			};
+
+			vertex.texCoord =
+			{
+				attrib.texcoords[2 * static_cast<uint64_t>(index.texcoord_index) + 0],
+				1.0f - attrib.texcoords[2 * static_cast<uint64_t>(index.texcoord_index) + 1]
+			};
+
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
+			if (uniqueVertices.count(vertex) == 0)
+			{
+				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+				vertices.push_back(vertex);
+
+			}
+
+			indices.push_back(uniqueVertices[vertex]);
+		}
+	}
+}
+
 void HelloTriangleApplication::createDepthResources()
 {
 	VkFormat depthFormat = findDepthFormat();
@@ -1443,7 +1450,7 @@ void HelloTriangleApplication::populateDebugMessengerCreateInfo(VkDebugUtilsMess
 		VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
 		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	createInfo.pfnUserCallback = debugCallback;
+	createInfo.pfnUserCallback = Debug::debugCallback;
 }
 
 bool HelloTriangleApplication::checkValidationLayerSupport()
@@ -1610,53 +1617,6 @@ VkShaderModule HelloTriangleApplication::createShaderModule(const std::vector<ch
 	}
 
 	return shaderModule;
-}
-
-void HelloTriangleApplication::loadModel()
-{
-	tinyobj::attrib_t attrib;
-	std::vector<tinyobj::shape_t> shapes;
-	std::vector<tinyobj::material_t> materials;
-	std::string warn, err;
-
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str()))
-	{
-		throw std::runtime_error(warn + err);
-	}
-
-	std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
-
-	for (const auto& shape : shapes)
-	{
-		for (const auto& index : shape.mesh.indices)
-		{
-			Vertex vertex = {};
-
-			vertex.pos =
-			{
-				attrib.vertices[3 * static_cast<uint64_t>(index.vertex_index) + 0],
-				attrib.vertices[3 * static_cast<uint64_t>(index.vertex_index) + 1],
-				attrib.vertices[3 * static_cast<uint64_t>(index.vertex_index) + 2],
-			};
-
-			vertex.texCoord =
-			{
-				attrib.texcoords[2 * static_cast<uint64_t>(index.texcoord_index) + 0],
-				1.0f - attrib.texcoords[2 * static_cast<uint64_t>(index.texcoord_index) + 1]
-			};
-
-			vertex.color = { 1.0f, 1.0f, 1.0f };
-
-			if (uniqueVertices.count(vertex) == 0)
-			{
-				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-				vertices.push_back(vertex);
-
-			}
-
-			indices.push_back(uniqueVertices[vertex]);
-		}
-	}
 }
 
 void HelloTriangleApplication::mainLoop()
@@ -1942,7 +1902,7 @@ void HelloTriangleApplication::cleanup()
 
 	if (enableValidationLayers)
 	{
-		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		Debug::DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 	}
 
 	vkDestroySurfaceKHR(instance, surface, nullptr);

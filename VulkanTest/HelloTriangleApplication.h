@@ -27,6 +27,8 @@
 #include <functional>
 #include <map>
 
+#include "engine/Debug.h"
+
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
