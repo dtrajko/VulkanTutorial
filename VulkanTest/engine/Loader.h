@@ -1,0 +1,50 @@
+#pragma once
+
+
+#include <vector>
+
+#include "Vertex.h"
+
+
+class Loader
+{
+public:
+
+	const std::string MODEL_PATH = "models/cube.obj";
+	const std::string TEXTURE_PATH = "textures/grassblock.png"; // particle_ground.png";
+
+	const std::vector<Vertex> vertices_triangle =
+	{
+		{ { 0.0f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+		{ { 0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+		{ {-0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
+	};
+
+	const std::vector<Vertex> vertices_quads = {
+		{ {-0.5f, -0.5f, 0.0f}, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+		{ { 0.5f, -0.5f, 0.0f}, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f} },
+		{ { 0.5f,  0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
+		{ {-0.5f,  0.5f, 0.0f}, { 1.0f, 1.0f, 1.0f }, {0.0f, 1.0f} },
+
+		{ {-0.5f, -0.5f, 0.5f}, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+		{ { 0.5f, -0.5f, 0.5f}, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f} },
+		{ { 0.5f,  0.5f, 0.5f}, { 0.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
+		{ {-0.5f,  0.5f, 0.5f}, { 1.0f, 1.0f, 1.0f }, {0.0f, 1.0f} }
+	};
+
+	const std::vector<uint32_t> indices_quads = {
+		0, 1, 2, 2, 3, 0,
+		4, 5, 6, 6, 7, 4,
+	};
+
+	// Model data
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+
+
+public:
+
+	// Models
+	void loadModel();
+
+};

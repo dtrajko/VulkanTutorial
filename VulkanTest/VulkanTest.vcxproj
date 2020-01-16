@@ -105,14 +105,19 @@
     <None Include="shaders\vert.spv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Buffer.cpp" />
     <ClCompile Include="engine\Debug.cpp" />
     <ClCompile Include="HelloTriangleApplication.cpp" />
+    <ClCompile Include="engine\Loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Buffer.h" />
     <ClInclude Include="engine\Debug.h" />
+    <ClInclude Include="engine\Vertex.h" />
     <ClInclude Include="HelloTriangleApplication.h" />
+    <ClInclude Include="engine\Loader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

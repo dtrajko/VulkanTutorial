@@ -28,13 +28,13 @@
 #include <map>
 
 #include "engine/Debug.h"
+#include "engine/Loader.h"
+#include "engine/Buffer.h"
 
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 
-const std::string MODEL_PATH = "models/chalet.obj";
-const std::string TEXTURE_PATH = "textures/chalet.jpg";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -75,60 +75,6 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-struct Vertex
-{
-	glm::vec3 pos;
-	glm::vec3 color;
-	glm::vec2 texCoord;
-
-	static VkVertexInputBindingDescription getBindingDescription()
-	{
-		VkVertexInputBindingDescription bindingDescription = {};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		return bindingDescription;
-	}
-
-	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-		attributeDescriptions[2].binding = 0;
-		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
-
-		return attributeDescriptions;
-	}
-
-	bool operator==(const Vertex& other) const
-	{
-		return pos == other.pos && color == other.color && texCoord == other.texCoord;
-	}
-};
-
-namespace std
-{
-	template<> struct hash<Vertex>
-	{
-		size_t operator()(Vertex const& vertex) const
-		{
-			return ((hash<glm::vec3>()(vertex.pos) ^
-				(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
-				(hash<glm::vec2>()(vertex.texCoord) << 1);
-		}
-	};
-}
 
 struct UniformBufferObject
 {
@@ -137,52 +83,11 @@ struct UniformBufferObject
 	alignas(16) glm::mat4 proj;
 };
 
-const std::vector<Vertex> vertices_triangle =
-{
-	{ { 0.0f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-	{ { 0.5f,  0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-	{ {-0.5f,  0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-};
-
-const std::vector<Vertex> vertices = {
-	{ {-0.5f, -0.5f, 0.0f}, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-	{ { 0.5f, -0.5f, 0.0f}, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f} },
-	{ { 0.5f,  0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
-	{ {-0.5f,  0.5f, 0.0f}, { 1.0f, 1.0f, 1.0f }, {0.0f, 1.0f} },
-
-	{ {-0.5f, -0.5f, 0.5f}, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-	{ { 0.5f, -0.5f, 0.5f}, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f} },
-	{ { 0.5f,  0.5f, 0.5f}, { 0.0f, 0.0f, 1.0f }, {1.0f, 1.0f} },
-	{ {-0.5f,  0.5f, 0.5f}, { 1.0f, 1.0f, 1.0f }, {0.0f, 1.0f} }
-};
-
-const std::vector<uint32_t> indices = {
-	0, 1, 2, 2, 3, 0,
-	4, 5, 6, 6, 7, 4,
-};
-
 
 class HelloTriangleApplication
 {
 
 public:
-
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-		VkDebugUtilsMessageTypeFlagsEXT messageType,
-		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-		void* pUserData);
-
-	static VkResult CreateDebugUtilsMessengerEXT(
-		VkInstance instance,
-		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDebugUtilsMessengerEXT* pDebugMessenger);
-
-	static void DestroyDebugUtilsMessengerEXT(
-		VkInstance instance,
-		VkDebugUtilsMessengerEXT debugMessenger,
-		const VkAllocationCallbacks* pAllocator);
 
 	static std::vector<char> readFile(const std::string& filename);
 
@@ -239,10 +144,6 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-	// Model data
-	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
-
 	// Vertex buffer
 	VkBuffer vertexBuffer;
 	VkDeviceMemory vertexBufferMemory;
@@ -287,6 +188,11 @@ private:
 	VkImage colorImage;
 	VkDeviceMemory colorImageMemory;
 	VkImageView colorImageView;
+
+	// Refactoring
+	Loader loader;
+	Buffer buffer;
+
 
 private:
 
@@ -349,10 +255,10 @@ private:
 	void createSyncObjects();
 
 	// Vertex buffer
-	void createVertexBuffer();
-	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 		VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void createVertexBuffer();
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
@@ -369,7 +275,7 @@ private:
 	void createDescriptorSets();
 
 	// Texture mapping
-	void createTextureImage();
+	void createTextureImage(const char* texFilepath);
 	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
 		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
 		VkImage& image, VkDeviceMemory& imageMemory);
@@ -387,9 +293,6 @@ private:
 	// Multisampling (MSAA)
 	VkSampleCountFlagBits getMaxUsableSampleCount();
 	void createColorResources();
-
-	// Models
-	void loadModel();
 
 	void mainLoop();
 	void drawFrame();
