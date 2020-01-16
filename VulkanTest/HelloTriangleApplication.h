@@ -76,7 +76,6 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-
 struct UniformBufferObject
 {
 	alignas(16) glm::mat4 model;
@@ -84,13 +83,10 @@ struct UniformBufferObject
 	alignas(16) glm::mat4 proj;
 };
 
-
 class HelloTriangleApplication
 {
 
 public:
-
-	static std::vector<char> readFile(const std::string& filename);
 
 	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 

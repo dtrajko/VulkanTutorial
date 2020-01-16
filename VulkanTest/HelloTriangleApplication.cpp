@@ -46,25 +46,6 @@ void HelloTriangleApplication::createTextureImage(const char* texFilepath)
 	generateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 }
 
-std::vector<char> HelloTriangleApplication::readFile(const std::string& filename)
-{
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw std::runtime_error("Failed to open file!");
-	}
-
-	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(fileSize);
-
-	file.seekg(0);
-	file.read(buffer.data(), fileSize);
-
-	file.close();
-	return buffer;
-}
-
 void HelloTriangleApplication::run()
 {
 	initWindow();
@@ -453,8 +434,8 @@ void HelloTriangleApplication::createDescriptorSetLayout()
 
 void HelloTriangleApplication::createGraphicsPipeline()
 {
-	auto vertShaderCode = readFile("shaders/shader_vertex.spv");
-	auto fragShaderCode = readFile("shaders/shader_fragment.spv");
+	auto vertShaderCode = Loader::readFile("shaders/shader_vertex.spv");
+	auto fragShaderCode = Loader::readFile("shaders/shader_fragment.spv");
 
 	VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
 	VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

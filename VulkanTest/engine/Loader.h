@@ -44,6 +44,8 @@ public:
 
 public:
 
+	static std::vector<char> readFile(const std::string& filename);
+
 	// Models
 	void loadModel();
 
