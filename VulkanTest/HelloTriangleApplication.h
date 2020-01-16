@@ -34,6 +34,7 @@
 #include "engine/Surface.h"
 #include "engine/CommandBuffer.h"
 #include "engine/CommandPool.h"
+#include "engine/Sampler.h"
 
 
 const int WIDTH = 1280;
@@ -159,7 +160,6 @@ private:
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
 	VkImageView textureImageView;
-	VkSampler textureSampler;
 
 	// Depth resources
 	VkImage depthImage;
@@ -182,6 +182,7 @@ private:
 	Surface surface;
 	CommandBuffer commandBuffer;
 	CommandPool commandPool;
+	Sampler sampler;
 
 
 private:

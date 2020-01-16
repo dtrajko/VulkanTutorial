@@ -109,23 +109,31 @@
     <ClCompile Include="engine\CommandBuffer.cpp" />
     <ClCompile Include="engine\Buffer.cpp" />
     <ClCompile Include="engine\Debug.cpp" />
+    <ClCompile Include="engine\InputSystem.cpp" />
+    <ClCompile Include="engine\Timer.cpp" />
     <ClCompile Include="HelloTriangleApplication.cpp" />
     <ClCompile Include="engine\Loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="engine\PhysicalDevice.cpp" />
     <ClCompile Include="engine\Surface.cpp" />
+    <ClCompile Include="engine\Sampler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\CommandPool.h" />
     <ClInclude Include="engine\CommandBuffer.h" />
     <ClInclude Include="engine\Buffer.h" />
     <ClInclude Include="engine\Debug.h" />
+    <ClInclude Include="engine\InputListener.h" />
+    <ClInclude Include="engine\InputSystem.h" />
+    <ClInclude Include="engine\Point.h" />
+    <ClInclude Include="engine\Timer.h" />
     <ClInclude Include="engine\Vertex.h" />
     <ClInclude Include="HelloTriangleApplication.h" />
     <ClInclude Include="engine\Loader.h" />
     <ClInclude Include="engine\PhysicalDevice.h" />
     <ClInclude Include="engine\Surface.h" />
+    <ClInclude Include="engine\Sampler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
