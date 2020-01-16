@@ -9,9 +9,7 @@ class CommandBuffer
 
 public:
 
-	// Command pool
-	VkCommandPool commandPool;
-
-	VkCommandBuffer beginSingleTimeCommands(VkDevice device);
+	VkCommandBuffer beginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
+	void endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBuffer, VkQueue graphicsQueue, VkCommandPool commandPool);
 
 };

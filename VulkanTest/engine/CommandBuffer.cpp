@@ -1,7 +1,7 @@
 #include "CommandBuffer.h"
 
 
-VkCommandBuffer CommandBuffer::beginSingleTimeCommands(VkDevice device)
+VkCommandBuffer CommandBuffer::beginSingleTimeCommands(VkDevice device, VkCommandPool commandPool)
 {
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -19,4 +19,19 @@ VkCommandBuffer CommandBuffer::beginSingleTimeCommands(VkDevice device)
 	vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
 	return commandBuffer;
+}
+
+void CommandBuffer::endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBuffer, VkQueue graphicsQueue, VkCommandPool commandPool)
+{
+	vkEndCommandBuffer(cmdBuffer);
+
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &cmdBuffer;
+
+	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(graphicsQueue);
+
+	vkFreeCommandBuffers(device, commandPool, 1, &cmdBuffer);
 }

@@ -11,7 +11,7 @@ class Loader
 public:
 
 	const std::string MODEL_PATH = "models/cube.obj";
-	const std::string TEXTURE_PATH = "textures/statue_512x512.png";
+	const std::string TEXTURE_PATH = "textures/statue_512x512_atlas.png";
 
 	const std::vector<Vertex> vertices_triangle =
 	{

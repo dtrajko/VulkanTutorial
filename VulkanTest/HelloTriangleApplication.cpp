@@ -84,7 +84,7 @@ void HelloTriangleApplication::initVulkan()
 	createRenderPass();
 	createDescriptorSetLayout();
 	createGraphicsPipeline();
-	createCommandPool();
+	commandPool.createCommandPool(physicalDevice, hPhysicalDevice, device, surfaceKHR);
 	createColorResources();
 	createDepthResources();
 	createFramebuffers();
@@ -614,20 +614,6 @@ void HelloTriangleApplication::createFramebuffers()
 	}
 }
 
-void HelloTriangleApplication::createCommandPool()
-{
-	QueueFamilyIndices queueFamilyIndices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
-
-	VkCommandPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
-
-	if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandBuffer.commandPool) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create Command pool!");
-	}
-}
-
 void HelloTriangleApplication::createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
 	VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
 	VkImage& image, VkDeviceMemory& imageMemory)
@@ -678,7 +664,7 @@ void HelloTriangleApplication::generateMipmaps(VkImage image, VkFormat imageForm
 		throw std::runtime_error("Texture image format does not support linear blitting!");
 	}
 
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device);
+	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -754,7 +740,7 @@ void HelloTriangleApplication::generateMipmaps(VkImage image, VkFormat imageForm
 		0, nullptr,
 		1, &barrier);
 
-	endSingleTimeCommands(cmdBuffer);
+	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
 }
 
 void HelloTriangleApplication::createTextureImageView()
@@ -1053,18 +1039,18 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
 
 void HelloTriangleApplication::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device);
+	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
 
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
 	vkCmdCopyBuffer(cmdBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-	endSingleTimeCommands(cmdBuffer);
+	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
 }
 
 void HelloTriangleApplication::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device);
+	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
 
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
@@ -1081,7 +1067,7 @@ void HelloTriangleApplication::copyBufferToImage(VkBuffer buffer, VkImage image,
 
 	vkCmdCopyBufferToImage(cmdBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-	endSingleTimeCommands(cmdBuffer);
+	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
 }
 
 void HelloTriangleApplication::createCommandBuffers()
@@ -1090,7 +1076,7 @@ void HelloTriangleApplication::createCommandBuffers()
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = commandBuffer.commandPool;
+	allocInfo.commandPool = commandPool.commandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t) commandBuffers.size();
 
@@ -1151,24 +1137,9 @@ void HelloTriangleApplication::createCommandBuffers()
 	}
 }
 
-void HelloTriangleApplication::endSingleTimeCommands(VkCommandBuffer cmdBuffer)
-{
-	vkEndCommandBuffer(cmdBuffer);
-
-	VkSubmitInfo submitInfo = {};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &cmdBuffer;
-
-	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(graphicsQueue);
-
-	vkFreeCommandBuffers(device, commandBuffer.commandPool, 1, &cmdBuffer);
-}
-
 void HelloTriangleApplication::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
 {
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device);
+	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -1239,7 +1210,7 @@ void HelloTriangleApplication::transitionImageLayout(VkImage image, VkFormat for
 		1, &barrier
 	);
 
-	endSingleTimeCommands(cmdBuffer);
+	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
 }
 
 void HelloTriangleApplication::createSyncObjects()
@@ -1655,7 +1626,7 @@ void HelloTriangleApplication::cleanupSwapChain()
 		vkDestroyFramebuffer(device, framebuffer, nullptr);
 	}
 
-	vkFreeCommandBuffers(device, commandBuffer.commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+	vkFreeCommandBuffers(device, commandPool.commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 
 	vkDestroyPipeline(device, graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
@@ -1701,7 +1672,7 @@ void HelloTriangleApplication::cleanup()
 		vkDestroyFence(device, inFlightFences[i], nullptr);
 	}
 
-	vkDestroyCommandPool(device, commandBuffer.commandPool, nullptr);
+	vkDestroyCommandPool(device, commandPool.commandPool, nullptr);
 
 	vkDestroyDevice(device, nullptr);
 

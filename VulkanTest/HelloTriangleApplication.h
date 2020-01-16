@@ -33,6 +33,7 @@
 #include "engine/PhysicalDevice.h"
 #include "engine/Surface.h"
 #include "engine/CommandBuffer.h"
+#include "engine/CommandPool.h"
 
 
 const int WIDTH = 1280;
@@ -180,6 +181,7 @@ private:
 	PhysicalDevice physicalDevice;
 	Surface surface;
 	CommandBuffer commandBuffer;
+	CommandPool commandPool;
 
 
 private:
@@ -231,9 +233,7 @@ private:
 	void createFramebuffers();
 
 	// Command pools
-	void createCommandPool();
 	void createCommandBuffers();
-	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 
 	// Semaphores (for synchronizing swap chain events)
