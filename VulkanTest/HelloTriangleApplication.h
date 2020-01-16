@@ -35,6 +35,7 @@
 #include "engine/CommandBuffer.h"
 #include "engine/CommandPool.h"
 #include "engine/Sampler.h"
+#include "engine/ImageView.h"
 
 
 const int WIDTH = 1280;
@@ -183,6 +184,7 @@ private:
 	CommandBuffer commandBuffer;
 	CommandPool commandPool;
 	Sampler sampler;
+	ImageView imageView;
 
 
 private:
@@ -263,7 +265,6 @@ private:
 		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
 		VkImage& image, VkDeviceMemory& imageMemory);
 	void createTextureImageView();
-	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 	void createTextureSampler();
 	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
