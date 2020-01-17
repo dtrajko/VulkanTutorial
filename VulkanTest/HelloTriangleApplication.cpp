@@ -90,7 +90,7 @@ void HelloTriangleApplication::initVulkan()
 	createDepthResources();
 	createFramebuffers();
 	createTextureImage(loader.TEXTURE_PATH.c_str());
-	createTextureImageView();
+	imageView.createTextureImageView(device, textureImage, mipLevels);
 	sampler.createTextureSampler(device, mipLevels);
 	loader.loadModel();
 	createVertexBuffer();
@@ -501,11 +501,6 @@ void HelloTriangleApplication::generateMipmaps(VkImage image, VkFormat imageForm
 	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
 }
 
-void HelloTriangleApplication::createTextureImageView()
-{
-	textureImageView = imageView.createImageView(device, textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
-}
-
 void HelloTriangleApplication::createDepthResources()
 {
 	VkFormat depthFormat = findDepthFormat();
@@ -683,7 +678,7 @@ void HelloTriangleApplication::createDescriptorSets()
 
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = textureImageView;
+		imageInfo.imageView = imageView.textureImageView;
 		imageInfo.sampler = sampler.textureSampler;
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
@@ -1367,7 +1362,7 @@ void HelloTriangleApplication::cleanup()
 	cleanupSwapChain();
 
 	vkDestroySampler(device, sampler.textureSampler, nullptr);
-	vkDestroyImageView(device, textureImageView, nullptr);
+	vkDestroyImageView(device, imageView.textureImageView, nullptr);
 	vkDestroyImage(device, textureImage, nullptr);
 	vkFreeMemory(device, textureImageMemory, nullptr);
 

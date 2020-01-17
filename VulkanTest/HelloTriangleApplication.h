@@ -162,7 +162,6 @@ private:
 	// Textures
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
-	VkImageView textureImageView;
 
 	// Depth resources
 	VkImage depthImage;
@@ -255,7 +254,6 @@ private:
 
 	// Texture mapping
 	void createTextureImage(const char* texFilepath);
-	void createTextureImageView();
 	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
 	// Depth resources
