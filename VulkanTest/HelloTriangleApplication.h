@@ -38,6 +38,7 @@
 #include "engine/ImageView.h"
 #include "engine/IndexBuffer.h"
 #include "engine/Image.h"
+#include "engine/DescriptorSetLayout.h"
 
 
 const int WIDTH = 1280;
@@ -129,7 +130,6 @@ private:
 	VkRenderPass renderPass;
 
 	// Descriptors
-	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
 
@@ -189,6 +189,7 @@ private:
 	ImageView imageView;
 	IndexBuffer indexBuffer;
 	Image image;
+	DescriptorSetLayout descriptorSetLayout;
 
 
 private:
@@ -256,7 +257,6 @@ private:
 	void updateUniformBuffer(uint32_t currentImage);
 
 	// Descriptors
-	void createDescriptorSetLayout();
 	void createDescriptorPool();
 	void createDescriptorSets();
 
