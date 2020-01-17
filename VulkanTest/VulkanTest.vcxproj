@@ -122,6 +122,7 @@
     <ClCompile Include="engine\PhysicalDevice.cpp" />
     <ClCompile Include="engine\Surface.cpp" />
     <ClCompile Include="engine\Sampler.cpp" />
+    <ClCompile Include="engine\ShaderModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\DescriptorSetLayout.h" />
@@ -142,6 +143,7 @@
     <ClInclude Include="engine\ImageView.h" />
     <ClInclude Include="engine\IndexBuffer.h" />
     <ClInclude Include="engine\Image.h" />
+    <ClInclude Include="engine\ShaderModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

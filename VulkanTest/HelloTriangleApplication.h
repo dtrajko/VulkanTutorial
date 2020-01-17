@@ -39,6 +39,7 @@
 #include "engine/IndexBuffer.h"
 #include "engine/Image.h"
 #include "engine/DescriptorSetLayout.h"
+#include "engine/ShaderModule.h"
 
 
 const int WIDTH = 1280;
@@ -190,6 +191,7 @@ private:
 	IndexBuffer indexBuffer;
 	Image image;
 	DescriptorSetLayout descriptorSetLayout;
+	ShaderModule shaderModule;
 
 
 private:
@@ -233,7 +235,6 @@ private:
 
 	// Graphics pipeline
 	void createGraphicsPipeline();
-	VkShaderModule createShaderModule(const std::vector<char>& code);
 
 	// Framebuffers
 	void createFramebuffers();
