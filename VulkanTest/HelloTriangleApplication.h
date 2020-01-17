@@ -40,6 +40,7 @@
 #include "engine/vulkan/Image.h"
 #include "engine/vulkan/DescriptorSetLayout.h"
 #include "engine/vulkan/ShaderModule.h"
+#include "engine/vulkan/SwapChain.h"
 
 
 const int WIDTH = 1280;
@@ -66,13 +67,6 @@ const std::vector<const char*> deviceExtensions =
 	const bool enableValidationLayers = true;
 #endif // NDEBUG
 
-
-struct SwapChainSupportDetails
-{
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
-};
 
 struct UniformBufferObject
 {
@@ -116,10 +110,6 @@ private:
 	VkQueue presentQueue;
 
 	// Swap chain
-	VkSwapchainKHR swapChain;
-	std::vector<VkImage> swapChainImages;
-	VkFormat swapChainImageFormat;
-	VkExtent2D swapChainExtent;
 	std::vector<VkImageView> swapChainImageViews;
 
 	// Framebuffers
@@ -191,6 +181,7 @@ private:
 	Image image;
 	DescriptorSetLayout descriptorSetLayout;
 	ShaderModule shaderModule;
+	SwapChain swapChain;
 
 
 private:
@@ -216,8 +207,6 @@ private:
 	void createSurface();
 
 	// Swap chain support
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-	void createSwapChain();
 	void createImageViews();
 	void cleanupSwapChain();
 	void recreateSwapChain();

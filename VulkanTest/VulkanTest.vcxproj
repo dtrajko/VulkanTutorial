@@ -124,6 +124,7 @@
     <ClCompile Include="engine\vulkan\Surface.cpp" />
     <ClCompile Include="engine\vulkan\Sampler.cpp" />
     <ClCompile Include="engine\vulkan\ShaderModule.cpp" />
+    <ClCompile Include="engine\vulkan\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Print.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="engine\vulkan\IndexBuffer.h" />
     <ClInclude Include="engine\vulkan\Image.h" />
     <ClInclude Include="engine\vulkan\ShaderModule.h" />
+    <ClInclude Include="engine\vulkan\SwapChain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
