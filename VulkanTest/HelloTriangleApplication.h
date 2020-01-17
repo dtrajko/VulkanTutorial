@@ -37,6 +37,7 @@
 #include "engine/Sampler.h"
 #include "engine/ImageView.h"
 #include "engine/IndexBuffer.h"
+#include "engine/Image.h"
 
 
 const int WIDTH = 1280;
@@ -187,6 +188,7 @@ private:
 	Sampler sampler;
 	ImageView imageView;
 	IndexBuffer indexBuffer;
+	Image image;
 
 
 private:
@@ -220,8 +222,6 @@ private:
 	// Swap chain support
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 	void printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport);
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 	void createSwapChain();
 	void createImageViews();
 	void cleanupSwapChain();
@@ -262,11 +262,7 @@ private:
 
 	// Texture mapping
 	void createTextureImage(const char* texFilepath);
-	void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
-		VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
-		VkImage& image, VkDeviceMemory& imageMemory);
 	void createTextureImageView();
-	void createTextureSampler();
 	void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
 	// Depth resources
@@ -276,7 +272,6 @@ private:
 	bool hasStencilComponent(VkFormat format);
 
 	// Multisampling (MSAA)
-	VkSampleCountFlagBits getMaxUsableSampleCount();
 	void createColorResources();
 
 	void mainLoop();

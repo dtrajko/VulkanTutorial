@@ -9,6 +9,7 @@ class CommandPool;
 
 class IndexBuffer
 {
+
 public:
 
 	void copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool,
