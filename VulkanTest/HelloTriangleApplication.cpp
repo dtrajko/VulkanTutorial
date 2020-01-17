@@ -2,6 +2,7 @@
 #include "stb_image.h"
 
 #include "HelloTriangleApplication.h"
+#include "engine/Print.h"
 
 
 void HelloTriangleApplication::createTextureImage(const char* texFilepath)
@@ -38,7 +39,7 @@ void HelloTriangleApplication::createTextureImage(const char* texFilepath)
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 
 	transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
-	copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	commandBuffer.copyBufferToImage(device, graphicsQueue, commandPool, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -75,7 +76,7 @@ void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int
 void HelloTriangleApplication::initVulkan()
 {
 	createInstance();
-	setupDebugMessenger();
+	debug.setupDebugMessenger(instance, enableValidationLayers);
 	createSurface();
 	pickPhysicalDevice();
 	createLogicalDevice();
@@ -129,9 +130,8 @@ void HelloTriangleApplication::createInstance()
 	{
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
-		populateDebugMessengerCreateInfo(debugCreateInfo);
+		debug.populateDebugMessengerCreateInfo(debugCreateInfo);
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-
 	}
 	else
 	{
@@ -142,22 +142,6 @@ void HelloTriangleApplication::createInstance()
 	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create a Vulkan instance");
-	}
-}
-
-void HelloTriangleApplication::setupDebugMessenger()
-{
-	if (!enableValidationLayers)
-	{
-		return;
-	}
-
-	VkDebugUtilsMessengerCreateInfoEXT createInfo;
-	populateDebugMessengerCreateInfo(createInfo);
-
-	if (Debug::CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to set up debug messenger!");
 	}
 }
 
@@ -264,9 +248,6 @@ void HelloTriangleApplication::createSwapChain()
 	{
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 	}
-
-	std::cout << std::endl;
-	std::cout << "VkSwapchainCreateInfoKHR.imageCount: " << imageCount << std::endl;
 
 	VkSwapchainCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -746,28 +727,6 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
 	vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
 }
 
-void HelloTriangleApplication::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
-{
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
-
-	VkBufferImageCopy region = {};
-	region.bufferOffset = 0;
-	region.bufferRowLength = 0;
-	region.bufferImageHeight = 0;
-
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.mipLevel = 0;
-	region.imageSubresource.baseArrayLayer = 0;
-	region.imageSubresource.layerCount = 1;
-
-	region.imageOffset = { 0, 0, 0 };
-	region.imageExtent = { width, height, 1 };
-
-	vkCmdCopyBufferToImage(cmdBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-
-	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
-}
-
 void HelloTriangleApplication::createCommandBuffers()
 {
 	commandBuffers.resize(swapChainFramebuffers.size());
@@ -971,21 +930,6 @@ void HelloTriangleApplication::recreateSwapChain()
 	createCommandBuffers();
 }
 
-void HelloTriangleApplication::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
-{
-	createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	createInfo.messageSeverity =
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	createInfo.messageType =
-		VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	createInfo.pfnUserCallback = Debug::debugCallback;
-}
-
 bool HelloTriangleApplication::checkValidationLayerSupport()
 {
 	uint32_t layerCount;
@@ -1050,7 +994,7 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice
 	VkPhysicalDeviceFeatures supportedFeatures;
 	vkGetPhysicalDeviceFeatures(hPhysicalDevice, &supportedFeatures);
 
-	printSwapChainSupport(swapChainAdequate, swapChainSupport);
+	Print::printSwapChainSupport(swapChainAdequate, swapChainSupport);
 
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
@@ -1101,7 +1045,7 @@ int HelloTriangleApplication::rateDeviceSuitability(VkPhysicalDevice device)
 		score = 0;
 	}
 
-	printDeviceProperties(deviceProperties, deviceFeatures, score);
+	Print::printDeviceProperties(deviceProperties, deviceFeatures, score);
 
 	return score;
 }
@@ -1381,47 +1325,6 @@ void HelloTriangleApplication::drawFrame()
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void HelloTriangleApplication::printDeviceProperties(
-	VkPhysicalDeviceProperties deviceProperties,
-	VkPhysicalDeviceFeatures deviceFeatures,
-	int score)
-{
-	std::cout << std::endl;
-	std::cout << "Device Properties" << std::endl;
-	std::cout << "\t" << "deviceID: " << deviceProperties.deviceID << std::endl;
-	std::cout << "\t" << "apiVersion: " << deviceProperties.apiVersion << std::endl;
-	std::cout << "\t" << "deviceName: " << deviceProperties.deviceName << std::endl;
-	std::cout << "\t" << "deviceType: " << deviceProperties.deviceType << std::endl;
-	std::cout << "\t" << "driverVersion: " << deviceProperties.driverVersion << std::endl;
-	std::cout << "\t" << "limits.bufferImageGranularity: " << deviceProperties.limits.bufferImageGranularity << std::endl;
-	std::cout << "\t" << "limits.discreteQueuePriorities: " << deviceProperties.limits.discreteQueuePriorities << std::endl;
-	std::cout << "\t" << "limits.framebufferColorSampleCounts: " << deviceProperties.limits.framebufferColorSampleCounts << std::endl;
-	std::cout << "\t" << "..." << std::endl;
-	std::cout << "\t" << "vendorID: " << deviceProperties.vendorID << std::endl;
-	std::cout << "Device Features" << std::endl;
-	std::cout << "\t" << "geometryShader: " << deviceFeatures.geometryShader << std::endl;
-	std::cout << "\t" << "sparseBinding: " << deviceFeatures.sparseBinding << std::endl;
-	std::cout << "\t" << "..." << std::endl;
-	std::cout << "Physical device score: " << score << std::endl;
-}
-
-void HelloTriangleApplication::printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport)
-{
-	std::cout << std::endl;
-	std::cout << "SwapChain Support: " << std::endl;
-	std::cout << "\t" << "swapChainAdequate: " << (swapChainAdequate ? "YES" : "NO") << std::endl;
-	std::cout << "\t" << "Number of Formats: " << swapChainSupport.formats.size() << std::endl;
-	for (VkSurfaceFormatKHR format : swapChainSupport.formats)
-	{
-		std::cout << "\t\t" << "Format: " << format.format << std::endl;
-	}
-	std::cout << "\t" << "Number of Presentation Modes: " << swapChainSupport.presentModes.size() << std::endl;
-	for (VkPresentModeKHR presentMode : swapChainSupport.presentModes)
-	{
-		std::cout << "\t\t" << "Format: " << presentMode << std::endl;
-	}
-}
-
 void HelloTriangleApplication::cleanupSwapChain()
 {
 	vkDestroyImageView(device, colorImageView, nullptr);
@@ -1489,7 +1392,7 @@ void HelloTriangleApplication::cleanup()
 
 	if (enableValidationLayers)
 	{
-		Debug::DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		Debug::DestroyDebugUtilsMessengerEXT(instance, debug.debugMessenger, nullptr);
 	}
 
 	vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);

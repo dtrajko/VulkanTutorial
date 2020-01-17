@@ -9,6 +9,11 @@ class Debug
 
 public:
 
+	VkDebugUtilsMessengerEXT debugMessenger;
+
+
+public:
+
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -25,5 +30,9 @@ public:
 		VkInstance instance,
 		VkDebugUtilsMessengerEXT debugMessenger,
 		const VkAllocationCallbacks* pAllocator);
+
+	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+
+	void setupDebugMessenger(VkInstance instance, bool enableValidationLayers);
 
 };

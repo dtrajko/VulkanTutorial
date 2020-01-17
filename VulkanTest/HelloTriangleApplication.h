@@ -100,7 +100,6 @@ private:
 
 	// Vulkan
 	VkInstance instance;
-	VkDebugUtilsMessengerEXT debugMessenger;
 
 	// Vulkan window surface
 	VkSurfaceKHR surfaceKHR;
@@ -180,6 +179,7 @@ private:
 	VkImageView colorImageView;
 
 	// Refactoring
+	Debug debug;
 	Loader loader;
 	Buffer buffer;
 	PhysicalDevice physicalDevice;
@@ -202,8 +202,6 @@ private:
 	std::vector<const char*> getRequiredExtensions();
 
 	// debug / validation layers
-	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-	void setupDebugMessenger();
 	bool checkValidationLayerSupport();
 
 	// physical devices
@@ -211,10 +209,6 @@ private:
 	bool isDeviceSuitable(VkPhysicalDevice device);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 	int rateDeviceSuitability(VkPhysicalDevice device);
-	void printDeviceProperties(
-		VkPhysicalDeviceProperties deviceProperties,
-		VkPhysicalDeviceFeatures deviceFeatures,
-		int score);
 
 	// logical device
 	void createLogicalDevice();
@@ -224,7 +218,6 @@ private:
 
 	// Swap chain support
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-	void printSwapChainSupport(bool swapChainAdequate, SwapChainSupportDetails swapChainSupport);
 	void createSwapChain();
 	void createImageViews();
 	void cleanupSwapChain();
@@ -248,7 +241,6 @@ private:
 
 	// Vertex buffer
 	void createVertexBuffer();
-	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 	// Index buffer
 	void createIndexBuffer();
