@@ -41,6 +41,7 @@
 #include "engine/vulkan/DescriptorSetLayout.h"
 #include "engine/vulkan/ShaderModule.h"
 #include "engine/vulkan/SwapChain.h"
+#include "engine/vulkan/VertexBuffer.h"
 
 
 const int WIDTH = 1280;
@@ -127,10 +128,6 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-	// Vertex buffer
-	VkBuffer vertexBuffer;
-	VkDeviceMemory vertexBufferMemory;
-
 	// Index buffer
 	VkBuffer vkIndexBuffer;
 	VkDeviceMemory indexBufferMemory;
@@ -182,6 +179,7 @@ private:
 	DescriptorSetLayout descriptorSetLayout;
 	ShaderModule shaderModule;
 	SwapChain swapChain;
+	VertexBuffer vertexBuffer;
 
 
 private:
@@ -226,9 +224,6 @@ private:
 
 	// Semaphores (for synchronizing swap chain events)
 	void createSyncObjects();
-
-	// Vertex buffer
-	void createVertexBuffer();
 
 	// Index buffer
 	void createIndexBuffer();

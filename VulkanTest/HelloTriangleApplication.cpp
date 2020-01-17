@@ -93,7 +93,7 @@ void HelloTriangleApplication::initVulkan()
 	imageView.createTextureImageView(device, textureImage, mipLevels);
 	sampler.createTextureSampler(device, mipLevels);
 	loader.loadModel();
-	createVertexBuffer();
+	vertexBuffer.createVertexBuffer(loader, device, hPhysicalDevice, indexBuffer, graphicsQueue, commandBuffer, commandPool, buffer);
 	createIndexBuffer();
 	createUniformBuffers();
 	createDescriptorPool();
@@ -508,33 +508,6 @@ void HelloTriangleApplication::createColorResources()
 	colorImageView = imageView.createImageView(device, colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void HelloTriangleApplication::createVertexBuffer()
-{
-	VkDeviceSize bufferSize = sizeof(loader.vertices[0]) * loader.vertices.size();
-
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-	buffer.createBuffer(device, hPhysicalDevice, bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory);
-
-	void* data;
-	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, loader.vertices.data(), (size_t)bufferSize);
-	vkUnmapMemory(device, stagingBufferMemory);
-
-	buffer.createBuffer(device, hPhysicalDevice, bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		vertexBuffer, vertexBufferMemory);
-
-	indexBuffer.copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, vertexBuffer, bufferSize);
-
-	vkDestroyBuffer(device, stagingBuffer, nullptr);
-	vkFreeMemory(device, stagingBufferMemory, nullptr);
-}
-
 void HelloTriangleApplication::createIndexBuffer()
 {
 	VkDeviceSize bufferSize = sizeof(loader.indices[0]) * loader.indices.size();
@@ -712,7 +685,7 @@ void HelloTriangleApplication::createCommandBuffers()
 		// Bind the graphics pipeline
 		vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-		VkBuffer vertexBuffers[] = { vertexBuffer };
+		VkBuffer vertexBuffers[] = { vertexBuffer.vertexBuffer };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
@@ -1285,8 +1258,8 @@ void HelloTriangleApplication::cleanup()
 	vkDestroyBuffer(device, vkIndexBuffer, nullptr);
 	vkFreeMemory(device, indexBufferMemory, nullptr);
 
-	vkDestroyBuffer(device, vertexBuffer, nullptr);
-	vkFreeMemory(device, vertexBufferMemory, nullptr);
+	vkDestroyBuffer(device, vertexBuffer.vertexBuffer, nullptr);
+	vkFreeMemory(device, vertexBuffer.vertexBufferMemory, nullptr);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
