@@ -114,6 +114,7 @@
     <ClCompile Include="HelloTriangleApplication.cpp" />
     <ClCompile Include="engine\Loader.cpp" />
     <ClCompile Include="engine\ImageView.cpp" />
+    <ClCompile Include="engine\IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="engine\PhysicalDevice.cpp" />
@@ -136,6 +137,7 @@
     <ClInclude Include="engine\Surface.h" />
     <ClInclude Include="engine\Sampler.h" />
     <ClInclude Include="engine\ImageView.h" />
+    <ClInclude Include="engine\IndexBuffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

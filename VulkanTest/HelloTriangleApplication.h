@@ -36,6 +36,7 @@
 #include "engine/CommandPool.h"
 #include "engine/Sampler.h"
 #include "engine/ImageView.h"
+#include "engine/IndexBuffer.h"
 
 
 const int WIDTH = 1280;
@@ -140,7 +141,7 @@ private:
 	VkDeviceMemory vertexBufferMemory;
 
 	// Index buffer
-	VkBuffer indexBuffer;
+	VkBuffer vkIndexBuffer;
 	VkDeviceMemory indexBufferMemory;
 
 	// Uniform buffers
@@ -185,6 +186,7 @@ private:
 	CommandPool commandPool;
 	Sampler sampler;
 	ImageView imageView;
+	IndexBuffer indexBuffer;
 
 
 private:
@@ -244,7 +246,6 @@ private:
 
 	// Vertex buffer
 	void createVertexBuffer();
-	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 	// Index buffer
