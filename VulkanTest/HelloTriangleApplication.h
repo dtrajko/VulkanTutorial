@@ -29,17 +29,17 @@
 
 #include "engine/Debug.h"
 #include "engine/Loader.h"
-#include "engine/Buffer.h"
-#include "engine/PhysicalDevice.h"
-#include "engine/Surface.h"
-#include "engine/CommandBuffer.h"
-#include "engine/CommandPool.h"
-#include "engine/Sampler.h"
-#include "engine/ImageView.h"
-#include "engine/IndexBuffer.h"
-#include "engine/Image.h"
-#include "engine/DescriptorSetLayout.h"
-#include "engine/ShaderModule.h"
+#include "engine/vulkan/Buffer.h"
+#include "engine/vulkan/PhysicalDevice.h"
+#include "engine/vulkan/Surface.h"
+#include "engine/vulkan/CommandBuffer.h"
+#include "engine/vulkan/CommandPool.h"
+#include "engine/vulkan/Sampler.h"
+#include "engine/vulkan/ImageView.h"
+#include "engine/vulkan/IndexBuffer.h"
+#include "engine/vulkan/Image.h"
+#include "engine/vulkan/DescriptorSetLayout.h"
+#include "engine/vulkan/ShaderModule.h"
 
 
 const int WIDTH = 1280;

@@ -105,30 +105,30 @@
     <None Include="shaders\vert.spv" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="engine\DescriptorSetLayout.cpp" />
-    <ClCompile Include="engine\CommandPool.cpp" />
-    <ClCompile Include="engine\CommandBuffer.cpp" />
-    <ClCompile Include="engine\Buffer.cpp" />
+    <ClCompile Include="engine\vulkan\DescriptorSetLayout.cpp" />
+    <ClCompile Include="engine\vulkan\CommandPool.cpp" />
+    <ClCompile Include="engine\vulkan\CommandBuffer.cpp" />
+    <ClCompile Include="engine\vulkan\Buffer.cpp" />
     <ClCompile Include="engine\Debug.cpp" />
     <ClCompile Include="engine\InputSystem.cpp" />
     <ClCompile Include="engine\Timer.cpp" />
     <ClCompile Include="HelloTriangleApplication.cpp" />
     <ClCompile Include="engine\Loader.cpp" />
-    <ClCompile Include="engine\ImageView.cpp" />
-    <ClCompile Include="engine\IndexBuffer.cpp" />
-    <ClCompile Include="engine\Image.cpp" />
+    <ClCompile Include="engine\vulkan\ImageView.cpp" />
+    <ClCompile Include="engine\vulkan\IndexBuffer.cpp" />
+    <ClCompile Include="engine\vulkan\Image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
-    <ClCompile Include="engine\PhysicalDevice.cpp" />
-    <ClCompile Include="engine\Surface.cpp" />
-    <ClCompile Include="engine\Sampler.cpp" />
-    <ClCompile Include="engine\ShaderModule.cpp" />
+    <ClCompile Include="engine\vulkan\PhysicalDevice.cpp" />
+    <ClCompile Include="engine\vulkan\Surface.cpp" />
+    <ClCompile Include="engine\vulkan\Sampler.cpp" />
+    <ClCompile Include="engine\vulkan\ShaderModule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\DescriptorSetLayout.h" />
-    <ClInclude Include="engine\CommandPool.h" />
-    <ClInclude Include="engine\CommandBuffer.h" />
-    <ClInclude Include="engine\Buffer.h" />
+    <ClInclude Include="engine\vulkan\DescriptorSetLayout.h" />
+    <ClInclude Include="engine\vulkan\CommandPool.h" />
+    <ClInclude Include="engine\vulkan\CommandBuffer.h" />
+    <ClInclude Include="engine\vulkan\Buffer.h" />
     <ClInclude Include="engine\Debug.h" />
     <ClInclude Include="engine\InputListener.h" />
     <ClInclude Include="engine\InputSystem.h" />
@@ -137,13 +137,13 @@
     <ClInclude Include="engine\Vertex.h" />
     <ClInclude Include="HelloTriangleApplication.h" />
     <ClInclude Include="engine\Loader.h" />
-    <ClInclude Include="engine\PhysicalDevice.h" />
-    <ClInclude Include="engine\Surface.h" />
-    <ClInclude Include="engine\Sampler.h" />
-    <ClInclude Include="engine\ImageView.h" />
-    <ClInclude Include="engine\IndexBuffer.h" />
-    <ClInclude Include="engine\Image.h" />
-    <ClInclude Include="engine\ShaderModule.h" />
+    <ClInclude Include="engine\vulkan\PhysicalDevice.h" />
+    <ClInclude Include="engine\vulkan\Surface.h" />
+    <ClInclude Include="engine\vulkan\Sampler.h" />
+    <ClInclude Include="engine\vulkan\ImageView.h" />
+    <ClInclude Include="engine\vulkan\IndexBuffer.h" />
+    <ClInclude Include="engine\vulkan\Image.h" />
+    <ClInclude Include="engine\vulkan\ShaderModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
