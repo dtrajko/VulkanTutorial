@@ -4,7 +4,14 @@
 #include <GLFW/glfw3.h>
 
 #include <optional>
+#include <vector>
 
+
+// Swapchain capability
+const std::vector<const char*> deviceExtensions =
+{
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
 
 struct QueueFamilyIndices
 {
@@ -21,6 +28,8 @@ class PhysicalDevice
 {
 
 public:
+
+	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
 	int rateDeviceSuitability(VkPhysicalDevice device);
 

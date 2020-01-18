@@ -577,7 +577,7 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice
 {
 	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
-	bool extensionsSupported = checkDeviceExtensionSupport(hPhysicalDevice);
+	bool extensionsSupported = physicalDevice.checkDeviceExtensionSupport(hPhysicalDevice);
 
 	bool swapChainAdequate = false;
 	SwapChainSupportDetails swapChainSupport;
@@ -594,28 +594,6 @@ bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice
 	Print::printSwapChainSupport(swapChainAdequate, swapChainSupport);
 
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
-}
-
-bool HelloTriangleApplication::checkDeviceExtensionSupport(VkPhysicalDevice device)
-{
-	uint32_t extensionCount;
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-
-	std::cout << std::endl;
-	std::cout << "Device Extension Support: " << std::endl;
-
-	for (const auto& extension : availableExtensions)
-	{
-		requiredExtensions.erase(extension.extensionName);
-		std::cout << "\t" << "extensionName: " << extension.extensionName << std::endl;
-	}
-
-	return requiredExtensions.empty();
 }
 
 void HelloTriangleApplication::createGraphicsPipeline()

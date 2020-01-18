@@ -3,8 +3,31 @@
 #include "../Print.h"
 
 #include <stdexcept>
-#include <vector>
+#include <string>
+#include <set>
 
+
+bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevice)
+{
+	uint32_t extensionCount;
+	vkEnumerateDeviceExtensionProperties(hPhysicalDevice, nullptr, &extensionCount, nullptr);
+
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(hPhysicalDevice, nullptr, &extensionCount, availableExtensions.data());
+
+	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+	std::cout << std::endl;
+	std::cout << "Device Extension Support: " << std::endl;
+
+	for (const auto& extension : availableExtensions)
+	{
+		requiredExtensions.erase(extension.extensionName);
+		std::cout << "\t" << "extensionName: " << extension.extensionName << std::endl;
+	}
+
+	return requiredExtensions.empty();
+}
 
 int PhysicalDevice::rateDeviceSuitability(VkPhysicalDevice device)
 {

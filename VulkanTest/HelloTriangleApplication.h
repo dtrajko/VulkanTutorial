@@ -55,13 +55,6 @@ const int HEIGHT = 720;
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
 
-// Swapchain capability
-const std::vector<const char*> deviceExtensions =
-{
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
-
-
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
 #else
@@ -172,7 +165,6 @@ private:
 	// physical devices
 	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice device);
-	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
 	// logical device
 	void createLogicalDevice();
