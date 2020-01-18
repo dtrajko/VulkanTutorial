@@ -115,6 +115,7 @@
     <ClCompile Include="engine\Debug.cpp" />
     <ClCompile Include="engine\InputSystem.cpp" />
     <ClCompile Include="engine\Timer.cpp" />
+    <ClCompile Include="engine\vulkan\Framebuffer.cpp" />
     <ClCompile Include="HelloTriangleApplication.cpp" />
     <ClCompile Include="engine\Loader.cpp" />
     <ClCompile Include="engine\vulkan\ImageView.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="engine\Point.h" />
     <ClInclude Include="engine\Timer.h" />
     <ClInclude Include="engine\Vertex.h" />
+    <ClInclude Include="engine\vulkan\Framebuffer.h" />
     <ClInclude Include="HelloTriangleApplication.h" />
     <ClInclude Include="engine\Loader.h" />
     <ClInclude Include="engine\vulkan\PhysicalDevice.h" />

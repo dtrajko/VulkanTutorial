@@ -46,6 +46,7 @@
 #include "engine/vulkan/DescriptorPool.h"
 #include "engine/vulkan/DescriptorSet.h"
 #include "engine/vulkan/SwapChain.h"
+#include "engine/vulkan/Framebuffer.h"
 
 
 const int WIDTH = 1280;
@@ -98,7 +99,6 @@ private:
 	VkQueue presentQueue;
 
 	// Framebuffers
-	std::vector<VkFramebuffer> swapChainFramebuffers;
 	bool framebufferResized = false; // used to recreate the swap chain
 
 	// Render pass
@@ -153,6 +153,7 @@ private:
 	DescriptorPool descriptorPool;
 	DescriptorSet descriptorSet;
 	SwapChain swapChain;
+	Framebuffer framebuffer;
 
 
 private:
@@ -178,9 +179,6 @@ private:
 
 	// Graphics pipeline
 	void createGraphicsPipeline();
-
-	// Framebuffers
-	void createFramebuffers();
 
 	// Command pools
 	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
