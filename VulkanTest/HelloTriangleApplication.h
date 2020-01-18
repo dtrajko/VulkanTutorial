@@ -184,9 +184,6 @@ private:
 	// logical device
 	void createLogicalDevice();
 
-	// Window surface
-	void createSurface();
-
 	// Swap chain support
 	void createImageViews();
 	void cleanupSwapChain(UniformBuffer uniformBuffer);

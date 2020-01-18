@@ -1,6 +1,7 @@
 #include "Surface.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 
 VkExtent2D Surface::chooseSwapExtent(GLFWwindow* window, const VkSurfaceCapabilitiesKHR& capabilities)
@@ -49,4 +50,12 @@ VkSurfaceFormatKHR Surface::chooseSwapSurfaceFormat(const std::vector<VkSurfaceF
 		}
 	}
 	return availableFormats[0];
+}
+
+void Surface::createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR& surfaceKHR)
+{
+	if (glfwCreateWindowSurface(instance, window, nullptr, &surfaceKHR) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create a window surface!");
+	}
 }

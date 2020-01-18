@@ -11,6 +11,8 @@ class Surface
 
 public:
 
+	void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR& surfaceKHR);
+
 	VkExtent2D chooseSwapExtent(GLFWwindow* window, const VkSurfaceCapabilitiesKHR& capabilities);
 
 	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

@@ -24,7 +24,7 @@ public:
 
 	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
 
 	VkSampleCountFlagBits getMaxUsableSampleCount(VkPhysicalDevice hPhysicalDevice);
 

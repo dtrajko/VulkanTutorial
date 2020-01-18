@@ -20,7 +20,7 @@ uint32_t PhysicalDevice::findMemoryType(VkPhysicalDevice physicalDevice, uint32_
 	throw std::runtime_error("Failed to find suitable memory type!");
 }
 
-QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface)
 {
 	// Logic to find graphics queue family
 	QueueFamilyIndices indices = {};

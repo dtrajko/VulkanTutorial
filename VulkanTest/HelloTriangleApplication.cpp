@@ -77,7 +77,7 @@ void HelloTriangleApplication::initVulkan()
 {
 	createInstance(enableValidationLayers);
 	debug.setupDebugMessenger(instance, enableValidationLayers);
-	createSurface();
+	surface.createSurface(instance, window, surfaceKHR);
 	pickPhysicalDevice();
 	createLogicalDevice();
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
@@ -142,14 +142,6 @@ void HelloTriangleApplication::createInstance(bool enableValidationLayers)
 	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create a Vulkan instance");
-	}
-}
-
-void HelloTriangleApplication::createSurface()
-{
-	if (glfwCreateWindowSurface(instance, window, nullptr, &surfaceKHR) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create a window surface!");
 	}
 }
 
