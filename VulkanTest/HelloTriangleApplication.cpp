@@ -78,8 +78,8 @@ void HelloTriangleApplication::initVulkan()
 	createInstance(enableValidationLayers);
 	debug.setupDebugMessenger(instance, enableValidationLayers);
 	surface.createSurface(instance, window, surfaceKHR);
-	pickPhysicalDevice();
-	createLogicalDevice();
+	pickPhysicalDevice(instance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, msaaSamples);
+	createLogicalDevice(hPhysicalDevice, surfaceKHR);
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
 	swapChain.createImageViews(device, imageView);
 	createRenderPass();
@@ -146,7 +146,8 @@ void HelloTriangleApplication::createInstance(bool enableValidationLayers)
 	}
 }
 
-void HelloTriangleApplication::pickPhysicalDevice()
+void HelloTriangleApplication::pickPhysicalDevice(VkInstance instance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice, 
+	VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples)
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -157,14 +158,14 @@ void HelloTriangleApplication::pickPhysicalDevice()
 		throw std::runtime_error("Failed to find GPUs with Vulkan support!");
 	}
 
-	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+	std::vector<VkPhysicalDevice> phyDevices(deviceCount);
+	vkEnumeratePhysicalDevices(instance, &deviceCount, phyDevices.data());
 
-	for (const auto& device : devices)
+	for (const auto& phyDevice : phyDevices)
 	{
-		if (physicalDevice.isDeviceSuitable(device, surfaceKHR, swapChain))
+		if (physicalDevice.isDeviceSuitable(phyDevice, surfaceKHR, swapChain))
 		{
-			hPhysicalDevice = device;
+			hPhysicalDevice = phyDevice;
 			msaaSamples = physicalDevice.getMaxUsableSampleCount(hPhysicalDevice);
 			break;
 		}
@@ -176,7 +177,7 @@ void HelloTriangleApplication::pickPhysicalDevice()
 	}
 }
 
-void HelloTriangleApplication::createLogicalDevice()
+void HelloTriangleApplication::createLogicalDevice(VkPhysicalDevice& hPhysicalDevice, VkSurfaceKHR surfaceKHR)
 {
 	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 

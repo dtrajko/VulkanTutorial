@@ -163,10 +163,11 @@ private:
 	std::vector<const char*> getRequiredExtensions(bool enableValidationLayers);
 
 	// physical devices
-	void pickPhysicalDevice();
+	void pickPhysicalDevice(VkInstance instance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice,
+		VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
 
 	// logical device
-	void createLogicalDevice();
+	void createLogicalDevice(VkPhysicalDevice& hPhysicalDevice, VkSurfaceKHR surfaceKHR);
 
 	// Swap chain support
 	void cleanupSwapChain(UniformBuffer uniformBuffer);
