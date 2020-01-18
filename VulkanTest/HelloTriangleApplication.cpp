@@ -79,7 +79,7 @@ void HelloTriangleApplication::initVulkan()
 	debug.setupDebugMessenger(instance, enableValidationLayers);
 	surface.createSurface(instance, window, surfaceKHR);
 	pickPhysicalDevice(instance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, msaaSamples);
-	createLogicalDevice(hPhysicalDevice, surfaceKHR);
+	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
 	swapChain.createImageViews(device, imageView);
 	createRenderPass();
@@ -175,57 +175,6 @@ void HelloTriangleApplication::pickPhysicalDevice(VkInstance instance, PhysicalD
 	{
 		throw std::runtime_error("Failed to find a suitable GPU!");
 	}
-}
-
-void HelloTriangleApplication::createLogicalDevice(VkPhysicalDevice& hPhysicalDevice, VkSurfaceKHR surfaceKHR)
-{
-	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
-
-	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
-
-	float queuePriority = 1.0f;
-	for (uint32_t queueFamily : uniqueQueueFamilies)
-	{
-		VkDeviceQueueCreateInfo queueCreateInfo = {};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueFamilyIndex = queueFamily;
-		queueCreateInfo.queueCount = 1;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
-		queueCreateInfos.push_back(queueCreateInfo);
-	}
-
-	VkPhysicalDeviceFeatures deviceFeatures = {};
-	deviceFeatures.samplerAnisotropy = VK_TRUE;
-	deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device
-
-	VkDeviceCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-	createInfo.pQueueCreateInfos = queueCreateInfos.data();
-	createInfo.pEnabledFeatures = &deviceFeatures;
-
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
-
-	if (enableValidationLayers)
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-	}
-
-	// create a logical device
-	if (vkCreateDevice(hPhysicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create logical device!");
-	}
-
-	vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-	vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
 
 void HelloTriangleApplication::createRenderPass()
@@ -358,11 +307,6 @@ VkFormat HelloTriangleApplication::findSupportedFormat(const std::vector<VkForma
 	return VkFormat::VK_FORMAT_UNDEFINED;
 }
 
-bool HelloTriangleApplication::hasStencilComponent(VkFormat format)
-{
-	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
-}
-
 void HelloTriangleApplication::createColorResources()
 {
 	VkFormat colorFormat = swapChain.swapChainImageFormat;
@@ -393,7 +337,7 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 	vkUnmapMemory(device, uniformBuffer.uniformBuffersMemory[currentImage]);
 }
 
-void HelloTriangleApplication::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
+void HelloTriangleApplication::transitionImageLayout(VkImage image, VkFormat imageFormat, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
 {
 	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
 
@@ -419,7 +363,7 @@ void HelloTriangleApplication::transitionImageLayout(VkImage image, VkFormat for
 	{
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 
-		if (hasStencilComponent(format)) {
+		if (format.hasStencilComponent(imageFormat)) {
 			barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
 		}
 	}

@@ -32,6 +32,7 @@
 #include "engine/vulkan/PhysicalDevice.h"
 #include "engine/vulkan/ValidationLayer.h"
 #include "engine/vulkan/Surface.h"
+#include "engine/vulkan/Device.h"
 #include "engine/vulkan/Buffer.h"
 #include "engine/vulkan/VertexBuffer.h"
 #include "engine/vulkan/IndexBuffer.h"
@@ -40,6 +41,7 @@
 #include "engine/vulkan/CommandPool.h"
 #include "engine/vulkan/Image.h"
 #include "engine/vulkan/ImageView.h"
+#include "engine/vulkan/Format.h"
 #include "engine/vulkan/Sampler.h"
 #include "engine/vulkan/ShaderModule.h"
 #include "engine/vulkan/DescriptorSetLayout.h"
@@ -154,6 +156,8 @@ private:
 	SwapChain swapChain;
 	Framebuffer framebuffer;
 	PipelineLayout pipelineLayout;
+	Format format;
+	Device logicalDevice;
 
 
 private:
@@ -166,9 +170,6 @@ private:
 	// physical devices
 	void pickPhysicalDevice(VkInstance instance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice,
 		VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
-
-	// logical device
-	void createLogicalDevice(VkPhysicalDevice& hPhysicalDevice, VkSurfaceKHR surfaceKHR);
 
 	// Swap chain support
 	void cleanupSwapChain(UniformBuffer uniformBuffer);
