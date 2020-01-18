@@ -95,9 +95,9 @@ void HelloTriangleApplication::initVulkan()
 	loader.loadModel();
 	vertexBuffer.createVertexBuffer(loader, device, hPhysicalDevice, indexBuffer, graphicsQueue, commandBuffer, commandPool, buffer);
 	createIndexBuffer();
-	createUniformBuffers();
+	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
 	createDescriptorPool();
-	createDescriptorSets();
+	createDescriptorSets(uniformBuffer);
 	createCommandBuffers();
 	createSyncObjects();
 }
@@ -535,21 +535,6 @@ void HelloTriangleApplication::createIndexBuffer()
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
-void HelloTriangleApplication::createUniformBuffers()
-{
-	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-	uniformBuffers.resize(swapChain.swapChainImages.size());
-	uniformBuffersMemory.resize(swapChain.swapChainImages.size());
-
-	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
-	{
-		buffer.createBuffer(device, hPhysicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			uniformBuffers[i], uniformBuffersMemory[i]);
-	}
-}
-
 void HelloTriangleApplication::createDescriptorPool()
 {
 	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
@@ -570,7 +555,7 @@ void HelloTriangleApplication::createDescriptorPool()
 	}
 }
 
-void HelloTriangleApplication::createDescriptorSets()
+void HelloTriangleApplication::createDescriptorSets(UniformBuffer uniformBuffer)
 {
 	std::vector<VkDescriptorSetLayout> layouts(swapChain.swapChainImages.size(), descriptorSetLayout.descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
@@ -589,7 +574,7 @@ void HelloTriangleApplication::createDescriptorSets()
 	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
 	{
 		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = uniformBuffers[i];
+		bufferInfo.buffer = uniformBuffer.uniformBuffers[i];
 		bufferInfo.offset = 0;
 		bufferInfo.range = sizeof(UniformBufferObject);
 
@@ -620,7 +605,7 @@ void HelloTriangleApplication::createDescriptorSets()
 	}
 }
 
-void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
+void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer)
 {
 	static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -634,9 +619,9 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
 	ubo.proj[1][1] *= -1;
 
 	void* data;
-	vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
+	vkMapMemory(device, uniformBuffer.uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
+	vkUnmapMemory(device, uniformBuffer.uniformBuffersMemory[currentImage]);
 }
 
 void HelloTriangleApplication::createCommandBuffers()
@@ -827,7 +812,7 @@ void HelloTriangleApplication::recreateSwapChain()
 
 	vkDeviceWaitIdle(device);
 
-	cleanupSwapChain();
+	cleanupSwapChain(uniformBuffer);
 
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
 	createImageViews();
@@ -836,9 +821,9 @@ void HelloTriangleApplication::recreateSwapChain()
 	createColorResources();
 	createDepthResources();
 	createFramebuffers();
-	createUniformBuffers();
+	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
 	createDescriptorPool();
-	createDescriptorSets();
+	createDescriptorSets(uniformBuffer);
 	createCommandBuffers();
 }
 
@@ -1146,7 +1131,7 @@ void HelloTriangleApplication::drawFrame()
 	}
 
 	// Update uniform buffer
-	updateUniformBuffer(imageIndex);
+	updateUniformBuffer(imageIndex, uniformBuffer);
 
 	// Check if a previous frame is using this image (i.e. there is its fence to wait on)
 	if (imagesInFlight[imageIndex] != VK_NULL_HANDLE)
@@ -1207,7 +1192,7 @@ void HelloTriangleApplication::drawFrame()
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void HelloTriangleApplication::cleanupSwapChain()
+void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 {
 	vkDestroyImageView(device, colorImageView, nullptr);
 	vkDestroyImage(device, colorImage, nullptr);
@@ -1237,8 +1222,8 @@ void HelloTriangleApplication::cleanupSwapChain()
 
 	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
 	{
-		vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-		vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+		vkDestroyBuffer(device, uniformBuffer.uniformBuffers[i], nullptr);
+		vkFreeMemory(device, uniformBuffer.uniformBuffersMemory[i], nullptr);
 	}
 
 	vkDestroyDescriptorPool(device, descriptorPool, nullptr);
@@ -1246,7 +1231,7 @@ void HelloTriangleApplication::cleanupSwapChain()
 
 void HelloTriangleApplication::cleanup()
 {
-	cleanupSwapChain();
+	cleanupSwapChain(uniformBuffer);
 
 	vkDestroySampler(device, sampler.textureSampler, nullptr);
 	vkDestroyImageView(device, imageView.textureImageView, nullptr);

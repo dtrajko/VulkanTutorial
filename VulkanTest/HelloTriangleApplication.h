@@ -42,6 +42,7 @@
 #include "engine/vulkan/ShaderModule.h"
 #include "engine/vulkan/SwapChain.h"
 #include "engine/vulkan/VertexBuffer.h"
+#include "engine/vulkan/UniformBuffer.h"
 
 
 const int WIDTH = 1280;
@@ -69,12 +70,6 @@ const std::vector<const char*> deviceExtensions =
 #endif // NDEBUG
 
 
-struct UniformBufferObject
-{
-	alignas(16) glm::mat4 model;
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
-};
 
 class HelloTriangleApplication
 {
@@ -132,10 +127,6 @@ private:
 	VkBuffer vkIndexBuffer;
 	VkDeviceMemory indexBufferMemory;
 
-	// Uniform buffers
-	std::vector<VkBuffer> uniformBuffers;
-	std::vector<VkDeviceMemory> uniformBuffersMemory;
-
 	// Command buffers
 	std::vector<VkCommandBuffer> commandBuffers;
 
@@ -180,6 +171,7 @@ private:
 	ShaderModule shaderModule;
 	SwapChain swapChain;
 	VertexBuffer vertexBuffer;
+	UniformBuffer uniformBuffer;
 
 
 private:
@@ -206,7 +198,7 @@ private:
 
 	// Swap chain support
 	void createImageViews();
-	void cleanupSwapChain();
+	void cleanupSwapChain(UniformBuffer uniformBuffer);
 	void recreateSwapChain();
 
 	// Render pass
@@ -229,12 +221,11 @@ private:
 	void createIndexBuffer();
 
 	// Uniform buffers
-	void createUniformBuffers();
-	void updateUniformBuffer(uint32_t currentImage);
+	void updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer);
 
 	// Descriptors
 	void createDescriptorPool();
-	void createDescriptorSets();
+	void createDescriptorSets(UniformBuffer uniformBuffer);
 
 	// Texture mapping
 	void createTextureImage(const char* texFilepath);
