@@ -47,6 +47,7 @@
 #include "engine/vulkan/DescriptorSet.h"
 #include "engine/vulkan/SwapChain.h"
 #include "engine/vulkan/Framebuffer.h"
+#include "engine/vulkan/PipelineLayout.h"
 
 
 const int WIDTH = 1280;
@@ -89,7 +90,6 @@ private:
 
 	// Vulkan physical devices
 	VkPhysicalDevice hPhysicalDevice = VK_NULL_HANDLE;
-	// std::optional<uint32_t> graphicsFamily;
 
 	// Vulkan logical device
 	VkDevice device;
@@ -105,7 +105,6 @@ private:
 	VkRenderPass renderPass;
 
 	// Graphics pipeline
-	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
 	// Semaphores (for synchronizing swap chain events)
@@ -154,6 +153,7 @@ private:
 	DescriptorSet descriptorSet;
 	SwapChain swapChain;
 	Framebuffer framebuffer;
+	PipelineLayout pipelineLayout;
 
 
 private:

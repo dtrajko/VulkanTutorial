@@ -98,7 +98,7 @@ void HelloTriangleApplication::initVulkan()
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
  	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
-	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout,
+	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout.pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
 }
@@ -526,7 +526,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
 	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
-	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout,
+	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout.pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 }
 
@@ -658,17 +658,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
 	colorBlending.blendConstants[3] = 0.0f; // Optional
 
 	// Fixed functions - Pipeline layout
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout.descriptorSetLayout;
-
-	pipelineLayoutInfo.pushConstantRangeCount = 0;
-
-	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create pipeline layout");
-	}
+	pipelineLayout.createPipelineLayout(device, descriptorSetLayout);
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -684,7 +674,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
 	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pColorBlendState = &colorBlending;
 	// pipeline layout
-	pipelineInfo.layout = pipelineLayout;
+	pipelineInfo.layout = pipelineLayout.pipelineLayout;
 	// render pass
 	pipelineInfo.renderPass = renderPass;
 	pipelineInfo.subpass = 0;
@@ -809,7 +799,7 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 	vkFreeCommandBuffers(device, commandPool.commandPool, static_cast<uint32_t>(commandPool.commandBuffers.size()), commandPool.commandBuffers.data());
 
 	vkDestroyPipeline(device, graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+	vkDestroyPipelineLayout(device, pipelineLayout.pipelineLayout, nullptr);
 	vkDestroyRenderPass(device, renderPass, nullptr);
 
 	for (auto imageView : swapChain.swapChainImageViews)
