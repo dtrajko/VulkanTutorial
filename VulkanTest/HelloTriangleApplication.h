@@ -115,9 +115,6 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-	// Command buffers
-	std::vector<VkCommandBuffer> commandBuffers;
-
 	// Semaphores (for synchronizing swap chain events)
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -195,7 +192,6 @@ private:
 	void createFramebuffers();
 
 	// Command pools
-	void createCommandBuffers();
 	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 
 	// Semaphores (for synchronizing swap chain events)
