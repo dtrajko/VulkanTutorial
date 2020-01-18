@@ -75,7 +75,7 @@ void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int
 
 void HelloTriangleApplication::initVulkan()
 {
-	createInstance();
+	createInstance(enableValidationLayers);
 	debug.setupDebugMessenger(instance, enableValidationLayers);
 	createSurface();
 	pickPhysicalDevice();
@@ -96,13 +96,13 @@ void HelloTriangleApplication::initVulkan()
 	vertexBuffer.createVertexBuffer(loader, device, hPhysicalDevice, indexBuffer, graphicsQueue, commandBuffer, commandPool, buffer);
 	createIndexBuffer();
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
-	createDescriptorPool();
+ 	descriptorPool.createDescriptorPool(device, swapChain);
 	createDescriptorSets(uniformBuffer);
 	createCommandBuffers();
 	createSyncObjects();
 }
 
-void HelloTriangleApplication::createInstance()
+void HelloTriangleApplication::createInstance(bool enableValidationLayers)
 {
 	if (enableValidationLayers && !validationLayer.checkValidationLayerSupport(validationLayers))
 	{
@@ -121,7 +121,7 @@ void HelloTriangleApplication::createInstance()
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
-	auto extensions = getRequiredExtensions();
+	auto extensions = getRequiredExtensions(enableValidationLayers);
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -535,32 +535,12 @@ void HelloTriangleApplication::createIndexBuffer()
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
-void HelloTriangleApplication::createDescriptorPool()
-{
-	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChain.swapChainImages.size());
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChain.swapChainImages.size());
-
-	VkDescriptorPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());;
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(swapChain.swapChainImages.size());
-
-	if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create descriptor pool!");
-	}
-}
-
 void HelloTriangleApplication::createDescriptorSets(UniformBuffer uniformBuffer)
 {
 	std::vector<VkDescriptorSetLayout> layouts(swapChain.swapChainImages.size(), descriptorSetLayout.descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = descriptorPool;
+	allocInfo.descriptorPool = descriptorPool.descriptorPool;
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChain.swapChainImages.size());
 	allocInfo.pSetLayouts = layouts.data();
 
@@ -822,12 +802,12 @@ void HelloTriangleApplication::recreateSwapChain()
 	createDepthResources();
 	createFramebuffers();
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
-	createDescriptorPool();
+	descriptorPool.createDescriptorPool(device, swapChain);
 	createDescriptorSets(uniformBuffer);
 	createCommandBuffers();
 }
 
-std::vector<const char*> HelloTriangleApplication::getRequiredExtensions()
+std::vector<const char*> HelloTriangleApplication::getRequiredExtensions(bool enableValidationLayers)
 {
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
@@ -1196,7 +1176,7 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 		vkFreeMemory(device, uniformBuffer.uniformBuffersMemory[i], nullptr);
 	}
 
-	vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+	vkDestroyDescriptorPool(device, descriptorPool.descriptorPool, nullptr);
 }
 
 void HelloTriangleApplication::cleanup()

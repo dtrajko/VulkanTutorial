@@ -44,6 +44,7 @@
 #include "engine/vulkan/VertexBuffer.h"
 #include "engine/vulkan/UniformBuffer.h"
 #include "engine/vulkan/ValidationLayer.h"
+#include "engine/vulkan/DescriptorPool.h"
 
 
 const int WIDTH = 1280;
@@ -113,7 +114,6 @@ private:
 	VkRenderPass renderPass;
 
 	// Descriptors
-	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
 
 	// Graphics pipeline
@@ -170,14 +170,15 @@ private:
 	VertexBuffer vertexBuffer;
 	UniformBuffer uniformBuffer;
 	ValidationLayer validationLayer;
+	DescriptorPool descriptorPool;
 
 
 private:
 
 	void initWindow();
 	void initVulkan();
-	void createInstance();
-	std::vector<const char*> getRequiredExtensions();
+	void createInstance(bool enableValidationLayers);
+	std::vector<const char*> getRequiredExtensions(bool enableValidationLayers);
 
 	// physical devices
 	void pickPhysicalDevice();
@@ -219,7 +220,6 @@ private:
 	void updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer);
 
 	// Descriptors
-	void createDescriptorPool();
 	void createDescriptorSets(UniformBuffer uniformBuffer);
 
 	// Texture mapping
