@@ -1,11 +1,35 @@
 #include "PhysicalDevice.h"
 
 #include "../Print.h"
+#include "SwapChain.h"
 
 #include <stdexcept>
 #include <string>
 #include <set>
 
+
+bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain swapChain)
+{
+	QueueFamilyIndices indices = findQueueFamilies(hPhysicalDevice, surfaceKHR);
+
+	bool extensionsSupported = checkDeviceExtensionSupport(hPhysicalDevice);
+
+	bool swapChainAdequate = false;
+	SwapChainSupportDetails swapChainSupport;
+
+	if (extensionsSupported)
+	{
+		swapChainSupport = swapChain.querySwapChainSupport(hPhysicalDevice, surfaceKHR);
+		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+	}
+
+	VkPhysicalDeviceFeatures supportedFeatures;
+	vkGetPhysicalDeviceFeatures(hPhysicalDevice, &supportedFeatures);
+
+	Print::printSwapChainSupport(swapChainAdequate, swapChainSupport);
+
+	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+}
 
 bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevice)
 {

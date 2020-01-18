@@ -164,7 +164,6 @@ private:
 
 	// physical devices
 	void pickPhysicalDevice();
-	bool isDeviceSuitable(VkPhysicalDevice device);
 
 	// logical device
 	void createLogicalDevice();

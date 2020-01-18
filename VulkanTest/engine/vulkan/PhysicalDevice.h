@@ -24,10 +24,16 @@ struct QueueFamilyIndices
 	}
 };
 
+
+class SwapChain;
+
+
 class PhysicalDevice
 {
 
 public:
+
+	bool isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain swapChain);
 
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 

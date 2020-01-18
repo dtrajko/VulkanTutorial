@@ -162,7 +162,7 @@ void HelloTriangleApplication::pickPhysicalDevice()
 
 	for (const auto& device : devices)
 	{
-		if (isDeviceSuitable(device))
+		if (physicalDevice.isDeviceSuitable(device, surfaceKHR, swapChain))
 		{
 			hPhysicalDevice = device;
 			msaaSamples = physicalDevice.getMaxUsableSampleCount(hPhysicalDevice);
@@ -571,29 +571,6 @@ std::vector<const char*> HelloTriangleApplication::getRequiredExtensions(bool en
 	}
 
 	return extensions;
-}
-
-bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice)
-{
-	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
-
-	bool extensionsSupported = physicalDevice.checkDeviceExtensionSupport(hPhysicalDevice);
-
-	bool swapChainAdequate = false;
-	SwapChainSupportDetails swapChainSupport;
-
-	if (extensionsSupported)
-	{
-		swapChainSupport = swapChain.querySwapChainSupport(hPhysicalDevice, surfaceKHR);
-		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-	}
-
-	VkPhysicalDeviceFeatures supportedFeatures;
-	vkGetPhysicalDeviceFeatures(hPhysicalDevice, &supportedFeatures);
-
-	Print::printSwapChainSupport(swapChainAdequate, swapChainSupport);
-
-	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
 void HelloTriangleApplication::createGraphicsPipeline()
