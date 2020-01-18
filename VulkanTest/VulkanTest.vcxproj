@@ -127,6 +127,7 @@
     <ClCompile Include="engine\vulkan\SwapChain.cpp" />
     <ClCompile Include="engine\vulkan\VertexBuffer.cpp" />
     <ClCompile Include="engine\vulkan\UniformBuffer.cpp" />
+    <ClCompile Include="engine\vulkan\ValidationLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Print.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="engine\vulkan\SwapChain.h" />
     <ClInclude Include="engine\vulkan\VertexBuffer.h" />
     <ClInclude Include="engine\vulkan\UniformBuffer.h" />
+    <ClInclude Include="engine\vulkan\ValidationLayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

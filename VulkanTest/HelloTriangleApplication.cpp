@@ -104,7 +104,7 @@ void HelloTriangleApplication::initVulkan()
 
 void HelloTriangleApplication::createInstance()
 {
-	if (enableValidationLayers && !checkValidationLayerSupport())
+	if (enableValidationLayers && !validationLayer.checkValidationLayerSupport(validationLayers))
 	{
 		throw std::runtime_error("Validation layers requested, but not available!");
 	}
@@ -825,36 +825,6 @@ void HelloTriangleApplication::recreateSwapChain()
 	createDescriptorPool();
 	createDescriptorSets(uniformBuffer);
 	createCommandBuffers();
-}
-
-bool HelloTriangleApplication::checkValidationLayerSupport()
-{
-	uint32_t layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-	for (const char* layerName : validationLayers)
-	{
-		bool layerFound = false;
-
-		for (const auto& layerProperties : availableLayers)
-		{
-			if (strcmp(layerName, layerProperties.layerName) == 0)
-			{
-				layerFound = true;
-				break;
-			}
-		}
-
-		if (!layerFound)
-		{
-			return false;
-		}
-	}
-
-	return true;
 }
 
 std::vector<const char*> HelloTriangleApplication::getRequiredExtensions()

@@ -43,6 +43,7 @@
 #include "engine/vulkan/SwapChain.h"
 #include "engine/vulkan/VertexBuffer.h"
 #include "engine/vulkan/UniformBuffer.h"
+#include "engine/vulkan/ValidationLayer.h"
 
 
 const int WIDTH = 1280;
@@ -51,10 +52,6 @@ const int HEIGHT = 720;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
-const std::vector<const char*> validationLayers =
-{
-	"VK_LAYER_KHRONOS_validation"
-};
 
 // Swapchain capability
 const std::vector<const char*> deviceExtensions =
@@ -172,6 +169,7 @@ private:
 	SwapChain swapChain;
 	VertexBuffer vertexBuffer;
 	UniformBuffer uniformBuffer;
+	ValidationLayer validationLayer;
 
 
 private:
@@ -180,9 +178,6 @@ private:
 	void initVulkan();
 	void createInstance();
 	std::vector<const char*> getRequiredExtensions();
-
-	// debug / validation layers
-	bool checkValidationLayerSupport();
 
 	// physical devices
 	void pickPhysicalDevice();
