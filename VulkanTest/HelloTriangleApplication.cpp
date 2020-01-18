@@ -5,50 +5,6 @@
 #include "engine/Print.h"
 
 
-void HelloTriangleApplication::createTextureImage(const char* texFilepath)
-{
-	int texWidth, texHeight, texChannels;
-
-	// stbi_uc* pixels = stbi_load(texFilepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-	stbi_uc* pixels = stbi_load(texFilepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-	VkDeviceSize imageSize = (uint64_t)texWidth * (uint64_t)texHeight * 4;
-	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-
-	if (!pixels)
-	{
-		throw std::runtime_error("Failed to load texture image!");
-	}
-
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-
-	buffer.createBuffer(device, hPhysicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory);
-
-	void* data;
-	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(device, stagingBufferMemory);
-
-	stbi_image_free(pixels);
-
-	image.createImage(device, physicalDevice, hPhysicalDevice, texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT,
-		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
-
-	image.transitionImageLayout(device, commandBuffer, commandPool, textureImage,
-		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		mipLevels, format, graphicsQueue);
-	commandBuffer.copyBufferToImage(device, graphicsQueue, commandPool, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-
-	vkDestroyBuffer(device, stagingBuffer, nullptr);
-	vkFreeMemory(device, stagingBufferMemory, nullptr);
-
-	image.generateMipmaps(hPhysicalDevice, device, commandBuffer, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
-}
-
 void HelloTriangleApplication::run()
 {
 	initWindow();
@@ -177,6 +133,50 @@ void HelloTriangleApplication::pickPhysicalDevice(VkInstance instance, PhysicalD
 	{
 		throw std::runtime_error("Failed to find a suitable GPU!");
 	}
+}
+
+void HelloTriangleApplication::createTextureImage(const char* texFilepath)
+{
+	int texWidth, texHeight, texChannels;
+
+	// stbi_uc* pixels = stbi_load(texFilepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load(texFilepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	VkDeviceSize imageSize = (uint64_t)texWidth * (uint64_t)texHeight * 4;
+	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+
+	if (!pixels)
+	{
+		throw std::runtime_error("Failed to load texture image!");
+	}
+
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+
+	buffer.createBuffer(device, hPhysicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+		stagingBuffer, stagingBufferMemory);
+
+	void* data;
+	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+	memcpy(data, pixels, static_cast<size_t>(imageSize));
+	vkUnmapMemory(device, stagingBufferMemory);
+
+	stbi_image_free(pixels);
+
+	image.createImage(device, physicalDevice, hPhysicalDevice, texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT,
+		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+
+	image.transitionImageLayout(device, commandBuffer, commandPool, textureImage,
+		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		mipLevels, format, graphicsQueue);
+	commandBuffer.copyBufferToImage(device, graphicsQueue, commandPool, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+
+	vkDestroyBuffer(device, stagingBuffer, nullptr);
+	vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+	image.generateMipmaps(hPhysicalDevice, device, commandBuffer, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 }
 
 void HelloTriangleApplication::createRenderPass()
