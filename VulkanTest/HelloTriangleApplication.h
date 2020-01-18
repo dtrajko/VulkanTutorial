@@ -120,19 +120,8 @@ private:
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
 
-	// Depth resources
-	VkImage depthImage;
-	VkDeviceMemory depthImageMemory;
-	VkImageView depthImageView;
-
 	// Mipmaps
 	uint32_t mipLevels;
-
-	// Multisampling (MSAA)
-	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-	VkImage colorImage;
-	VkDeviceMemory colorImageMemory;
-	VkImageView colorImageView;
 
 	// Refactoring
 	Debug debug;
@@ -181,9 +170,6 @@ private:
 	// Graphics pipeline
 	void createGraphicsPipeline();
 
-	// Command pools
-	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-
 	// Semaphores (for synchronizing swap chain events)
 	void createSyncObjects();
 
@@ -192,15 +178,6 @@ private:
 
 	// Texture mapping
 	void createTextureImage(const char* texFilepath);
-
-	// Depth resources
-	void createDepthResources();
-	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-	VkFormat findDepthFormat();
-	bool hasStencilComponent(VkFormat format);
-
-	// Multisampling (MSAA)
-	void createColorResources();
 
 	void mainLoop();
 	void drawFrame();
