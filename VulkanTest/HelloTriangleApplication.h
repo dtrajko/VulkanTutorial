@@ -29,22 +29,23 @@
 
 #include "engine/Debug.h"
 #include "engine/Loader.h"
-#include "engine/vulkan/Buffer.h"
 #include "engine/vulkan/PhysicalDevice.h"
+#include "engine/vulkan/ValidationLayer.h"
 #include "engine/vulkan/Surface.h"
+#include "engine/vulkan/Buffer.h"
+#include "engine/vulkan/VertexBuffer.h"
+#include "engine/vulkan/IndexBuffer.h"
+#include "engine/vulkan/UniformBuffer.h"
 #include "engine/vulkan/CommandBuffer.h"
 #include "engine/vulkan/CommandPool.h"
-#include "engine/vulkan/Sampler.h"
-#include "engine/vulkan/ImageView.h"
-#include "engine/vulkan/IndexBuffer.h"
 #include "engine/vulkan/Image.h"
-#include "engine/vulkan/DescriptorSetLayout.h"
+#include "engine/vulkan/ImageView.h"
+#include "engine/vulkan/Sampler.h"
 #include "engine/vulkan/ShaderModule.h"
-#include "engine/vulkan/SwapChain.h"
-#include "engine/vulkan/VertexBuffer.h"
-#include "engine/vulkan/UniformBuffer.h"
-#include "engine/vulkan/ValidationLayer.h"
+#include "engine/vulkan/DescriptorSetLayout.h"
 #include "engine/vulkan/DescriptorPool.h"
+#include "engine/vulkan/DescriptorSet.h"
+#include "engine/vulkan/SwapChain.h"
 
 
 const int WIDTH = 1280;
@@ -113,9 +114,6 @@ private:
 	// Render pass
 	VkRenderPass renderPass;
 
-	// Descriptors
-	std::vector<VkDescriptorSet> descriptorSets;
-
 	// Graphics pipeline
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
@@ -151,22 +149,23 @@ private:
 	// Refactoring
 	Debug debug;
 	Loader loader;
-	Buffer buffer;
 	PhysicalDevice physicalDevice;
+	ValidationLayer validationLayer;
 	Surface surface;
+	Buffer buffer;
+	VertexBuffer vertexBuffer;
+	IndexBuffer indexBuffer;
+	UniformBuffer uniformBuffer;
 	CommandBuffer commandBuffer;
 	CommandPool commandPool;
-	Sampler sampler;
-	ImageView imageView;
-	IndexBuffer indexBuffer;
 	Image image;
-	DescriptorSetLayout descriptorSetLayout;
+	ImageView imageView;
+	Sampler sampler;
 	ShaderModule shaderModule;
-	SwapChain swapChain;
-	VertexBuffer vertexBuffer;
-	UniformBuffer uniformBuffer;
-	ValidationLayer validationLayer;
+	DescriptorSetLayout descriptorSetLayout;
 	DescriptorPool descriptorPool;
+	DescriptorSet descriptorSet;
+	SwapChain swapChain;
 
 
 private:
@@ -211,9 +210,6 @@ private:
 
 	// Uniform buffers
 	void updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer);
-
-	// Descriptors
-	void createDescriptorSets(UniformBuffer uniformBuffer);
 
 	// Texture mapping
 	void createTextureImage(const char* texFilepath);
