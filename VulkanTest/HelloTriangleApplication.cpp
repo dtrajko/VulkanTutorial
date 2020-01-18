@@ -81,7 +81,7 @@ void HelloTriangleApplication::initVulkan()
 	pickPhysicalDevice();
 	createLogicalDevice();
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
-	createImageViews();
+	swapChain.createImageViews(device, imageView);
 	createRenderPass();
 	descriptorSetLayout.createDescriptorSetLayout(device);
 	createGraphicsPipeline();
@@ -226,17 +226,6 @@ void HelloTriangleApplication::createLogicalDevice()
 	vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
 
-
-void HelloTriangleApplication::createImageViews()
-{
-	swapChainImageViews.resize(swapChain.swapChainImages.size());
-
-	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
-	{
-		swapChainImageViews[i] = imageView.createImageView(device, swapChain.swapChainImages[i], swapChain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-	}
-}
-
 void HelloTriangleApplication::createRenderPass()
 {
 	// Attachment description
@@ -321,14 +310,14 @@ void HelloTriangleApplication::createRenderPass()
 
 void HelloTriangleApplication::createFramebuffers()
 {
-	swapChainFramebuffers.resize(swapChainImageViews.size());
+	swapChainFramebuffers.resize(swapChain.swapChainImageViews.size());
 
-	for (size_t i = 0; i < swapChainImageViews.size(); i++)
+	for (size_t i = 0; i < swapChain.swapChainImageViews.size(); i++)
 	{
 		std::array<VkImageView, 3> attachments = {
 			colorImageView,
 			depthImageView,
-			swapChainImageViews[i],
+			swapChain.swapChainImageViews[i],
 		};
 
 		VkFramebufferCreateInfo framebufferInfo = {};
@@ -621,7 +610,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	cleanupSwapChain(uniformBuffer);
 
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
-	createImageViews();
+	swapChain.createImageViews(device, imageView);
 	createRenderPass();
 	createGraphicsPipeline();
 	createColorResources();
@@ -989,7 +978,7 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 	vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 	vkDestroyRenderPass(device, renderPass, nullptr);
 
-	for (auto imageView : swapChainImageViews)
+	for (auto imageView : swapChain.swapChainImageViews)
 	{
 		vkDestroyImageView(device, imageView, nullptr);
 	}

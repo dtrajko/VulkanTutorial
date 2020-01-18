@@ -1,5 +1,7 @@
 #include "SwapChain.h"
 
+#include "ImageView.h"
+
 #include <stdexcept>
 
 
@@ -90,4 +92,14 @@ SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice device
 	}
 
 	return details;
+}
+
+void SwapChain::createImageViews(VkDevice device, ImageView imageView)
+{
+	swapChainImageViews.resize(swapChainImages.size());
+
+	for (size_t i = 0; i < swapChainImages.size(); i++)
+	{
+		swapChainImageViews[i] = imageView.createImageView(device, swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+	}
 }

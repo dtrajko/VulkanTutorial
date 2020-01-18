@@ -17,6 +17,9 @@ struct SwapChainSupportDetails
 };
 
 
+class ImageView;
+
+
 class SwapChain
 {
 public:
@@ -25,10 +28,13 @@ public:
 	std::vector<VkImage> swapChainImages;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
+	std::vector<VkImageView> swapChainImageViews;
 
 	void createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDevice, PhysicalDevice physicalDevice,
 		VkDevice device, Surface surface, VkSurfaceKHR surfaceKHR);
 
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surfaceKHR);
+
+	void createImageViews(VkDevice device, ImageView imageView);
 
 };

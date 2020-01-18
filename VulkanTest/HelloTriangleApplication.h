@@ -104,9 +104,6 @@ private:
 	// Presentation queue
 	VkQueue presentQueue;
 
-	// Swap chain
-	std::vector<VkImageView> swapChainImageViews;
-
 	// Framebuffers
 	std::vector<VkFramebuffer> swapChainFramebuffers;
 	bool framebufferResized = false; // used to recreate the swap chain
@@ -185,7 +182,6 @@ private:
 	void createLogicalDevice();
 
 	// Swap chain support
-	void createImageViews();
 	void cleanupSwapChain(UniformBuffer uniformBuffer);
 	void recreateSwapChain();
 
