@@ -120,10 +120,6 @@ private:
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-	// Index buffer
-	VkBuffer vkIndexBuffer;
-	VkDeviceMemory indexBufferMemory;
-
 	// Command buffers
 	std::vector<VkCommandBuffer> commandBuffers;
 
@@ -212,9 +208,6 @@ private:
 
 	// Semaphores (for synchronizing swap chain events)
 	void createSyncObjects();
-
-	// Index buffer
-	void createIndexBuffer();
 
 	// Uniform buffers
 	void updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer);

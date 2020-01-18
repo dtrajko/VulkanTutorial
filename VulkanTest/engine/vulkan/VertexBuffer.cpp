@@ -7,7 +7,7 @@
 #include "Buffer.h"
 
 
-void VertexBuffer::createVertexBuffer(Loader loader, VkDevice device, VkPhysicalDevice hPhysicalDevice,
+void VertexBuffer::createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader,
 	IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool, Buffer buffer)
 {
 	VkDeviceSize bufferSize = sizeof(loader.vertices[0]) * loader.vertices.size();

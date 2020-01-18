@@ -20,7 +20,7 @@ public:
 	VkBuffer vertexBuffer;
 	VkDeviceMemory vertexBufferMemory;
 
-	void createVertexBuffer(Loader loader, VkDevice device, VkPhysicalDevice hPhysicalDevice,
+	void createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader,
 		IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool, Buffer buffer);
 
 };
