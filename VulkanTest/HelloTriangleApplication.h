@@ -173,7 +173,6 @@ private:
 	void pickPhysicalDevice();
 	bool isDeviceSuitable(VkPhysicalDevice device);
 	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-	int rateDeviceSuitability(VkPhysicalDevice device);
 
 	// logical device
 	void createLogicalDevice();
