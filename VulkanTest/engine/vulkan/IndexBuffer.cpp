@@ -7,20 +7,20 @@
 
 
 
-void IndexBuffer::copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool,
+void IndexBuffer::copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool,
 	VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool.commandPool);
+	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool->commandPool);
 
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
 	vkCmdCopyBuffer(cmdBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
+	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
 }
 
 void IndexBuffer::createIndexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader, Buffer buffer,
-	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool)
+	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool)
 {
 	VkDeviceSize bufferSize = sizeof(loader.indices[0]) * loader.indices.size();
 

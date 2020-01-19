@@ -125,7 +125,7 @@ private:
 	IndexBuffer indexBuffer;
 	UniformBuffer uniformBuffer;
 	CommandBuffer commandBuffer;
-	CommandPool commandPool;
+	CommandPool* commandPool;
 	Image image;
 	ImageView imageView;
 	Sampler sampler;

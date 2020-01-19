@@ -36,9 +36,9 @@ void CommandBuffer::endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBu
 	vkFreeCommandBuffers(device, commandPool, 1, &cmdBuffer);
 }
 
-void CommandBuffer::copyBufferToImage(VkDevice device, VkQueue graphicsQueue, CommandPool commandPool, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+void CommandBuffer::copyBufferToImage(VkDevice device, VkQueue graphicsQueue, CommandPool* commandPool, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
-	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(device, commandPool.commandPool);
+	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(device, commandPool->commandPool);
 
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
@@ -55,5 +55,5 @@ void CommandBuffer::copyBufferToImage(VkDevice device, VkQueue graphicsQueue, Co
 
 	vkCmdCopyBufferToImage(cmdBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-	endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool.commandPool);
+	endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
 }

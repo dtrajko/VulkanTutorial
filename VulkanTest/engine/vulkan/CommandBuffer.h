@@ -15,6 +15,6 @@ public:
 
 	void endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBuffer, VkQueue graphicsQueue, VkCommandPool commandPool);
 
-	void copyBufferToImage(VkDevice device, VkQueue graphicsQueue, CommandPool commandPool, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+	void copyBufferToImage(VkDevice device, VkQueue graphicsQueue, CommandPool* commandPool, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 };

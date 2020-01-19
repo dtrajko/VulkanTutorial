@@ -42,7 +42,7 @@ void HelloTriangleApplication::initVulkan()
 	createRenderPass();
 	descriptorSetLayout.createDescriptorSetLayout(device);
 	createGraphicsPipeline();
-	commandPool.createCommandPool(physicalDevice, hPhysicalDevice, device, surfaceKHR);
+	commandPool = new CommandPool(physicalDevice, hPhysicalDevice, device, surfaceKHR);
 	image.createColorResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView);
 	image.createDepthResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
@@ -55,7 +55,7 @@ void HelloTriangleApplication::initVulkan()
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
  	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
-	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
+	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
 }
@@ -249,7 +249,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
 	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
-	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
+	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 }
 
@@ -448,7 +448,7 @@ void HelloTriangleApplication::drawFrame()
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &commandPool.commandBuffers[imageIndex];
+	submitInfo.pCommandBuffers = &commandPool->commandBuffers[imageIndex];
 
 	VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
 	submitInfo.signalSemaphoreCount = 1;
@@ -503,7 +503,7 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 		vkDestroyFramebuffer(device, framebuffer, nullptr);
 	}
 
-	vkFreeCommandBuffers(device, commandPool.commandPool, static_cast<uint32_t>(commandPool.commandBuffers.size()), commandPool.commandBuffers.data());
+	vkFreeCommandBuffers(device, commandPool->commandPool, static_cast<uint32_t>(commandPool->commandBuffers.size()), commandPool->commandBuffers.data());
 
 	vkDestroyPipeline(device, graphicsPipeline, nullptr);
 	
@@ -551,7 +551,7 @@ void HelloTriangleApplication::cleanup()
 		vkDestroyFence(device, inFlightFences[i], nullptr);
 	}
 
-	vkDestroyCommandPool(device, commandPool.commandPool, nullptr);
+	delete commandPool;
 
 	vkDestroyDevice(device, nullptr);
 

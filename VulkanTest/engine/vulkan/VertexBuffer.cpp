@@ -8,7 +8,7 @@
 
 
 void VertexBuffer::createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader,
-	IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool, Buffer buffer)
+	IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool, Buffer buffer)
 {
 	VkDeviceSize bufferSize = sizeof(loader.vertices[0]) * loader.vertices.size();
 

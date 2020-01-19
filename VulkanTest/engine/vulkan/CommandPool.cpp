@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 
-void CommandPool::createCommandPool(PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR)
+CommandPool::CommandPool(PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR) : m_device(device)
 {
 	QueueFamilyIndices queueFamilyIndices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
@@ -21,6 +21,11 @@ void CommandPool::createCommandPool(PhysicalDevice physicalDevice, VkPhysicalDev
 	{
 		throw std::runtime_error("Failed to create Command pool!");
 	}
+}
+
+CommandPool::~CommandPool()
+{
+	vkDestroyCommandPool(m_device, commandPool, nullptr);
 }
 
 void CommandPool::createCommandBuffers(VkDevice device, Loader loader, VkRenderPass renderPass, SwapChain swapChain,

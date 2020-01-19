@@ -21,13 +21,15 @@ public:
 
 	// Command pool
 	VkCommandPool commandPool;
+	VkDevice m_device;
 
 	// Command buffers
 	std::vector<VkCommandBuffer> commandBuffers;
 
 public:
 
-	void createCommandPool(PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR);
+	CommandPool(PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR);
+	~CommandPool();
 
 	void createCommandBuffers(VkDevice device, Loader loader, VkRenderPass renderPass, SwapChain swapChain,
 		std::vector<VkFramebuffer> swapChainFramebuffers, VkPipeline graphicsPipeline, VkPipelineLayout pipelineLayout,

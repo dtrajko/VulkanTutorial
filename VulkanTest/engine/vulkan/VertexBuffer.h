@@ -21,6 +21,6 @@ public:
 	VkDeviceMemory vertexBufferMemory;
 
 	void createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader,
-		IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool commandPool, Buffer buffer);
+		IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool, Buffer buffer);
 
 };
