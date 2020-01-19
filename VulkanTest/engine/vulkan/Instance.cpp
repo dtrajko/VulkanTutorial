@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 
-Instance::Instance(bool enableValidationLayers, const std::vector<const char*> validationLayers, ValidationLayer validationLayer, Debug debug)
+Instance::Instance(bool enableValidationLayers, const std::vector<const char*> validationLayers, ValidationLayer validationLayer)
 {
 	if (enableValidationLayers && !validationLayer.checkValidationLayerSupport(validationLayers))
 	{
@@ -34,7 +34,7 @@ Instance::Instance(bool enableValidationLayers, const std::vector<const char*> v
 	{
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
-		debug.populateDebugMessengerCreateInfo(debugCreateInfo);
+		Debug::populateDebugMessengerCreateInfo(debugCreateInfo);
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
 	}
 	else

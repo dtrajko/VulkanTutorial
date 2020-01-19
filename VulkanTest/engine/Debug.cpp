@@ -3,6 +3,11 @@
 #include <iostream>
 
 
+Debug::Debug(VkInstance instance, bool enableValidationLayers) : m_Instance(instance), m_EnableValidationLayers(enableValidationLayers)
+{
+	setupDebugMessenger(instance, enableValidationLayers);
+}
+
 void Debug::setupDebugMessenger(VkInstance instance, bool enableValidationLayers)
 {
 	if (!enableValidationLayers)
@@ -16,6 +21,14 @@ void Debug::setupDebugMessenger(VkInstance instance, bool enableValidationLayers
 	if (Debug::CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to set up debug messenger!");
+	}
+}
+
+Debug::~Debug()
+{
+	if (m_EnableValidationLayers)
+	{
+		Debug::DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 	}
 }
 

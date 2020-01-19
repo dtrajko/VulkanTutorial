@@ -115,7 +115,6 @@ private:
 	size_t currentFrame = 0;
 
 	// Refactoring
-	Debug debug;
 	Loader loader;
 	PhysicalDevice physicalDevice;
 	ValidationLayer validationLayer;
@@ -130,11 +129,12 @@ private:
 	Framebuffer framebuffer;
 	Format format;
 	Device logicalDevice;
-	UniformBuffer uniformBuffer;
 	CommandBuffer commandBuffer;
+	Debug* debug;
 	Buffer* buffer;
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
+	UniformBuffer uniformBuffer;
 	Sampler* textureSampler;
 	Instance* instance;
 	CommandPool* commandPool;

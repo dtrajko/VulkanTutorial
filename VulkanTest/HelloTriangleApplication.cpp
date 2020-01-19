@@ -30,10 +30,10 @@ void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int
 
 void HelloTriangleApplication::initVulkan()
 {
-	instance = new Instance(enableValidationLayers, validationLayers, validationLayer, debug);
+	instance = new Instance(enableValidationLayers, validationLayers, validationLayer);
 
 	// instance.createInstance(enableValidationLayers, validationLayers, validationLayer, debug);
-	debug.setupDebugMessenger(instance->hInstance, enableValidationLayers);
+	debug = new Debug(instance->hInstance, enableValidationLayers);
 	surface.createSurface(instance->hInstance, window, surfaceKHR);
 	pickPhysicalDevice(instance->hInstance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, image.msaaSamples);
 	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
@@ -553,10 +553,7 @@ void HelloTriangleApplication::cleanup()
 
 	vkDestroyDevice(device, nullptr);
 
-	if (enableValidationLayers)
-	{
-		Debug::DestroyDebugUtilsMessengerEXT(instance->hInstance, debug.debugMessenger, nullptr);
-	}
+	delete debug;
 
 	vkDestroySurfaceKHR(instance->hInstance, surfaceKHR, nullptr);
 
