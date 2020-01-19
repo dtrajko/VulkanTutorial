@@ -1,6 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "HelloTriangleApplication.h"
 #include "engine/Print.h"
 
@@ -33,10 +30,10 @@ void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int
 
 void HelloTriangleApplication::initVulkan()
 {
-	createInstance(enableValidationLayers);
-	debug.setupDebugMessenger(instance, enableValidationLayers);
-	surface.createSurface(instance, window, surfaceKHR);
-	pickPhysicalDevice(instance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, image.msaaSamples);
+	instance.createInstance(enableValidationLayers, validationLayers, validationLayer, debug);
+	debug.setupDebugMessenger(instance.hInstance, enableValidationLayers);
+	surface.createSurface(instance.hInstance, window, surfaceKHR);
+	pickPhysicalDevice(instance.hInstance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, image.msaaSamples);
 	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
 	swapChain.createImageViews(device, imageView);
@@ -47,9 +44,9 @@ void HelloTriangleApplication::initVulkan()
 	image.createColorResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView);
 	image.createDepthResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
-	createTextureImage(loader.TEXTURE_PATH.c_str());
-	imageView.createTextureImageView(device, textureImage, mipLevels);
-	sampler.createTextureSampler(device, mipLevels);
+	image.createTextureImage(loader.TEXTURE_PATH.c_str(), device, physicalDevice, hPhysicalDevice, buffer, commandBuffer, commandPool, format, graphicsQueue);
+	imageView.createTextureImageView(device, image.textureImage, image.mipLevels);
+	sampler.createTextureSampler(device, image.mipLevels);
 	loader.loadModel();
 	vertexBuffer.createVertexBuffer(hPhysicalDevice, device, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool, buffer);
 	indexBuffer.createIndexBuffer(hPhysicalDevice, device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
@@ -59,49 +56,6 @@ void HelloTriangleApplication::initVulkan()
 	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout.pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
-}
-
-void HelloTriangleApplication::createInstance(bool enableValidationLayers)
-{
-	if (enableValidationLayers && !validationLayer.checkValidationLayerSupport(validationLayers))
-	{
-		throw std::runtime_error("Validation layers requested, but not available!");
-	}
-
-	VkApplicationInfo appInfo = {};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Hello Triangle";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "No Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_0;
-
-	VkInstanceCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &appInfo;
-
-	auto extensions = getRequiredExtensions(enableValidationLayers);
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-	createInfo.ppEnabledExtensionNames = extensions.data();
-
-	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-	if (enableValidationLayers)
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
-		debug.populateDebugMessengerCreateInfo(debugCreateInfo);
-		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-		createInfo.pNext = nullptr;
-	}
-
-	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create a Vulkan instance");
-	}
 }
 
 void HelloTriangleApplication::pickPhysicalDevice(VkInstance instance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice, 
@@ -133,50 +87,6 @@ void HelloTriangleApplication::pickPhysicalDevice(VkInstance instance, PhysicalD
 	{
 		throw std::runtime_error("Failed to find a suitable GPU!");
 	}
-}
-
-void HelloTriangleApplication::createTextureImage(const char* texFilepath)
-{
-	int texWidth, texHeight, texChannels;
-
-	// stbi_uc* pixels = stbi_load(texFilepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-	stbi_uc* pixels = stbi_load(texFilepath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-	VkDeviceSize imageSize = (uint64_t)texWidth * (uint64_t)texHeight * 4;
-	mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-
-	if (!pixels)
-	{
-		throw std::runtime_error("Failed to load texture image!");
-	}
-
-	VkBuffer stagingBuffer;
-	VkDeviceMemory stagingBufferMemory;
-
-	buffer.createBuffer(device, hPhysicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory);
-
-	void* data;
-	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(device, stagingBufferMemory);
-
-	stbi_image_free(pixels);
-
-	image.createImage(device, physicalDevice, hPhysicalDevice, texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT,
-		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
-
-	image.transitionImageLayout(device, commandBuffer, commandPool, textureImage,
-		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		mipLevels, format, graphicsQueue);
-	commandBuffer.copyBufferToImage(device, graphicsQueue, commandPool, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-
-	vkDestroyBuffer(device, stagingBuffer, nullptr);
-	vkFreeMemory(device, stagingBufferMemory, nullptr);
-
-	image.generateMipmaps(hPhysicalDevice, device, commandBuffer, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 }
 
 void HelloTriangleApplication::createRenderPass()
@@ -339,22 +249,6 @@ void HelloTriangleApplication::recreateSwapChain()
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
 	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout.pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
-}
-
-std::vector<const char*> HelloTriangleApplication::getRequiredExtensions(bool enableValidationLayers)
-{
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-	if (enableValidationLayers)
-	{
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
-
-	return extensions;
 }
 
 void HelloTriangleApplication::createGraphicsPipeline()
@@ -635,8 +529,8 @@ void HelloTriangleApplication::cleanup()
 
 	vkDestroySampler(device, sampler.textureSampler, nullptr);
 	vkDestroyImageView(device, imageView.textureImageView, nullptr);
-	vkDestroyImage(device, textureImage, nullptr);
-	vkFreeMemory(device, textureImageMemory, nullptr);
+	vkDestroyImage(device, image.textureImage, nullptr);
+	vkFreeMemory(device, image.textureImageMemory, nullptr);
 
 	vkDestroyDescriptorSetLayout(device, descriptorSetLayout.descriptorSetLayout, nullptr);
 
@@ -659,11 +553,11 @@ void HelloTriangleApplication::cleanup()
 
 	if (enableValidationLayers)
 	{
-		Debug::DestroyDebugUtilsMessengerEXT(instance, debug.debugMessenger, nullptr);
+		Debug::DestroyDebugUtilsMessengerEXT(instance.hInstance, debug.debugMessenger, nullptr);
 	}
 
-	vkDestroySurfaceKHR(instance, surfaceKHR, nullptr);
-	vkDestroyInstance(instance, nullptr);
+	vkDestroySurfaceKHR(instance.hInstance, surfaceKHR, nullptr);
+	vkDestroyInstance(instance.hInstance, nullptr);
 
 	glfwDestroyWindow(window);
 

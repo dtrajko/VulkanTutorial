@@ -8,6 +8,8 @@
 #include <vector>
 
 
+class PhysicalDevice;
+class Buffer;
 class CommandBuffer;
 class CommandPool;
 class SwapChain;
@@ -30,6 +32,13 @@ public:
 	VkDeviceMemory depthImageMemory;
 	VkImageView depthImageView;
 
+	// Textures
+	VkImage textureImage;
+	VkDeviceMemory textureImageMemory;
+
+	// Mipmaps
+	uint32_t mipLevels;
+
 
 public:
 
@@ -39,6 +48,10 @@ public:
 
 	void transitionImageLayout(VkDevice device, CommandBuffer commandBuffer, CommandPool commandPool, VkImage image, VkFormat imageFormat,
 		VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, Format format, VkQueue graphicsQueue);
+
+	// Texture mapping
+	void createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
+		Buffer buffer, CommandBuffer commandBuffer, CommandPool commandPool, Format format, VkQueue graphicsQueue);
 
 	// Multisampling (MSAA)
 	void createColorResources(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, ImageView imageView);

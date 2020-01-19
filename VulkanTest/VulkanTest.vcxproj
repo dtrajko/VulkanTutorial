@@ -122,6 +122,7 @@
     <ClCompile Include="engine\vulkan\ImageView.cpp" />
     <ClCompile Include="engine\vulkan\IndexBuffer.cpp" />
     <ClCompile Include="engine\vulkan\Image.cpp" />
+    <ClCompile Include="engine\vulkan\Instance.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="engine\vulkan\PhysicalDevice.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="engine\vulkan\UniformBuffer.h" />
     <ClInclude Include="engine\vulkan\ValidationLayer.h" />
     <ClInclude Include="engine\vulkan\PipelineLayout.h" />
+    <ClInclude Include="engine\vulkan\Instance.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

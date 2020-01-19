@@ -50,6 +50,7 @@
 #include "engine/vulkan/SwapChain.h"
 #include "engine/vulkan/Framebuffer.h"
 #include "engine/vulkan/PipelineLayout.h"
+#include "engine/vulkan/Instance.h"
 
 
 const int WIDTH = 1280;
@@ -84,9 +85,6 @@ private:
 	// GLFW
 	GLFWwindow* window;
 
-	// Vulkan
-	VkInstance instance;
-
 	// Vulkan window surface
 	VkSurfaceKHR surfaceKHR;
 
@@ -116,13 +114,6 @@ private:
 	std::vector<VkFence> imagesInFlight;
 	size_t currentFrame = 0;
 
-	// Textures
-	VkImage textureImage;
-	VkDeviceMemory textureImageMemory;
-
-	// Mipmaps
-	uint32_t mipLevels;
-
 	// Refactoring
 	Debug debug;
 	Loader loader;
@@ -147,17 +138,16 @@ private:
 	PipelineLayout pipelineLayout;
 	Format format;
 	Device logicalDevice;
+	Instance instance;
 
 
 private:
 
 	void initWindow();
 	void initVulkan();
-	void createInstance(bool enableValidationLayers);
-	std::vector<const char*> getRequiredExtensions(bool enableValidationLayers);
 
 	// physical devices
-	void pickPhysicalDevice(VkInstance instance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice,
+	void pickPhysicalDevice(VkInstance hInstance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice,
 		VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
 
 	// Swap chain support
@@ -175,9 +165,6 @@ private:
 
 	// Uniform buffers
 	void updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer);
-
-	// Texture mapping
-	void createTextureImage(const char* texFilepath);
 
 	void mainLoop();
 	void drawFrame();
