@@ -7,10 +7,10 @@
 #include "Buffer.h"
 
 
-VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, IndexBuffer* indexBuffer,
+VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, IndexBuffer* indexBuffer,
 	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool) : m_device(device)
 {
-	VkDeviceSize bufferSize = sizeof(loader.vertices[0]) * loader.vertices.size();
+	VkDeviceSize bufferSize = sizeof(loader->vertices[0]) * loader->vertices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
@@ -24,7 +24,7 @@ VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Lo
 
 	void* data;
 	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, loader.vertices.data(), (size_t)bufferSize);
+	memcpy(data, loader->vertices.data(), (size_t)bufferSize);
 	vkUnmapMemory(device, stagingBufferMemory);
 	
 	Buffer* oVertexBuffer = new Buffer(device, hPhysicalDevice, bufferSize,

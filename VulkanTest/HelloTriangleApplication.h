@@ -112,7 +112,6 @@ private:
 	size_t currentFrame = 0;
 
 	// Refactoring
-	Loader loader;
 	PhysicalDevice physicalDevice;
 	ValidationLayer validationLayer;
 	Image image;
@@ -129,13 +128,14 @@ private:
 
 	// RAII
 	Debug* debug;
+	Instance* instance;
 	Surface* surface;
+	Loader* loader;
 	Buffer* buffer;
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
 	UniformBuffer uniformBuffer;
 	Sampler* textureSampler;
-	Instance* instance;
 	CommandPool* commandPool;
 	PipelineLayout* pipelineLayout;
 

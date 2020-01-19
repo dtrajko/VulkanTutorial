@@ -21,7 +21,7 @@ public:
 	VkDeviceMemory m_Memory;
 	VkDevice m_device;
 
-	VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, IndexBuffer* indexBuffer,
+	VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, IndexBuffer* indexBuffer,
 		VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool);
 	~VertexBuffer();
 

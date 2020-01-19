@@ -19,7 +19,7 @@ public:
 	VkDeviceMemory m_Memory;
 	VkDevice m_Device;
 
-	IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, Buffer* buffer,
+	IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, Buffer* buffer,
 		VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool);
 
 	~IndexBuffer();

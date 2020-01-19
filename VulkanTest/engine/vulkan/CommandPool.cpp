@@ -28,7 +28,7 @@ CommandPool::~CommandPool()
 	vkDestroyCommandPool(m_device, commandPool, nullptr);
 }
 
-void CommandPool::createCommandBuffers(VkDevice device, Loader loader, VkRenderPass renderPass, SwapChain swapChain,
+void CommandPool::createCommandBuffers(VkDevice device, Loader* loader, VkRenderPass renderPass, SwapChain swapChain,
 	std::vector<VkFramebuffer> swapChainFramebuffers, VkPipeline graphicsPipeline, VkPipelineLayout pipelineLayout,
 	VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet descriptorSet)
 {
@@ -85,7 +85,7 @@ void CommandPool::createCommandBuffers(VkDevice device, Loader loader, VkRenderP
 		vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet.descriptorSets[i], 0, nullptr);
 
 		// vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
-		vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(loader.indices.size()), 1, 0, 0, 0);
+		vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(loader->indices.size()), 1, 0, 0, 0);
 
 		// End the Render pass
 		vkCmdEndRenderPass(commandBuffers[i]);

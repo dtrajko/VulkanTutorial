@@ -51,6 +51,14 @@ void Loader::loadModel()
 	}
 }
 
+Loader::~Loader()
+{
+}
+
+Loader::Loader()
+{
+}
+
 std::vector<char> Loader::readFile(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);

@@ -33,6 +33,7 @@ void HelloTriangleApplication::initVulkan()
 	instance = new Instance(enableValidationLayers, validationLayers, validationLayer);
 	debug = new Debug(instance->hInstance, enableValidationLayers);
 	surface = new Surface(instance->hInstance, window);
+	loader = new Loader();
 	pickPhysicalDevice(instance->hInstance, physicalDevice, hPhysicalDevice, surface->m_surfaceKHR, swapChain, image.msaaSamples);
 	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface);
@@ -44,10 +45,10 @@ void HelloTriangleApplication::initVulkan()
 	image.createColorResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView);
 	image.createDepthResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
-	image.createTextureImage(loader.TEXTURE_PATH.c_str(), device, physicalDevice, hPhysicalDevice, commandBuffer, commandPool, format, graphicsQueue);
+	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device, physicalDevice, hPhysicalDevice, commandBuffer, commandPool, format, graphicsQueue);
 	imageView.createTextureImageView(device, image.textureImage, image.mipLevels);
 	textureSampler = new Sampler(device, image.mipLevels);
-	loader.loadModel();
+	loader->loadModel();
 	vertexBuffer = new VertexBuffer(device, hPhysicalDevice, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
 	indexBuffer = new IndexBuffer(device, hPhysicalDevice, loader, buffer, graphicsQueue, commandBuffer, commandPool);
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain);
@@ -551,10 +552,9 @@ void HelloTriangleApplication::cleanup()
 
 	vkDestroyDevice(device, nullptr);
 
-	delete debug;
-
+	delete loader;
 	delete surface;
-
+	delete debug;
 	delete instance;
 
 	glfwDestroyWindow(window);

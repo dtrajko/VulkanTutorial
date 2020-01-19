@@ -6,10 +6,10 @@
 #include "CommandPool.h"
 
 
-IndexBuffer::IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, Buffer* buffer,
+IndexBuffer::IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, Buffer* buffer,
 	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool) : m_Device(device)
 {
-	VkDeviceSize bufferSize = sizeof(loader.indices[0]) * loader.indices.size();
+	VkDeviceSize bufferSize = sizeof(loader->indices[0]) * loader->indices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
@@ -23,7 +23,7 @@ IndexBuffer::IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Load
 
 	void* data;
 	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, loader.indices.data(), (size_t)bufferSize);
+	memcpy(data, loader->indices.data(), (size_t)bufferSize);
 	vkUnmapMemory(device, stagingBufferMemory);
 
 	Buffer* oIndexBuffer = new Buffer(device, hPhysicalDevice, bufferSize,

@@ -10,6 +10,17 @@ class Loader
 {
 public:
 
+	Loader();
+
+	static std::vector<char> readFile(const std::string& filename);
+
+	// Models
+	void loadModel();
+
+	~Loader();
+
+public:
+
 	const std::string MODEL_PATH = "models/cube.obj";
 	const std::string TEXTURE_PATH = "textures/statue_512x512_atlas.png";
 
@@ -40,13 +51,5 @@ public:
 	// Model data
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
-
-
-public:
-
-	static std::vector<char> readFile(const std::string& filename);
-
-	// Models
-	void loadModel();
 
 };
