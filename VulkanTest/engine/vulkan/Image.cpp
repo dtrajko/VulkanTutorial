@@ -289,7 +289,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 }
 
 void Image::createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
-	Buffer buffer, CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
+	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
 	int texWidth, texHeight, texChannels;
 
@@ -305,9 +305,10 @@ void Image::createTextureImage(const char* texFilepath, VkDevice device, Physica
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
-	buffer.createBuffer(device, hPhysicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory);
+	Buffer* oStagingBuffer = new Buffer(device, hPhysicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	stagingBuffer = oStagingBuffer->m_Buffer;
+	stagingBufferMemory = oStagingBuffer->m_Memory;
 
 	void* data;
 	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);

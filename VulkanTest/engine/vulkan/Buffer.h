@@ -11,8 +11,15 @@ class Buffer
 
 public:
 
-	void createBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize size, VkBufferUsageFlags usage,
-		VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	VkBuffer m_Buffer;
+	VkDeviceMemory m_Memory;
+	VkDevice m_Device;
+
+public:
+
+	Buffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize size, VkBufferUsageFlags usage,
+		VkMemoryPropertyFlags properties);
+	~Buffer();
 
 private:
 	PhysicalDevice physicalDevice;

@@ -3,8 +3,8 @@
 #include <stdexcept>
 
 
-void Buffer::createBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-	VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+Buffer::Buffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize size, VkBufferUsageFlags usage,
+	VkMemoryPropertyFlags properties) : m_Device(device)
 {
 	VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -12,23 +12,27 @@ void Buffer::createBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkD
 	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+	if (vkCreateBuffer(device, &bufferInfo, nullptr, &m_Buffer) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create a buffer!");
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
+	vkGetBufferMemoryRequirements(device, m_Buffer, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = physicalDevice.findMemoryType(hPhysicalDevice, memRequirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+	if (vkAllocateMemory(device, &allocInfo, nullptr, &m_Memory) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate buffer memory!");
 	}
 
-	vkBindBufferMemory(device, buffer, bufferMemory, 0);
+	vkBindBufferMemory(device, m_Buffer, m_Memory, 0);
+}
+
+Buffer::~Buffer()
+{
 }

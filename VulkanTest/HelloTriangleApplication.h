@@ -120,7 +120,7 @@ private:
 	PhysicalDevice physicalDevice;
 	ValidationLayer validationLayer;
 	Surface surface;
-	Buffer buffer;
+	Buffer* buffer;
 	IndexBuffer indexBuffer;
 	UniformBuffer uniformBuffer;
 	CommandBuffer commandBuffer;

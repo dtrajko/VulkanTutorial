@@ -4,7 +4,7 @@
 #include "Buffer.h"
 
 
-void UniformBuffer::createUniformBuffers(VkDevice device, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, Buffer buffer)
+void UniformBuffer::createUniformBuffers(VkDevice device, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain)
 {
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
@@ -13,8 +13,10 @@ void UniformBuffer::createUniformBuffers(VkDevice device, VkPhysicalDevice hPhys
 
 	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
 	{
-		buffer.createBuffer(device, hPhysicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			uniformBuffers[i], uniformBuffersMemory[i]);
+		Buffer* buffer = new Buffer(device, hPhysicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		uniformBuffers[i] = buffer->m_Buffer;
+		uniformBuffersMemory[i] = buffer->m_Memory;
 	}
 }

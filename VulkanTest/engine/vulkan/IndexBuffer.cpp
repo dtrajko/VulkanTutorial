@@ -19,30 +19,38 @@ void IndexBuffer::copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandBuff
 	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
 }
 
-void IndexBuffer::createIndexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader, Buffer buffer,
+void IndexBuffer::createIndexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader, Buffer* buffer,
 	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool)
 {
 	VkDeviceSize bufferSize = sizeof(loader.indices[0]) * loader.indices.size();
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
-	buffer.createBuffer(device, hPhysicalDevice, bufferSize,
+
+	Buffer* oStagingBuffer = new Buffer(device, hPhysicalDevice, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory);
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	stagingBuffer = oStagingBuffer->m_Buffer;
+	stagingBufferMemory = oStagingBuffer->m_Memory;
 
 	void* data;
 	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
 	memcpy(data, loader.indices.data(), (size_t)bufferSize);
 	vkUnmapMemory(device, stagingBufferMemory);
 
-	buffer.createBuffer(device, hPhysicalDevice, bufferSize,
+	Buffer* oIndexBuffer = new Buffer(device, hPhysicalDevice, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		indexBuffer, indexBufferMemory);
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+	indexBuffer = oIndexBuffer->m_Buffer;
+	indexBufferMemory = oIndexBuffer->m_Memory;
 
 	copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, indexBuffer, bufferSize);
 
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+	delete oIndexBuffer;
+	delete oStagingBuffer;
 }

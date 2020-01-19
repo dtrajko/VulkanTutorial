@@ -51,7 +51,7 @@ public:
 
 	// Texture mapping
 	void createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
-		Buffer buffer, CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
+		CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	// Multisampling (MSAA)
 	void createColorResources(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, ImageView imageView);
