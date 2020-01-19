@@ -51,7 +51,7 @@ void HelloTriangleApplication::initVulkan()
 	textureSampler = new Sampler(device, image.mipLevels);
 	loader.loadModel();
 	vertexBuffer = new VertexBuffer(device, hPhysicalDevice, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
-	indexBuffer.createIndexBuffer(hPhysicalDevice, device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
+	indexBuffer = new IndexBuffer(device, hPhysicalDevice, loader, buffer, graphicsQueue, commandBuffer, commandPool);
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain);
  	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
@@ -539,9 +539,7 @@ void HelloTriangleApplication::cleanup()
 
 	vkDestroyDescriptorSetLayout(device, descriptorSetLayout.descriptorSetLayout, nullptr);
 
-	vkFreeMemory(device, indexBuffer.indexBufferMemory, nullptr);
-	vkDestroyBuffer(device, indexBuffer.indexBuffer, nullptr);
-
+	delete indexBuffer;
 	delete vertexBuffer;
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)

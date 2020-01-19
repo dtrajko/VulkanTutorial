@@ -15,11 +15,14 @@ class IndexBuffer
 
 public:
 
-	VkBuffer indexBuffer;
-	VkDeviceMemory indexBufferMemory;
+	VkBuffer m_Buffer;
+	VkDeviceMemory m_Memory;
+	VkDevice m_Device;
 
-	void createIndexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader, Buffer* buffer,
+	IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, Buffer* buffer,
 		VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool);
+
+	~IndexBuffer();
 
 	void copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool,
 		VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

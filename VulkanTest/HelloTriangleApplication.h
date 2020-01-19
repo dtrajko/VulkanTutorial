@@ -120,10 +120,6 @@ private:
 	PhysicalDevice physicalDevice;
 	ValidationLayer validationLayer;
 	Surface surface;
-	Buffer* buffer;
-	IndexBuffer indexBuffer;
-	UniformBuffer uniformBuffer;
-	CommandBuffer commandBuffer;
 	Image image;
 	ImageView imageView;
 	ShaderModule shaderModule;
@@ -134,8 +130,12 @@ private:
 	Framebuffer framebuffer;
 	Format format;
 	Device logicalDevice;
-	Sampler* textureSampler;
+	UniformBuffer uniformBuffer;
+	CommandBuffer commandBuffer;
+	Buffer* buffer;
 	VertexBuffer* vertexBuffer;
+	IndexBuffer* indexBuffer;
+	Sampler* textureSampler;
 	Instance* instance;
 	CommandPool* commandPool;
 	PipelineLayout* pipelineLayout;

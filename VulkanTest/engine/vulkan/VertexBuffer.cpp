@@ -7,8 +7,7 @@
 #include "Buffer.h"
 
 
-
-VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, IndexBuffer indexBuffer,
+VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, IndexBuffer* indexBuffer,
 	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool) : m_device(device)
 {
 	VkDeviceSize bufferSize = sizeof(loader.vertices[0]) * loader.vertices.size();
@@ -35,7 +34,7 @@ VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Lo
 	m_Buffer = oVertexBuffer->m_Buffer;
 	m_Memory = oVertexBuffer->m_Memory;
 
-	indexBuffer.copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, m_Buffer, bufferSize);
+	indexBuffer->copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, m_Buffer, bufferSize);
 
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);

@@ -30,7 +30,7 @@ CommandPool::~CommandPool()
 
 void CommandPool::createCommandBuffers(VkDevice device, Loader loader, VkRenderPass renderPass, SwapChain swapChain,
 	std::vector<VkFramebuffer> swapChainFramebuffers, VkPipeline graphicsPipeline, VkPipelineLayout pipelineLayout,
-	VertexBuffer* vertexBuffer, IndexBuffer indexBuffer, DescriptorSet descriptorSet)
+	VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet descriptorSet)
 {
 	commandBuffers.resize(swapChainFramebuffers.size());
 
@@ -80,7 +80,7 @@ void CommandPool::createCommandBuffers(VkDevice device, Loader loader, VkRenderP
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-		vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer.indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer->m_Buffer, 0, VK_INDEX_TYPE_UINT32);
 
 		vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet.descriptorSets[i], 0, nullptr);
 
