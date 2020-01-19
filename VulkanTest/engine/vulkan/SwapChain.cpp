@@ -6,13 +6,13 @@
 
 
 void SwapChain::createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDevice, PhysicalDevice physicalDevice,
-	VkDevice device, Surface surface, VkSurfaceKHR surfaceKHR)
+	VkDevice device, Surface* surface)
 {
-	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(hPhysicalDevice, surfaceKHR);
+	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(hPhysicalDevice, surface->m_surfaceKHR);
 
-	VkSurfaceFormatKHR surfaceFormat = surface.chooseSwapSurfaceFormat(swapChainSupport.formats);
-	VkPresentModeKHR presentMode = surface.chooseSwapPresentMode(swapChainSupport.presentModes);
-	VkExtent2D extent = surface.chooseSwapExtent(window, swapChainSupport.capabilities);
+	VkSurfaceFormatKHR surfaceFormat = surface->chooseSwapSurfaceFormat(swapChainSupport.formats);
+	VkPresentModeKHR presentMode = surface->chooseSwapPresentMode(swapChainSupport.presentModes);
+	VkExtent2D extent = surface->chooseSwapExtent(window, swapChainSupport.capabilities);
 
 	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
 
@@ -23,7 +23,7 @@ void SwapChain::createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDe
 
 	VkSwapchainCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = surfaceKHR;
+	createInfo.surface = surface->m_surfaceKHR;
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -31,7 +31,7 @@ void SwapChain::createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDe
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
+	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surface->m_surfaceKHR);
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	if (indices.graphicsFamily != indices.presentFamily)

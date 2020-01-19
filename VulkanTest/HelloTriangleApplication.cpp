@@ -31,18 +31,16 @@ void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int
 void HelloTriangleApplication::initVulkan()
 {
 	instance = new Instance(enableValidationLayers, validationLayers, validationLayer);
-
-	// instance.createInstance(enableValidationLayers, validationLayers, validationLayer, debug);
 	debug = new Debug(instance->hInstance, enableValidationLayers);
-	surface.createSurface(instance->hInstance, window, surfaceKHR);
-	pickPhysicalDevice(instance->hInstance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, image.msaaSamples);
-	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
-	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
+	surface = new Surface(instance->hInstance, window);
+	pickPhysicalDevice(instance->hInstance, physicalDevice, hPhysicalDevice, surface->m_surfaceKHR, swapChain, image.msaaSamples);
+	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
+	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
 	createRenderPass();
 	descriptorSetLayout.createDescriptorSetLayout(device);
 	createGraphicsPipeline();
-	commandPool = new CommandPool(physicalDevice, hPhysicalDevice, device, surfaceKHR);
+	commandPool = new CommandPool(physicalDevice, hPhysicalDevice, device, surface->m_surfaceKHR);
 	image.createColorResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView);
 	image.createDepthResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
@@ -239,7 +237,7 @@ void HelloTriangleApplication::recreateSwapChain()
 
 	cleanupSwapChain(uniformBuffer);
 
-	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
+	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
 	createRenderPass();
 	createGraphicsPipeline();
@@ -555,7 +553,7 @@ void HelloTriangleApplication::cleanup()
 
 	delete debug;
 
-	vkDestroySurfaceKHR(instance->hInstance, surfaceKHR, nullptr);
+	delete surface;
 
 	delete instance;
 

@@ -31,7 +31,7 @@ public:
 	std::vector<VkImageView> swapChainImageViews;
 
 	void createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDevice, PhysicalDevice physicalDevice,
-		VkDevice device, Surface surface, VkSurfaceKHR surfaceKHR);
+		VkDevice device, Surface* surface);
 
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surfaceKHR);
 

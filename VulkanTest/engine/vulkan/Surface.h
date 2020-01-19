@@ -8,10 +8,18 @@
 
 class Surface
 {
+public:
+
+	// Vulkan window surface
+	VkSurfaceKHR m_surfaceKHR;
+
+	VkInstance m_Instance;
 
 public:
 
-	void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR& surfaceKHR);
+	Surface(VkInstance instance, GLFWwindow* window);
+
+	~Surface();
 
 	VkExtent2D chooseSwapExtent(GLFWwindow* window, const VkSurfaceCapabilitiesKHR& capabilities);
 

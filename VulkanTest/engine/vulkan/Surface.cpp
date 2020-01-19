@@ -4,6 +4,19 @@
 #include <stdexcept>
 
 
+Surface::Surface(VkInstance instance, GLFWwindow* window) : m_Instance(instance)
+{
+	if (glfwCreateWindowSurface(instance, window, nullptr, &m_surfaceKHR) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to create a window surface!");
+	}
+}
+
+Surface::~Surface()
+{
+	vkDestroySurfaceKHR(m_Instance, m_surfaceKHR, nullptr);
+}
+
 VkExtent2D Surface::chooseSwapExtent(GLFWwindow* window, const VkSurfaceCapabilitiesKHR& capabilities)
 {
 	if (capabilities.currentExtent.width != UINT32_MAX)
@@ -50,12 +63,4 @@ VkSurfaceFormatKHR Surface::chooseSwapSurfaceFormat(const std::vector<VkSurfaceF
 		}
 	}
 	return availableFormats[0];
-}
-
-void Surface::createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR& surfaceKHR)
-{
-	if (glfwCreateWindowSurface(instance, window, nullptr, &surfaceKHR) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create a window surface!");
-	}
 }

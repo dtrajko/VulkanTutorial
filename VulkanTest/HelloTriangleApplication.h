@@ -85,9 +85,6 @@ private:
 	// GLFW
 	GLFWwindow* window;
 
-	// Vulkan window surface
-	VkSurfaceKHR surfaceKHR;
-
 	// Vulkan physical devices
 	VkPhysicalDevice hPhysicalDevice = VK_NULL_HANDLE;
 
@@ -118,7 +115,6 @@ private:
 	Loader loader;
 	PhysicalDevice physicalDevice;
 	ValidationLayer validationLayer;
-	Surface surface;
 	Image image;
 	ImageView imageView;
 	ShaderModule shaderModule;
@@ -130,7 +126,10 @@ private:
 	Format format;
 	Device logicalDevice;
 	CommandBuffer commandBuffer;
+
+	// RAII
 	Debug* debug;
+	Surface* surface;
 	Buffer* buffer;
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
