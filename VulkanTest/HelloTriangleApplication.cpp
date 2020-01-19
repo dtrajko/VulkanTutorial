@@ -4,39 +4,21 @@
 
 void HelloTriangleApplication::run()
 {
-	initWindow();
+	window = new Window();
 	initVulkan();
 	mainLoop();
 	cleanup();
-}
-
-void HelloTriangleApplication::initWindow()
-{
-	glfwInit();
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	// glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-	glfwSetWindowUserPointer(window, this);
-	glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-}
-
-void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int width, int height)
-{
-	auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
-	app->framebufferResized = true;
 }
 
 void HelloTriangleApplication::initVulkan()
 {
 	instance = new Instance(enableValidationLayers, validationLayers, validationLayer);
 	debug = new Debug(instance->hInstance, enableValidationLayers);
-	surface = new Surface(instance->hInstance, window);
+	surface = new Surface(instance->hInstance, window->m_Window);
 	loader = new Loader();
 	physicalDevice = new PhysicalDevice(instance->hInstance, surface->m_surfaceKHR, swapChain, image.msaaSamples);
 	logicalDevice.createLogicalDevice(physicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
-	swapChain.createSwapChain(window, physicalDevice, device, surface);
+	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
 	createRenderPass(physicalDevice);
 	descriptorSetLayout.createDescriptorSetLayout(device);
@@ -196,10 +178,10 @@ void HelloTriangleApplication::createSyncObjects()
 void HelloTriangleApplication::recreateSwapChain()
 {
 	int width = 0, height = 0;
-	glfwGetFramebufferSize(window, &width, &height);
+	glfwGetFramebufferSize(window->m_Window, &width, &height);
 	while (width == 0 || height == 0)
 	{
-		glfwGetFramebufferSize(window, &width, &height);
+		glfwGetFramebufferSize(window->m_Window, &width, &height);
 		glfwWaitEvents();
 	}
 
@@ -207,7 +189,7 @@ void HelloTriangleApplication::recreateSwapChain()
 
 	cleanupSwapChain(uniformBuffer);
 
-	swapChain.createSwapChain(window, physicalDevice, device, surface);
+	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
 	createRenderPass(physicalDevice);
 	createGraphicsPipeline();
@@ -367,7 +349,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
 
 void HelloTriangleApplication::mainLoop()
 {
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window->m_Window))
 	{
 		glfwPollEvents();
 		drawFrame();
@@ -441,9 +423,9 @@ void HelloTriangleApplication::drawFrame()
 	presentInfo.pResults = nullptr; // Optional
 
 	result = vkQueuePresentKHR(presentQueue, &presentInfo);
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized)
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window->framebufferResized)
 	{
-		framebufferResized = false;
+		window->framebufferResized = false;
 		recreateSwapChain();
 	}
 	else if (result != VK_SUCCESS)
@@ -526,7 +508,7 @@ void HelloTriangleApplication::cleanup()
 	delete debug;
 	delete instance;
 
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(window->m_Window);
 
 	glfwTerminate();
 }

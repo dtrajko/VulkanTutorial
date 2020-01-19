@@ -16,6 +16,7 @@
 
 #include "engine/Debug.h"
 #include "engine/Loader.h"
+#include "engine/Window.h"
 #include "engine/vulkan/PhysicalDevice.h"
 #include "engine/vulkan/ValidationLayer.h"
 #include "engine/vulkan/Surface.h"
@@ -40,12 +41,7 @@
 #include "engine/vulkan/Instance.h"
 
 
-const int WIDTH = 1280;
-const int HEIGHT = 720;
-
-
 const int MAX_FRAMES_IN_FLIGHT = 2;
-
 
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
@@ -54,23 +50,15 @@ const int MAX_FRAMES_IN_FLIGHT = 2;
 #endif // NDEBUG
 
 
-
 class HelloTriangleApplication
 {
 
 public:
 
-	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
-
-
-public:
-
 	void run();
 
-private:
 
-	// GLFW
-	GLFWwindow* window;
+private:
 
 	// Vulkan logical device
 	VkDevice device;
@@ -78,9 +66,6 @@ private:
 
 	// Presentation queue
 	VkQueue presentQueue;
-
-	// Framebuffers
-	bool framebufferResized = false; // used to recreate the swap chain
 
 	// Render pass
 	VkRenderPass renderPass;
@@ -110,6 +95,7 @@ private:
 	CommandBuffer commandBuffer;
 
 	// RAII
+	Window* window;
 	Debug* debug;
 	Instance* instance;
 	Surface* surface;
@@ -126,12 +112,7 @@ private:
 
 private:
 
-	void initWindow();
 	void initVulkan();
-
-	// physical devices
-	void pickPhysicalDevice(VkInstance hInstance, PhysicalDevice* physicalDevice,
-		VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
 
 	// Swap chain support
 	void cleanupSwapChain(UniformBuffer uniformBuffer);
