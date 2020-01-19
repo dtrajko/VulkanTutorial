@@ -17,10 +17,13 @@ class VertexBuffer
 public:
 
 	// Vertex buffer
-	VkBuffer vertexBuffer;
+	VkBuffer m_Buffer;
 	VkDeviceMemory vertexBufferMemory;
+	VkDevice m_device;
 
-	void createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader,
+	VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader,
 		IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool, Buffer buffer);
+	~VertexBuffer();
+
 
 };

@@ -7,8 +7,9 @@
 #include "Buffer.h"
 
 
-void VertexBuffer::createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice device, Loader loader,
-	IndexBuffer indexBuffer, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool, Buffer buffer)
+
+VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader loader, IndexBuffer indexBuffer,
+	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool, Buffer buffer) : m_device(device)
 {
 	VkDeviceSize bufferSize = sizeof(loader.vertices[0]) * loader.vertices.size();
 
@@ -27,10 +28,15 @@ void VertexBuffer::createVertexBuffer(VkPhysicalDevice hPhysicalDevice, VkDevice
 	buffer.createBuffer(device, hPhysicalDevice, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		vertexBuffer, vertexBufferMemory);
+		m_Buffer, vertexBufferMemory);
 
-	indexBuffer.copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, vertexBuffer, bufferSize);
+	indexBuffer.copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, m_Buffer, bufferSize);
 
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
+VertexBuffer::~VertexBuffer()
+{
+	vkDestroyBuffer(m_device, m_Buffer, nullptr);
 }

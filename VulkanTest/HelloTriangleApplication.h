@@ -121,11 +121,9 @@ private:
 	ValidationLayer validationLayer;
 	Surface surface;
 	Buffer buffer;
-	VertexBuffer vertexBuffer;
 	IndexBuffer indexBuffer;
 	UniformBuffer uniformBuffer;
 	CommandBuffer commandBuffer;
-	CommandPool* commandPool;
 	Image image;
 	ImageView imageView;
 	Sampler sampler;
@@ -135,10 +133,12 @@ private:
 	DescriptorSet descriptorSet;
 	SwapChain swapChain;
 	Framebuffer framebuffer;
-	PipelineLayout* pipelineLayout;
 	Format format;
 	Device logicalDevice;
+	VertexBuffer* vertexBuffer;
 	Instance* instance;
+	CommandPool* commandPool;
+	PipelineLayout* pipelineLayout;
 
 
 private:
