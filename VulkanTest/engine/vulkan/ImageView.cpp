@@ -27,5 +27,5 @@ VkImageView ImageView::createImageView(VkDevice device, VkImage image, VkFormat 
 
 void ImageView::createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels)
 {
-	textureImageView = createImageView(device, image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+	m_ImageView = createImageView(device, image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
 }

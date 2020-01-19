@@ -126,7 +126,6 @@ private:
 	CommandBuffer commandBuffer;
 	Image image;
 	ImageView imageView;
-	Sampler sampler;
 	ShaderModule shaderModule;
 	DescriptorSetLayout descriptorSetLayout;
 	DescriptorPool descriptorPool;
@@ -135,6 +134,7 @@ private:
 	Framebuffer framebuffer;
 	Format format;
 	Device logicalDevice;
+	Sampler* textureSampler;
 	VertexBuffer* vertexBuffer;
 	Instance* instance;
 	CommandPool* commandPool;

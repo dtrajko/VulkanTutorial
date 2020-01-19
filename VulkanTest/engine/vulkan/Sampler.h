@@ -9,8 +9,10 @@ class Sampler
 
 public:
 
-	VkSampler textureSampler;
+	VkSampler m_Sampler;
+	VkDevice m_Device;
 
-	void createTextureSampler(VkDevice device, uint32_t mipLevels);
+	Sampler(VkDevice device, uint32_t mipLevels);
+	~Sampler();
 
 };

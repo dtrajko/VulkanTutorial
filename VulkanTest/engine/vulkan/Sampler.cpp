@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 
-void Sampler::createTextureSampler(VkDevice device, uint32_t mipLevels)
+Sampler::Sampler(VkDevice device, uint32_t mipLevels) : m_Device(device)
 {
 	VkSamplerCreateInfo samplerInfo = {};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -23,9 +23,13 @@ void Sampler::createTextureSampler(VkDevice device, uint32_t mipLevels)
 	samplerInfo.maxLod = static_cast<float>(mipLevels);
 	samplerInfo.mipLodBias = 0.0f;
 
-	if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
+	if (vkCreateSampler(device, &samplerInfo, nullptr, &m_Sampler) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create texture sampler!");
 	}
+}
 
+Sampler::~Sampler()
+{
+	vkDestroySampler(m_Device, m_Sampler, nullptr);
 }

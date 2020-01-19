@@ -9,7 +9,7 @@ class ImageView
 
 public:
 
-	VkImageView textureImageView;
+	VkImageView m_ImageView;
 
 	VkImageView createImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 	void createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels);

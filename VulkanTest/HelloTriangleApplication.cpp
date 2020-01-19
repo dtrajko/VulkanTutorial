@@ -48,13 +48,13 @@ void HelloTriangleApplication::initVulkan()
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
 	image.createTextureImage(loader.TEXTURE_PATH.c_str(), device, physicalDevice, hPhysicalDevice, buffer, commandBuffer, commandPool, format, graphicsQueue);
 	imageView.createTextureImageView(device, image.textureImage, image.mipLevels);
-	sampler.createTextureSampler(device, image.mipLevels);
+	textureSampler = new Sampler(device, image.mipLevels);
 	loader.loadModel();
 	vertexBuffer = new VertexBuffer(device, hPhysicalDevice, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool, buffer);
 	indexBuffer.createIndexBuffer(hPhysicalDevice, device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
  	descriptorPool.createDescriptorPool(device, swapChain);
-	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
+	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
 	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
@@ -248,7 +248,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
 	descriptorPool.createDescriptorPool(device, swapChain);
-	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
+	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
 	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 }
@@ -531,15 +531,16 @@ void HelloTriangleApplication::cleanup()
 {
 	cleanupSwapChain(uniformBuffer);
 
-	vkDestroySampler(device, sampler.textureSampler, nullptr);
-	vkDestroyImageView(device, imageView.textureImageView, nullptr);
+	delete textureSampler;
+
+	vkDestroyImageView(device, imageView.m_ImageView, nullptr);
 	vkDestroyImage(device, image.textureImage, nullptr);
 	vkFreeMemory(device, image.textureImageMemory, nullptr);
 
 	vkDestroyDescriptorSetLayout(device, descriptorSetLayout.descriptorSetLayout, nullptr);
 
-	vkDestroyBuffer(device, indexBuffer.indexBuffer, nullptr);
 	vkFreeMemory(device, indexBuffer.indexBufferMemory, nullptr);
+	vkDestroyBuffer(device, indexBuffer.indexBuffer, nullptr);
 
 	vkFreeMemory(device, vertexBuffer->vertexBufferMemory, nullptr);
 	delete vertexBuffer;

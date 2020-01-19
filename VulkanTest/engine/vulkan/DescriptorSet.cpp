@@ -14,7 +14,7 @@
 
 
 void DescriptorSet::createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain swapChain,
-	DescriptorSetLayout descriptorSetLayout, DescriptorPool descriptorPool, ImageView imageView, Sampler sampler)
+	DescriptorSetLayout descriptorSetLayout, DescriptorPool descriptorPool, ImageView imageView, Sampler* sampler)
 {
 	std::vector<VkDescriptorSetLayout> layouts(swapChain.swapChainImages.size(), descriptorSetLayout.descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
@@ -39,8 +39,8 @@ void DescriptorSet::createDescriptorSets(VkDevice device, UniformBuffer uniformB
 
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = imageView.textureImageView;
-		imageInfo.sampler = sampler.textureSampler;
+		imageInfo.imageView = imageView.m_ImageView;
+		imageInfo.sampler = sampler->m_Sampler;
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
