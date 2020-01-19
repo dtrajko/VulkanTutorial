@@ -39,6 +39,7 @@
 #include "engine/vulkan/Framebuffer.h"
 #include "engine/vulkan/PipelineLayout.h"
 #include "engine/vulkan/Instance.h"
+#include "engine/vulkan/RenderPass.h"
 
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -66,9 +67,6 @@ private:
 
 	// Presentation queue
 	VkQueue presentQueue;
-
-	// Render pass
-	VkRenderPass renderPass;
 
 	// Graphics pipeline
 	VkPipeline graphicsPipeline;
@@ -108,6 +106,7 @@ private:
 	Sampler* textureSampler;
 	CommandPool* commandPool;
 	PipelineLayout* pipelineLayout;
+	RenderPass* renderPass;
 
 
 private:
@@ -117,9 +116,6 @@ private:
 	// Swap chain support
 	void cleanupSwapChain(UniformBuffer uniformBuffer);
 	void recreateSwapChain();
-
-	// Render pass
-	void createRenderPass(PhysicalDevice* physicalDevice);
 
 	// Graphics pipeline
 	void createGraphicsPipeline();

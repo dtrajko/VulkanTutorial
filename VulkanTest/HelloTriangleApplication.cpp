@@ -20,13 +20,13 @@ void HelloTriangleApplication::initVulkan()
 	logicalDevice.createLogicalDevice(physicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
 	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
-	createRenderPass(physicalDevice);
+	renderPass = new RenderPass(physicalDevice, device, swapChain, image);
 	descriptorSetLayout.createDescriptorSetLayout(device);
 	createGraphicsPipeline();
 	commandPool = new CommandPool(physicalDevice, device, surface->m_surfaceKHR);
 	image.createColorResources(device, physicalDevice, swapChain, imageView);
 	image.createDepthResources(device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
-	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
+	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
 	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device, physicalDevice, commandBuffer, commandPool, format, graphicsQueue);
 	imageView.createTextureImageView(device, image.textureImage, image.mipLevels);
 	textureSampler = new Sampler(device, image.mipLevels);
@@ -36,91 +36,9 @@ void HelloTriangleApplication::initVulkan()
 	uniformBuffer.createUniformBuffers(physicalDevice, device, swapChain);
  	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
-	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
+	commandPool->createCommandBuffers(device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
-}
-
-void HelloTriangleApplication::createRenderPass(PhysicalDevice* physicalDevice)
-{
-	// Attachment description
-	VkAttachmentDescription colorAttachment = {};
-	colorAttachment.format = swapChain.swapChainImageFormat;
-	colorAttachment.samples = image.msaaSamples;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentDescription depthAttachment = {};
-	depthAttachment.format = image.findDepthFormat(physicalDevice->m_Device);
-	depthAttachment.samples = image.msaaSamples;
-	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentDescription colorAttachmentResolve = {};
-	colorAttachmentResolve.format = swapChain.swapChainImageFormat;
-	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-	// Subpasses and attachment references
-	VkAttachmentReference colorAttachmentRef = {};
-	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentReference depthAttachmentRef = {};
-	depthAttachmentRef.attachment = 1;
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentReference colorAttachmentResolveRef = {};
-	colorAttachmentResolveRef.attachment = 2;
-	colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	VkSubpassDescription subpass = {};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	subpass.pResolveAttachments = &colorAttachmentResolveRef;
-
-	// Subpass dependencies
-	VkSubpassDependency dependency = {};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask =
-		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-	std::array<VkAttachmentDescription, 3> attachments = { colorAttachment, depthAttachment, colorAttachmentResolve };
-
-	// Render pass
-	VkRenderPassCreateInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	renderPassInfo.pAttachments = attachments.data();
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
-
-	if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create Render pass!");
-	}
 }
 
 void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer)
@@ -191,15 +109,15 @@ void HelloTriangleApplication::recreateSwapChain()
 
 	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
-	createRenderPass(physicalDevice);
+	renderPass->createRenderPass(physicalDevice, device, swapChain, image);
 	createGraphicsPipeline();
 	image.createColorResources(device, physicalDevice, swapChain, imageView);
 	image.createDepthResources(device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
-	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
+	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
 	uniformBuffer.createUniformBuffers(physicalDevice, device, swapChain);
 	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
-	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
+	commandPool->createCommandBuffers(device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 }
 
@@ -333,7 +251,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
 	// pipeline layout
 	pipelineInfo.layout = pipelineLayout->pipelineLayout;
 	// render pass
-	pipelineInfo.renderPass = renderPass;
+	pipelineInfo.renderPass = renderPass->m_RenderPass;
 	pipelineInfo.subpass = 0;
 
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
@@ -459,7 +377,7 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 	
 	delete pipelineLayout;
 
-	vkDestroyRenderPass(device, renderPass, nullptr);
+	renderPass->cleanUp();
 
 	for (auto imageView : swapChain.swapChainImageViews)
 	{
@@ -500,6 +418,8 @@ void HelloTriangleApplication::cleanup()
 	}
 
 	delete commandPool;
+
+	delete renderPass;
 
 	vkDestroyDevice(device, nullptr);
 

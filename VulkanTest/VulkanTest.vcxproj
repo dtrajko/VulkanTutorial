@@ -135,6 +135,7 @@
     <ClCompile Include="engine\vulkan\ValidationLayer.cpp" />
     <ClCompile Include="engine\vulkan\PipelineLayout.cpp" />
     <ClCompile Include="engine\Window.cpp" />
+    <ClCompile Include="engine\vulkan\RenderPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\vulkan\DescriptorSet.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="engine\vulkan\PipelineLayout.h" />
     <ClInclude Include="engine\vulkan\Instance.h" />
     <ClInclude Include="engine\Window.h" />
+    <ClInclude Include="engine\vulkan\RenderPass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
