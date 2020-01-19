@@ -3,6 +3,22 @@
 #include <iostream>
 
 
+void Debug::setupDebugMessenger(VkInstance instance, bool enableValidationLayers)
+{
+	if (!enableValidationLayers)
+	{
+		return;
+	}
+
+	VkDebugUtilsMessengerCreateInfoEXT createInfo;
+	populateDebugMessengerCreateInfo(createInfo);
+
+	if (Debug::CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
+	{
+		throw std::runtime_error("Failed to set up debug messenger!");
+	}
+}
+
 VKAPI_ATTR VkBool32 VKAPI_CALL Debug::debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -56,20 +72,4 @@ void Debug::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT&
 		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	createInfo.pfnUserCallback = Debug::debugCallback;
-}
-
-void Debug::setupDebugMessenger(VkInstance instance, bool enableValidationLayers)
-{
-	if (!enableValidationLayers)
-	{
-		return;
-	}
-
-	VkDebugUtilsMessengerCreateInfoEXT createInfo;
-	populateDebugMessengerCreateInfo(createInfo);
-
-	if (Debug::CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to set up debug messenger!");
-	}
 }

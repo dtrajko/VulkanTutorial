@@ -135,10 +135,10 @@ private:
 	DescriptorSet descriptorSet;
 	SwapChain swapChain;
 	Framebuffer framebuffer;
-	PipelineLayout pipelineLayout;
+	PipelineLayout* pipelineLayout;
 	Format format;
 	Device logicalDevice;
-	Instance instance;
+	Instance* instance;
 
 
 private:

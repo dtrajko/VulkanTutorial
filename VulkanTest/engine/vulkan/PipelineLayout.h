@@ -13,10 +13,12 @@ class PipelineLayout
 public:
 	
 	VkPipelineLayout pipelineLayout;
+	VkDevice m_device;
 
 
 public:
 
-	void createPipelineLayout(VkDevice device, DescriptorSetLayout descriptorSetLayout);
+	PipelineLayout(VkDevice device, DescriptorSetLayout descriptorSetLayout);
+	~PipelineLayout();
 
 };

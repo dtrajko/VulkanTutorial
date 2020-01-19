@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 
-void Instance::createInstance(bool enableValidationLayers, const std::vector<const char*> validationLayers, ValidationLayer validationLayer, Debug debug)
+Instance::Instance(bool enableValidationLayers, const std::vector<const char*> validationLayers, ValidationLayer validationLayer, Debug debug)
 {
 	if (enableValidationLayers && !validationLayer.checkValidationLayerSupport(validationLayers))
 	{
@@ -47,6 +47,11 @@ void Instance::createInstance(bool enableValidationLayers, const std::vector<con
 	{
 		throw std::runtime_error("Failed to create a Vulkan instance");
 	}
+}
+
+Instance::~Instance()
+{
+	vkDestroyInstance(hInstance, nullptr);
 }
 
 std::vector<const char*> Instance::getRequiredExtensions(bool enableValidationLayers)

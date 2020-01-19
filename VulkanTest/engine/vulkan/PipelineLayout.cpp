@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 
-void PipelineLayout::createPipelineLayout(VkDevice device, DescriptorSetLayout descriptorSetLayout)
+PipelineLayout::PipelineLayout(VkDevice device, DescriptorSetLayout descriptorSetLayout) : m_device(device)
 {
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -18,4 +18,9 @@ void PipelineLayout::createPipelineLayout(VkDevice device, DescriptorSetLayout d
 	{
 		throw std::runtime_error("Failed to create pipeline layout");
 	}
+}
+
+PipelineLayout::~PipelineLayout()
+{
+	vkDestroyPipelineLayout(m_device, pipelineLayout, nullptr);
 }

@@ -30,10 +30,12 @@ void HelloTriangleApplication::framebufferResizeCallback(GLFWwindow* window, int
 
 void HelloTriangleApplication::initVulkan()
 {
-	instance.createInstance(enableValidationLayers, validationLayers, validationLayer, debug);
-	debug.setupDebugMessenger(instance.hInstance, enableValidationLayers);
-	surface.createSurface(instance.hInstance, window, surfaceKHR);
-	pickPhysicalDevice(instance.hInstance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, image.msaaSamples);
+	instance = new Instance(enableValidationLayers, validationLayers, validationLayer, debug);
+
+	// instance.createInstance(enableValidationLayers, validationLayers, validationLayer, debug);
+	debug.setupDebugMessenger(instance->hInstance, enableValidationLayers);
+	surface.createSurface(instance->hInstance, window, surfaceKHR);
+	pickPhysicalDevice(instance->hInstance, physicalDevice, hPhysicalDevice, surfaceKHR, swapChain, image.msaaSamples);
 	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
 	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface, surfaceKHR);
 	swapChain.createImageViews(device, imageView);
@@ -53,7 +55,7 @@ void HelloTriangleApplication::initVulkan()
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
  	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
-	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout.pipelineLayout,
+	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
 }
@@ -247,7 +249,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain, buffer);
 	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, sampler);
-	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout.pipelineLayout,
+	commandPool.createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
 		vertexBuffer, indexBuffer, descriptorSet);
 }
 
@@ -363,7 +365,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
 	colorBlending.blendConstants[3] = 0.0f; // Optional
 
 	// Fixed functions - Pipeline layout
-	pipelineLayout.createPipelineLayout(device, descriptorSetLayout);
+	pipelineLayout = new PipelineLayout(device, descriptorSetLayout);
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -379,7 +381,7 @@ void HelloTriangleApplication::createGraphicsPipeline()
 	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pColorBlendState = &colorBlending;
 	// pipeline layout
-	pipelineInfo.layout = pipelineLayout.pipelineLayout;
+	pipelineInfo.layout = pipelineLayout->pipelineLayout;
 	// render pass
 	pipelineInfo.renderPass = renderPass;
 	pipelineInfo.subpass = 0;
@@ -504,7 +506,9 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 	vkFreeCommandBuffers(device, commandPool.commandPool, static_cast<uint32_t>(commandPool.commandBuffers.size()), commandPool.commandBuffers.data());
 
 	vkDestroyPipeline(device, graphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(device, pipelineLayout.pipelineLayout, nullptr);
+	
+	delete pipelineLayout;
+
 	vkDestroyRenderPass(device, renderPass, nullptr);
 
 	for (auto imageView : swapChain.swapChainImageViews)
@@ -553,11 +557,12 @@ void HelloTriangleApplication::cleanup()
 
 	if (enableValidationLayers)
 	{
-		Debug::DestroyDebugUtilsMessengerEXT(instance.hInstance, debug.debugMessenger, nullptr);
+		Debug::DestroyDebugUtilsMessengerEXT(instance->hInstance, debug.debugMessenger, nullptr);
 	}
 
-	vkDestroySurfaceKHR(instance.hInstance, surfaceKHR, nullptr);
-	vkDestroyInstance(instance.hInstance, nullptr);
+	vkDestroySurfaceKHR(instance->hInstance, surfaceKHR, nullptr);
+
+	delete instance;
 
 	glfwDestroyWindow(window);
 

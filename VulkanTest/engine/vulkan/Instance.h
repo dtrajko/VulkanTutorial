@@ -20,6 +20,10 @@ public:
 
 public:
 
+	Instance(bool enableValidationLayers, const std::vector<const char*> validationLayers, ValidationLayer validationLayer, Debug debug);
+
+	~Instance();
+
 	void createInstance(bool enableValidationLayers, const std::vector<const char*> validationLayers, ValidationLayer validationLayer, Debug debug);
 
 	std::vector<const char*> getRequiredExtensions(bool enableValidationLayers);
