@@ -1,10 +1,12 @@
 #include "Buffer.h"
 
+#include "PhysicalDevice.h"
+
 #include <stdexcept>
 
 
-Buffer::Buffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize size, VkBufferUsageFlags usage,
-	VkMemoryPropertyFlags properties) : m_Device(device)
+Buffer::Buffer(PhysicalDevice* physicalDevice, VkDevice device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+	: m_Device(device)
 {
 	VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -23,7 +25,7 @@ Buffer::Buffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize s
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = physicalDevice.findMemoryType(hPhysicalDevice, memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = physicalDevice->findMemoryType(memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(device, &allocInfo, nullptr, &m_Memory) != VK_SUCCESS)
 	{

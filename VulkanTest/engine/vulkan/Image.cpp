@@ -20,7 +20,7 @@
 #include <iostream>
 
 
-void Image::createImage(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
+void Image::createImage(VkDevice device, PhysicalDevice* physicalDevice,
 	uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
 	VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 {
@@ -50,7 +50,7 @@ void Image::createImage(VkDevice device, PhysicalDevice physicalDevice, VkPhysic
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = physicalDevice.findMemoryType(hPhysicalDevice, memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = physicalDevice->findMemoryType(memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 	{
@@ -93,23 +93,23 @@ VkFormat Image::findSupportedFormat(VkPhysicalDevice hPhysicalDevice, const std:
 	return VkFormat::VK_FORMAT_UNDEFINED;
 }
 
-void Image::createColorResources(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, ImageView imageView)
+void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView)
 {
 	VkFormat colorFormat = swapChain.swapChainImageFormat;
 
-	createImage(device, physicalDevice, hPhysicalDevice,
+	createImage(device, physicalDevice,
 		swapChain.swapChainExtent.width, swapChain.swapChainExtent.height, 1, msaaSamples, colorFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		colorImage, colorImageMemory);
 	colorImageView = imageView.createImageView(device, colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void Image::createDepthResources(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, ImageView imageView, 
+void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView, 
 	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
-	VkFormat depthFormat = findDepthFormat(hPhysicalDevice);
+	VkFormat depthFormat = findDepthFormat(physicalDevice->m_Device);
 
-	createImage(device, physicalDevice, hPhysicalDevice, swapChain.swapChainExtent.width, swapChain.swapChainExtent.height,
+	createImage(device, physicalDevice, swapChain.swapChainExtent.width, swapChain.swapChainExtent.height,
 		1, msaaSamples, depthFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -288,7 +288,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
 }
 
-void Image::createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
+void Image::createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice* physicalDevice,
 	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
 	int texWidth, texHeight, texChannels;
@@ -305,7 +305,7 @@ void Image::createTextureImage(const char* texFilepath, VkDevice device, Physica
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
-	Buffer* oStagingBuffer = new Buffer(device, hPhysicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+	Buffer* oStagingBuffer = new Buffer(physicalDevice, device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 	stagingBuffer = oStagingBuffer->m_Buffer;
 	stagingBufferMemory = oStagingBuffer->m_Memory;
@@ -317,7 +317,7 @@ void Image::createTextureImage(const char* texFilepath, VkDevice device, Physica
 
 	stbi_image_free(pixels);
 
-	createImage(device, physicalDevice, hPhysicalDevice, texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT,
+	createImage(device, physicalDevice, texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT,
 		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
@@ -330,5 +330,5 @@ void Image::createTextureImage(const char* texFilepath, VkDevice device, Physica
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
 
-	generateMipmaps(hPhysicalDevice, device, commandBuffer, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
+	generateMipmaps(physicalDevice->m_Device, device, commandBuffer, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 }

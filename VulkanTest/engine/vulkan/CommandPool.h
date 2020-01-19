@@ -28,7 +28,7 @@ public:
 
 public:
 
-	CommandPool(PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR);
+	CommandPool(PhysicalDevice* physicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR);
 	~CommandPool();
 
 	void createCommandBuffers(VkDevice device, Loader* loader, VkRenderPass renderPass, SwapChain swapChain,

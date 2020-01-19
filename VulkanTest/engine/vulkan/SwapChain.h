@@ -30,8 +30,7 @@ public:
 	VkExtent2D swapChainExtent;
 	std::vector<VkImageView> swapChainImageViews;
 
-	void createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDevice, PhysicalDevice physicalDevice,
-		VkDevice device, Surface* surface);
+	void createSwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevice device, Surface* surface);
 
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surfaceKHR);
 

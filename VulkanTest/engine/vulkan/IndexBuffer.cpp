@@ -4,9 +4,10 @@
 #include "Buffer.h"
 #include "CommandBuffer.h"
 #include "CommandPool.h"
+#include "PhysicalDevice.h"
 
 
-IndexBuffer::IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, Buffer* buffer,
+IndexBuffer::IndexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Loader* loader, Buffer* buffer,
 	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool) : m_Device(device)
 {
 	VkDeviceSize bufferSize = sizeof(loader->indices[0]) * loader->indices.size();
@@ -14,7 +15,7 @@ IndexBuffer::IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Load
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
-	Buffer* oStagingBuffer = new Buffer(device, hPhysicalDevice, bufferSize,
+	Buffer* oStagingBuffer = new Buffer(physicalDevice, device, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
@@ -26,7 +27,7 @@ IndexBuffer::IndexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Load
 	memcpy(data, loader->indices.data(), (size_t)bufferSize);
 	vkUnmapMemory(device, stagingBufferMemory);
 
-	Buffer* oIndexBuffer = new Buffer(device, hPhysicalDevice, bufferSize,
+	Buffer* oIndexBuffer = new Buffer(physicalDevice, device, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 

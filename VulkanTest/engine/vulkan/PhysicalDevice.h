@@ -33,16 +33,25 @@ class PhysicalDevice
 
 public:
 
+	// Vulkan physical devices
+	VkPhysicalDevice m_Device = VK_NULL_HANDLE;
+
+public:
+
+	PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
+
+	~PhysicalDevice();
+
 	bool isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain swapChain);
 
-	bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+	bool checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevice);
 
-	int rateDeviceSuitability(VkPhysicalDevice device);
+	int rateDeviceSuitability();
 
-	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface);
+	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR& surface);
 
-	VkSampleCountFlagBits getMaxUsableSampleCount(VkPhysicalDevice hPhysicalDevice);
+	VkSampleCountFlagBits getMaxUsableSampleCount();
 
 };

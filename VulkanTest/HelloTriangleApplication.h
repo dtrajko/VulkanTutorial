@@ -12,20 +12,7 @@
 #include <glm/gtx/hash.hpp>
 
 #include <iostream>
-#include <fstream>
-#include <stdexcept>
-#include <algorithm>
 #include <chrono>
-#include <vector>
-#include <cstring>
-#include <cstdlib>
-#include <cstdint>
-#include <array>
-#include <optional>
-#include <set>
-#include <unordered_map>
-#include <functional>
-#include <map>
 
 #include "engine/Debug.h"
 #include "engine/Loader.h"
@@ -85,9 +72,6 @@ private:
 	// GLFW
 	GLFWwindow* window;
 
-	// Vulkan physical devices
-	VkPhysicalDevice hPhysicalDevice = VK_NULL_HANDLE;
-
 	// Vulkan logical device
 	VkDevice device;
 	VkQueue graphicsQueue;
@@ -112,7 +96,6 @@ private:
 	size_t currentFrame = 0;
 
 	// Refactoring
-	PhysicalDevice physicalDevice;
 	ValidationLayer validationLayer;
 	Image image;
 	ImageView imageView;
@@ -131,6 +114,7 @@ private:
 	Instance* instance;
 	Surface* surface;
 	Loader* loader;
+	PhysicalDevice* physicalDevice;
 	Buffer* buffer;
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
@@ -146,7 +130,7 @@ private:
 	void initVulkan();
 
 	// physical devices
-	void pickPhysicalDevice(VkInstance hInstance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice,
+	void pickPhysicalDevice(VkInstance hInstance, PhysicalDevice* physicalDevice,
 		VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
 
 	// Swap chain support
@@ -154,7 +138,7 @@ private:
 	void recreateSwapChain();
 
 	// Render pass
-	void createRenderPass();
+	void createRenderPass(PhysicalDevice* physicalDevice);
 
 	// Graphics pipeline
 	void createGraphicsPipeline();

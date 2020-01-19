@@ -7,10 +7,10 @@
 #include <stdexcept>
 
 
-void Device::createLogicalDevice(PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice, VkDevice& device,
+void Device::createLogicalDevice(PhysicalDevice* physicalDevice, VkDevice& device,
 	VkSurfaceKHR surfaceKHR, bool enableValidationLayers, VkQueue& graphicsQueue, VkQueue& presentQueue)
 {
-	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
+	QueueFamilyIndices indices = physicalDevice->findQueueFamilies(physicalDevice->m_Device, surfaceKHR);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -50,7 +50,7 @@ void Device::createLogicalDevice(PhysicalDevice physicalDevice, VkPhysicalDevice
 	}
 
 	// create a logical device
-	if (vkCreateDevice(hPhysicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
+	if (vkCreateDevice(physicalDevice->m_Device, &createInfo, nullptr, &device) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create logical device!");
 	}

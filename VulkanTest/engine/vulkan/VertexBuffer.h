@@ -9,6 +9,7 @@ class IndexBuffer;
 class CommandBuffer;
 class CommandPool;
 class Buffer;
+class PhysicalDevice;
 
 
 class VertexBuffer
@@ -21,7 +22,7 @@ public:
 	VkDeviceMemory m_Memory;
 	VkDevice m_device;
 
-	VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, IndexBuffer* indexBuffer,
+	VertexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Loader* loader, IndexBuffer* indexBuffer,
 		VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool);
 	~VertexBuffer();
 

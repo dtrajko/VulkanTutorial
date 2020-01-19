@@ -5,9 +5,10 @@
 #include "CommandBuffer.h"
 #include "CommandPool.h"
 #include "Buffer.h"
+#include "PhysicalDevice.h"
 
 
-VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Loader* loader, IndexBuffer* indexBuffer,
+VertexBuffer::VertexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Loader* loader, IndexBuffer* indexBuffer,
 	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool) : m_device(device)
 {
 	VkDeviceSize bufferSize = sizeof(loader->vertices[0]) * loader->vertices.size();
@@ -15,7 +16,7 @@ VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Lo
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 
-	Buffer* oStagingBuffer = new Buffer(device, hPhysicalDevice, bufferSize,
+	Buffer* oStagingBuffer = new Buffer(physicalDevice, device, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
@@ -26,8 +27,8 @@ VertexBuffer::VertexBuffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, Lo
 	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
 	memcpy(data, loader->vertices.data(), (size_t)bufferSize);
 	vkUnmapMemory(device, stagingBufferMemory);
-	
-	Buffer* oVertexBuffer = new Buffer(device, hPhysicalDevice, bufferSize,
+
+	Buffer* oVertexBuffer = new Buffer(physicalDevice, device, bufferSize,
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 

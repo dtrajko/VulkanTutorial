@@ -9,9 +9,9 @@
 #include <stdexcept>
 
 
-CommandPool::CommandPool(PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR) : m_device(device)
+CommandPool::CommandPool(PhysicalDevice* physicalDevice, VkDevice device, VkSurfaceKHR surfaceKHR) : m_device(device)
 {
-	QueueFamilyIndices queueFamilyIndices = physicalDevice.findQueueFamilies(hPhysicalDevice, surfaceKHR);
+	QueueFamilyIndices queueFamilyIndices = physicalDevice->findQueueFamilies(physicalDevice->m_Device, surfaceKHR);
 
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

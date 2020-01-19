@@ -8,6 +8,40 @@
 #include <set>
 
 
+PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples)
+{
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	int physicalDeviceScore = 0;
+
+	if (deviceCount == 0)
+	{
+		throw std::runtime_error("Failed to find GPUs with Vulkan support!");
+	}
+
+	std::vector<VkPhysicalDevice> phyDevices(deviceCount);
+	vkEnumeratePhysicalDevices(instance, &deviceCount, phyDevices.data());
+
+	for (const auto& phyDevice : phyDevices)
+	{
+		if (isDeviceSuitable(phyDevice, surfaceKHR, swapChain))
+		{
+			m_Device = phyDevice;
+			msaaSamples = getMaxUsableSampleCount();
+			break;
+		}
+	}
+
+	if (m_Device == VK_NULL_HANDLE)
+	{
+		throw std::runtime_error("Failed to find a suitable GPU!");
+	}
+}
+
+PhysicalDevice::~PhysicalDevice()
+{
+}
+
 bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain swapChain)
 {
 	QueueFamilyIndices indices = findQueueFamilies(hPhysicalDevice, surfaceKHR);
@@ -53,12 +87,12 @@ bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevic
 	return requiredExtensions.empty();
 }
 
-int PhysicalDevice::rateDeviceSuitability(VkPhysicalDevice device)
+int PhysicalDevice::rateDeviceSuitability()
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
-	vkGetPhysicalDeviceProperties(device, &deviceProperties);
-	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+	vkGetPhysicalDeviceProperties(m_Device, &deviceProperties);
+	vkGetPhysicalDeviceFeatures(m_Device, &deviceFeatures);
 
 	int score = 0;
 
@@ -82,10 +116,10 @@ int PhysicalDevice::rateDeviceSuitability(VkPhysicalDevice device)
 	return score;
 }
 
-uint32_t PhysicalDevice::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t PhysicalDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
-	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+	vkGetPhysicalDeviceMemoryProperties(m_Device, &memProperties);
 
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
 	{
@@ -98,14 +132,14 @@ uint32_t PhysicalDevice::findMemoryType(VkPhysicalDevice physicalDevice, uint32_
 	throw std::runtime_error("Failed to find suitable memory type!");
 }
 
-QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR& surface)
+QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR& surface)
 {
 	// Logic to find graphics queue family
 	QueueFamilyIndices indices = {};
 	uint32_t queueFamilyCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+	vkGetPhysicalDeviceQueueFamilyProperties(hPhysicalDevice, &queueFamilyCount, nullptr);
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+	vkGetPhysicalDeviceQueueFamilyProperties(hPhysicalDevice, &queueFamilyCount, queueFamilies.data());
 
 	int i = 0;
 	for (const auto& queueFamily : queueFamilies)
@@ -116,7 +150,7 @@ QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice physicalDe
 		}
 
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(hPhysicalDevice, i, surface, &presentSupport);
 
 		if (presentSupport)
 		{
@@ -134,10 +168,10 @@ QueueFamilyIndices PhysicalDevice::findQueueFamilies(VkPhysicalDevice physicalDe
 	return indices;
 }
 
-VkSampleCountFlagBits PhysicalDevice::getMaxUsableSampleCount(VkPhysicalDevice hPhysicalDevice)
+VkSampleCountFlagBits PhysicalDevice::getMaxUsableSampleCount()
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
-	vkGetPhysicalDeviceProperties(hPhysicalDevice, &physicalDeviceProperties);
+	vkGetPhysicalDeviceProperties(m_Device, &physicalDeviceProperties);
 
 	VkSampleCountFlags counts =
 		physicalDeviceProperties.limits.framebufferColorSampleCounts &

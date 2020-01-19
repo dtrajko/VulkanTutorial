@@ -9,10 +9,11 @@ class PhysicalDevice;
 
 class Device
 {
+
 public:
 
 	// logical device
-	void createLogicalDevice(PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice, VkDevice& device,
+	void createLogicalDevice(PhysicalDevice* physicalDevice, VkDevice& device,
 		VkSurfaceKHR surfaceKHR, bool enableValidationLayers, VkQueue& graphicsQueue, VkQueue& presentQueue);
 
 };

@@ -5,10 +5,9 @@
 #include <stdexcept>
 
 
-void SwapChain::createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDevice, PhysicalDevice physicalDevice,
-	VkDevice device, Surface* surface)
+void SwapChain::createSwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevice device, Surface* surface)
 {
-	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(hPhysicalDevice, surface->m_surfaceKHR);
+	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice->m_Device, surface->m_surfaceKHR);
 
 	VkSurfaceFormatKHR surfaceFormat = surface->chooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = surface->chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -31,7 +30,7 @@ void SwapChain::createSwapChain(GLFWwindow* window, VkPhysicalDevice hPhysicalDe
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = physicalDevice.findQueueFamilies(hPhysicalDevice, surface->m_surfaceKHR);
+	QueueFamilyIndices indices = physicalDevice->findQueueFamilies(physicalDevice->m_Device, surface->m_surfaceKHR);
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	if (indices.graphicsFamily != indices.presentFamily)

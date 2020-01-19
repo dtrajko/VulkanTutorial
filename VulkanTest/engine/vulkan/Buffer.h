@@ -3,7 +3,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "PhysicalDevice.h"
+
+class PhysicalDevice;
 
 
 class Buffer
@@ -17,11 +18,7 @@ public:
 
 public:
 
-	Buffer(VkDevice device, VkPhysicalDevice hPhysicalDevice, VkDeviceSize size, VkBufferUsageFlags usage,
-		VkMemoryPropertyFlags properties);
+	Buffer(PhysicalDevice* physicalDevice, VkDevice device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 	~Buffer();
-
-private:
-	PhysicalDevice physicalDevice;
 
 };

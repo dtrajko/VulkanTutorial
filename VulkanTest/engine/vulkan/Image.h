@@ -42,7 +42,7 @@ public:
 
 public:
 
-	void createImage(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
+	void createImage(VkDevice device, PhysicalDevice* physicalDevice,
 		uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
 		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 
@@ -50,14 +50,14 @@ public:
 		VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, Format format, VkQueue graphicsQueue);
 
 	// Texture mapping
-	void createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice,
+	void createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice* physicalDevice,
 		CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	// Multisampling (MSAA)
-	void createColorResources(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, ImageView imageView);
+	void createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView);
 
 	// Depth resources
-	void createDepthResources(VkDevice device, PhysicalDevice physicalDevice, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain, ImageView imageView,
+	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView,
 		CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	VkFormat findSupportedFormat(VkPhysicalDevice hPhysicalDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);

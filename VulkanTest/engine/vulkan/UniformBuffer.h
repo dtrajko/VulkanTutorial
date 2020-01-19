@@ -18,6 +18,7 @@ struct UniformBufferObject
 
 class SwapChain;
 class Buffer;
+class PhysicalDevice;
 
 
 class UniformBuffer
@@ -28,6 +29,6 @@ public:
 	std::vector<VkBuffer> uniformBuffers;
 	std::vector<VkDeviceMemory> uniformBuffersMemory;
 
-	void createUniformBuffers(VkDevice device, VkPhysicalDevice hPhysicalDevice, SwapChain swapChain);
+	void createUniformBuffers(PhysicalDevice* physicalDevice, VkDevice device, SwapChain swapChain);
 
 };

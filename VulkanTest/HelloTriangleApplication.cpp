@@ -34,24 +34,24 @@ void HelloTriangleApplication::initVulkan()
 	debug = new Debug(instance->hInstance, enableValidationLayers);
 	surface = new Surface(instance->hInstance, window);
 	loader = new Loader();
-	pickPhysicalDevice(instance->hInstance, physicalDevice, hPhysicalDevice, surface->m_surfaceKHR, swapChain, image.msaaSamples);
-	logicalDevice.createLogicalDevice(physicalDevice, hPhysicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
-	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface);
+	physicalDevice = new PhysicalDevice(instance->hInstance, surface->m_surfaceKHR, swapChain, image.msaaSamples);
+	logicalDevice.createLogicalDevice(physicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
+	swapChain.createSwapChain(window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
-	createRenderPass();
+	createRenderPass(physicalDevice);
 	descriptorSetLayout.createDescriptorSetLayout(device);
 	createGraphicsPipeline();
-	commandPool = new CommandPool(physicalDevice, hPhysicalDevice, device, surface->m_surfaceKHR);
-	image.createColorResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView);
-	image.createDepthResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
+	commandPool = new CommandPool(physicalDevice, device, surface->m_surfaceKHR);
+	image.createColorResources(device, physicalDevice, swapChain, imageView);
+	image.createDepthResources(device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
-	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device, physicalDevice, hPhysicalDevice, commandBuffer, commandPool, format, graphicsQueue);
+	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device, physicalDevice, commandBuffer, commandPool, format, graphicsQueue);
 	imageView.createTextureImageView(device, image.textureImage, image.mipLevels);
 	textureSampler = new Sampler(device, image.mipLevels);
 	loader->loadModel();
-	vertexBuffer = new VertexBuffer(device, hPhysicalDevice, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
-	indexBuffer = new IndexBuffer(device, hPhysicalDevice, loader, buffer, graphicsQueue, commandBuffer, commandPool);
-	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain);
+	vertexBuffer = new VertexBuffer(physicalDevice, device, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
+	indexBuffer = new IndexBuffer(physicalDevice, device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
+	uniformBuffer.createUniformBuffers(physicalDevice, device, swapChain);
  	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
 	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
@@ -59,38 +59,7 @@ void HelloTriangleApplication::initVulkan()
 	createSyncObjects();
 }
 
-void HelloTriangleApplication::pickPhysicalDevice(VkInstance instance, PhysicalDevice physicalDevice, VkPhysicalDevice& hPhysicalDevice, 
-	VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples)
-{
-	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-	int physicalDeviceScore = 0;
-
-	if (deviceCount == 0)
-	{
-		throw std::runtime_error("Failed to find GPUs with Vulkan support!");
-	}
-
-	std::vector<VkPhysicalDevice> phyDevices(deviceCount);
-	vkEnumeratePhysicalDevices(instance, &deviceCount, phyDevices.data());
-
-	for (const auto& phyDevice : phyDevices)
-	{
-		if (physicalDevice.isDeviceSuitable(phyDevice, surfaceKHR, swapChain))
-		{
-			hPhysicalDevice = phyDevice;
-			msaaSamples = physicalDevice.getMaxUsableSampleCount(hPhysicalDevice);
-			break;
-		}
-	}
-
-	if (hPhysicalDevice == VK_NULL_HANDLE)
-	{
-		throw std::runtime_error("Failed to find a suitable GPU!");
-	}
-}
-
-void HelloTriangleApplication::createRenderPass()
+void HelloTriangleApplication::createRenderPass(PhysicalDevice* physicalDevice)
 {
 	// Attachment description
 	VkAttachmentDescription colorAttachment = {};
@@ -104,7 +73,7 @@ void HelloTriangleApplication::createRenderPass()
 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentDescription depthAttachment = {};
-	depthAttachment.format = image.findDepthFormat(hPhysicalDevice);
+	depthAttachment.format = image.findDepthFormat(physicalDevice->m_Device);
 	depthAttachment.samples = image.msaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -238,14 +207,14 @@ void HelloTriangleApplication::recreateSwapChain()
 
 	cleanupSwapChain(uniformBuffer);
 
-	swapChain.createSwapChain(window, hPhysicalDevice, physicalDevice, device, surface);
+	swapChain.createSwapChain(window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
-	createRenderPass();
+	createRenderPass(physicalDevice);
 	createGraphicsPipeline();
-	image.createColorResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView);
-	image.createDepthResources(device, physicalDevice, hPhysicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
+	image.createColorResources(device, physicalDevice, swapChain, imageView);
+	image.createDepthResources(device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
 	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass);
-	uniformBuffer.createUniformBuffers(device, hPhysicalDevice, swapChain);
+	uniformBuffer.createUniformBuffers(physicalDevice, device, swapChain);
 	descriptorPool.createDescriptorPool(device, swapChain);
 	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
 	commandPool->createCommandBuffers(device, loader, renderPass, swapChain, framebuffer.swapChainFramebuffers, graphicsPipeline, pipelineLayout->pipelineLayout,
