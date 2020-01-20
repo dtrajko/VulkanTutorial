@@ -36,6 +36,8 @@ public:
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
 
+	VkImageView textureImageView;
+
 	// Mipmaps
 	uint32_t mipLevels;
 
@@ -59,6 +61,8 @@ public:
 	// Depth resources
 	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView,
 		CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
+
+	void createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels);
 
 	VkFormat findSupportedFormat(VkPhysicalDevice hPhysicalDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 	VkFormat findDepthFormat(VkPhysicalDevice hPhysicalDevice);

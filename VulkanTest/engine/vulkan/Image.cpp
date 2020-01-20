@@ -121,6 +121,12 @@ void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice
 		VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, format, graphicsQueue);
 }
 
+void Image::createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels)
+{
+	ImageView imageView;
+	textureImageView = imageView.createImageView(device, image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+}
+
 void Image::transitionImageLayout(VkDevice device, CommandBuffer commandBuffer, CommandPool* commandPool, VkImage image, VkFormat imageFormat,
 	VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, Format format, VkQueue graphicsQueue)
 {

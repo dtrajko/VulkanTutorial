@@ -10,7 +10,7 @@ class UniformBuffer;
 class SwapChain;
 class DescriptorSetLayout;
 class DescriptorPool;
-class ImageView;
+class Image;
 class Sampler;
 
 
@@ -22,7 +22,7 @@ public:
 	std::vector<VkDescriptorSet> descriptorSets;
 
 	void createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain swapChain,
-		DescriptorSetLayout* descriptorSetLayout, DescriptorPool descriptorPool, ImageView imageView, Sampler* sampler);
+		DescriptorSetLayout* descriptorSetLayout, DescriptorPool descriptorPool, Image image, Sampler* sampler);
 
 
 };
