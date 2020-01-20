@@ -21,8 +21,8 @@ public:
 	// Descriptors
 	std::vector<VkDescriptorSet> descriptorSets;
 
-	void createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain swapChain,
-		DescriptorSetLayout* descriptorSetLayout, DescriptorPool descriptorPool, Image image, Sampler* sampler);
+	void createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain* swapChain,
+		DescriptorSetLayout* descriptorSetLayout, DescriptorPool* descriptorPool, Image image, Sampler* sampler);
 
 
 };

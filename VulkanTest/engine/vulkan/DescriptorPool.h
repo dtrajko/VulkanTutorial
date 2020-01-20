@@ -11,9 +11,16 @@ class DescriptorPool
 {
 public:
 
-	VkDescriptorPool descriptorPool;
+	VkDevice m_Device;
+	VkDescriptorPool m_DescriptorPool;
+	SwapChain* m_SwapChain;
 
-	void createDescriptorPool(VkDevice device, SwapChain swapChain);
+public:
 
+	DescriptorPool(VkDevice device, SwapChain* swapChain);
+
+	void createDescriptorPool();
+
+	~DescriptorPool();
 
 };

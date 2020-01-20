@@ -5,6 +5,11 @@
 #include <stdexcept>
 
 
+SwapChain::SwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevice device, Surface* surface)
+{
+	createSwapChain(window, physicalDevice, device, surface);
+}
+
 void SwapChain::createSwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevice device, Surface* surface)
 {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice->m_Device, surface->m_surfaceKHR);

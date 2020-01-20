@@ -8,7 +8,7 @@
 #include <set>
 
 
-PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples)
+PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain* swapChain, VkSampleCountFlagBits& msaaSamples)
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -42,7 +42,7 @@ PhysicalDevice::~PhysicalDevice()
 {
 }
 
-bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain swapChain)
+bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain* swapChain)
 {
 	QueueFamilyIndices indices = findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
@@ -53,7 +53,7 @@ bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfac
 
 	if (extensionsSupported)
 	{
-		swapChainSupport = swapChain.querySwapChainSupport(hPhysicalDevice, surfaceKHR);
+		swapChainSupport = swapChain->querySwapChainSupport(hPhysicalDevice, surfaceKHR);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 

@@ -38,11 +38,11 @@ public:
 
 public:
 
-	PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain swapChain, VkSampleCountFlagBits& msaaSamples);
+	PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain* swapChain, VkSampleCountFlagBits& msaaSamples);
 
 	~PhysicalDevice();
 
-	bool isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain swapChain);
+	bool isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain* swapChain);
 
 	bool checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevice);
 

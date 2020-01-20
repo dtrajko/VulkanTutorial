@@ -11,13 +11,13 @@
 #include <iostream>
 
 
-GraphicsPipeline::GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain swapChain, Image image,
+GraphicsPipeline::GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, Image image,
 	DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass) : m_Device(device)
 {
 	createGraphicsPipeline(device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 }
 
-void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain swapChain, Image image,
+void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, Image image,
 	DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass)
 {
 	auto vertShaderCode = Loader::readFile("shaders/shader_vertex.spv");
@@ -67,14 +67,14 @@ void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shad
 	VkViewport viewport = {};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)swapChain.swapChainExtent.width;
-	viewport.height = (float)swapChain.swapChainExtent.height;
+	viewport.width = (float)swapChain->swapChainExtent.width;
+	viewport.height = (float)swapChain->swapChainExtent.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	VkRect2D scissor = {};
 	scissor.offset = { 0, 0 };
-	scissor.extent = swapChain.swapChainExtent;
+	scissor.extent = swapChain->swapChainExtent;
 
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;

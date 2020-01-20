@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-RenderPass::RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain swapChain, Image image) : m_Device(device)
+RenderPass::RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image) : m_Device(device)
 {
 	createRenderPass(physicalDevice, device, swapChain, image);
 }
@@ -22,11 +22,11 @@ RenderPass::~RenderPass()
 {
 }
 
-void RenderPass::createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain swapChain, Image image)
+void RenderPass::createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image)
 {
 	// Attachment description
 	VkAttachmentDescription colorAttachment = {};
-	colorAttachment.format = swapChain.swapChainImageFormat;
+	colorAttachment.format = swapChain->swapChainImageFormat;
 	colorAttachment.samples = image.msaaSamples;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -46,7 +46,7 @@ void RenderPass::createRenderPass(PhysicalDevice* physicalDevice, VkDevice devic
 	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentDescription colorAttachmentResolve = {};
-	colorAttachmentResolve.format = swapChain.swapChainImageFormat;
+	colorAttachmentResolve.format = swapChain->swapChainImageFormat;
 	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

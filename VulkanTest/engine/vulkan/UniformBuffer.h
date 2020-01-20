@@ -29,6 +29,6 @@ public:
 	std::vector<VkBuffer> uniformBuffers;
 	std::vector<VkDeviceMemory> uniformBuffersMemory;
 
-	void createUniformBuffers(PhysicalDevice* physicalDevice, VkDevice device, SwapChain swapChain);
+	void createUniformBuffers(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain);
 
 };

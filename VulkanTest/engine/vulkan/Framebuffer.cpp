@@ -6,16 +6,16 @@
 #include <stdexcept>
 
 
-void Framebuffer::createFramebuffers(VkDevice device, SwapChain swapChain, VkImageView colorImageView, VkImageView depthImageView, VkRenderPass renderPass)
+void Framebuffer::createFramebuffers(VkDevice device, SwapChain* swapChain, VkImageView colorImageView, VkImageView depthImageView, VkRenderPass renderPass)
 {
-	swapChainFramebuffers.resize(swapChain.swapChainImageViews.size());
+	swapChainFramebuffers.resize(swapChain->swapChainImageViews.size());
 
-	for (size_t i = 0; i < swapChain.swapChainImageViews.size(); i++)
+	for (size_t i = 0; i < swapChain->swapChainImageViews.size(); i++)
 	{
 		std::array<VkImageView, 3> attachments = {
 			colorImageView,
 			depthImageView,
-			swapChain.swapChainImageViews[i],
+			swapChain->swapChainImageViews[i],
 		};
 
 		VkFramebufferCreateInfo framebufferInfo = {};
@@ -23,8 +23,8 @@ void Framebuffer::createFramebuffers(VkDevice device, SwapChain swapChain, VkIma
 		framebufferInfo.renderPass = renderPass;
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		framebufferInfo.pAttachments = attachments.data();
-		framebufferInfo.width = swapChain.swapChainExtent.width;
-		framebufferInfo.height = swapChain.swapChainExtent.height;
+		framebufferInfo.width = swapChain->swapChainExtent.width;
+		framebufferInfo.height = swapChain->swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
 		if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)

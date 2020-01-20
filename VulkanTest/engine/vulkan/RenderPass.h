@@ -21,9 +21,9 @@ public:
 
 public:
 
-	RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain swapChain, Image image);
+	RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image);
 
-	void createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain swapChain, Image image);
+	void createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image);
 
 	void cleanUp();
 

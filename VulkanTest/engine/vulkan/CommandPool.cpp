@@ -28,7 +28,7 @@ CommandPool::~CommandPool()
 	vkDestroyCommandPool(m_device, commandPool, nullptr);
 }
 
-void CommandPool::createCommandBuffers(VkDevice device, Loader* loader, VkRenderPass renderPass, SwapChain swapChain,
+void CommandPool::createCommandBuffers(VkDevice device, Loader* loader, VkRenderPass renderPass, SwapChain* swapChain,
 	std::vector<VkFramebuffer> swapChainFramebuffers, VkPipeline graphicsPipeline, VkPipelineLayout pipelineLayout,
 	VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet descriptorSet)
 {
@@ -62,7 +62,7 @@ void CommandPool::createCommandBuffers(VkDevice device, Loader* loader, VkRender
 		renderPassInfo.renderPass = renderPass;
 		renderPassInfo.framebuffer = swapChainFramebuffers[i];
 		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = swapChain.swapChainExtent;
+		renderPassInfo.renderArea.extent = swapChain->swapChainExtent;
 
 		std::array<VkClearValue, 2> clearValues = {};
 		clearValues[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };

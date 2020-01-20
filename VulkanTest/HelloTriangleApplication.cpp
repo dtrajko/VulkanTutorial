@@ -18,8 +18,8 @@ void HelloTriangleApplication::initVulkan()
 	loader = new Loader();
 	physicalDevice = new PhysicalDevice(instance->hInstance, surface->m_surfaceKHR, swapChain, image.msaaSamples);
 	device = new Device(physicalDevice, surface->m_surfaceKHR, enableValidationLayers);
-	swapChain.createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
-	swapChain.createImageViews(device->m_Device, imageView);
+	swapChain = new SwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
+	swapChain->createImageViews(device->m_Device, imageView);
 	renderPass = new RenderPass(physicalDevice, device->m_Device, swapChain, image);
 	descriptorSetLayout = new DescriptorSetLayout(device->m_Device);
 	graphicsPipeline = new GraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
@@ -34,7 +34,7 @@ void HelloTriangleApplication::initVulkan()
 	vertexBuffer = new VertexBuffer(physicalDevice, device->m_Device, loader, indexBuffer, device->graphicsQueue, commandBuffer, commandPool);
 	indexBuffer = new IndexBuffer(physicalDevice, device->m_Device, loader, buffer, device->graphicsQueue, commandBuffer, commandPool);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
- 	descriptorPool.createDescriptorPool(device->m_Device, swapChain);
+	descriptorPool = new DescriptorPool(device->m_Device, swapChain);
 	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, image, textureSampler);
 	commandPool->createCommandBuffers(device->m_Device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers,
 		graphicsPipeline->m_Pipeline, graphicsPipeline->m_PipelineLayout->m_PipelineLayout, vertexBuffer, indexBuffer, descriptorSet);
@@ -51,7 +51,7 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 	UniformBufferObject ubo = {};
 	ubo.model = glm::rotate(glm::mat4(0.1f), time * glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	ubo.view = glm::lookAt(glm::vec3(3.2f, 3.2f, 0.0f), glm::vec3(0.0f, 0.15f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	ubo.proj = glm::perspective(glm::radians(45.0f), (float)swapChain.swapChainExtent.width / (float)swapChain.swapChainExtent.height, 0.1f, 10.0f);
+	ubo.proj = glm::perspective(glm::radians(45.0f), (float)swapChain->swapChainExtent.width / (float)swapChain->swapChainExtent.height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
 	void* data;
@@ -65,7 +65,7 @@ void HelloTriangleApplication::createSyncObjects()
 	imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 	inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-	imagesInFlight.resize(swapChain.swapChainImages.size(), VK_NULL_HANDLE);
+	imagesInFlight.resize(swapChain->swapChainImages.size(), VK_NULL_HANDLE);
 
 	VkSemaphoreCreateInfo semaphoreInfo = {};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -107,15 +107,15 @@ void HelloTriangleApplication::recreateSwapChain()
 
 	cleanupSwapChain(uniformBuffer);
 
-	swapChain.createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
-	swapChain.createImageViews(device->m_Device, imageView);
+	swapChain->createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
+	swapChain->createImageViews(device->m_Device, imageView);
 	renderPass->createRenderPass(physicalDevice, device->m_Device, swapChain, image);
 	graphicsPipeline->createGraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
 	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, device->graphicsQueue);
 	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
-	descriptorPool.createDescriptorPool(device->m_Device, swapChain);
+	descriptorPool->createDescriptorPool();
 	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, image, textureSampler);
 	commandPool->createCommandBuffers(device->m_Device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers,
 		graphicsPipeline->m_Pipeline, graphicsPipeline->m_PipelineLayout->m_PipelineLayout, vertexBuffer, indexBuffer, descriptorSet);
@@ -138,7 +138,7 @@ void HelloTriangleApplication::drawFrame(Device* device)
 
 	// Acquiring an image from the swap chain
 	uint32_t imageIndex;
-	VkResult result = vkAcquireNextImageKHR(device->m_Device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(device->m_Device, swapChain->swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -190,7 +190,7 @@ void HelloTriangleApplication::drawFrame(Device* device)
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = signalSemaphores;
 
-	VkSwapchainKHR swapChains[] = { swapChain.swapChain };
+	VkSwapchainKHR swapChains[] = { swapChain->swapChain };
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
@@ -222,23 +222,22 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 	vkFreeCommandBuffers(device->m_Device, commandPool->commandPool, static_cast<uint32_t>(commandPool->commandBuffers.size()), commandPool->commandBuffers.data());
 
 	graphicsPipeline->cleanUp();
-
 	renderPass->cleanUp();
 
-	for (auto imageView : swapChain.swapChainImageViews)
+	for (auto imageView : swapChain->swapChainImageViews)
 	{
 		vkDestroyImageView(device->m_Device, imageView, nullptr);
 	}
 
-	vkDestroySwapchainKHR(device->m_Device, swapChain.swapChain, nullptr);
+	vkDestroySwapchainKHR(device->m_Device, swapChain->swapChain, nullptr);
 
-	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
+	for (size_t i = 0; i < swapChain->swapChainImages.size(); i++)
 	{
 		vkDestroyBuffer(device->m_Device, uniformBuffer.uniformBuffers[i], nullptr);
 		vkFreeMemory(device->m_Device, uniformBuffer.uniformBuffersMemory[i], nullptr);
 	}
 
-	vkDestroyDescriptorPool(device->m_Device, descriptorPool.descriptorPool, nullptr);
+	delete descriptorPool;
 }
 
 void HelloTriangleApplication::cleanup()

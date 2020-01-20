@@ -6,22 +6,32 @@
 #include <array>
 
 
-void DescriptorPool::createDescriptorPool(VkDevice device, SwapChain swapChain)
+DescriptorPool::DescriptorPool(VkDevice device, SwapChain* swapChain) : m_Device(device), m_SwapChain(swapChain)
+{
+	createDescriptorPool();
+}
+
+void DescriptorPool::createDescriptorPool()
 {
 	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = static_cast<uint32_t>(swapChain.swapChainImages.size());
+	poolSizes[0].descriptorCount = static_cast<uint32_t>(m_SwapChain->swapChainImages.size());
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = static_cast<uint32_t>(swapChain.swapChainImages.size());
+	poolSizes[1].descriptorCount = static_cast<uint32_t>(m_SwapChain->swapChainImages.size());
 
 	VkDescriptorPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());;
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(swapChain.swapChainImages.size());
+	poolInfo.maxSets = static_cast<uint32_t>(m_SwapChain->swapChainImages.size());
 
-	if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+	if (vkCreateDescriptorPool(m_Device, &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create descriptor pool!");
 	}
+}
+
+DescriptorPool::~DescriptorPool()
+{
+	vkDestroyDescriptorPool(m_Device, m_DescriptorPool, nullptr);
 }

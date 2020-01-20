@@ -58,10 +58,10 @@ public:
 		CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	// Multisampling (MSAA)
-	void createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView);
+	void createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView);
 
 	// Depth resources
-	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView,
+	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView,
 		CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	void createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels);

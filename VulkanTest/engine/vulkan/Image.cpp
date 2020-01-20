@@ -93,23 +93,23 @@ VkFormat Image::findSupportedFormat(VkPhysicalDevice hPhysicalDevice, const std:
 	return VkFormat::VK_FORMAT_UNDEFINED;
 }
 
-void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView)
+void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView)
 {
-	VkFormat colorFormat = swapChain.swapChainImageFormat;
+	VkFormat colorFormat = swapChain->swapChainImageFormat;
 
 	createImage(device, physicalDevice,
-		swapChain.swapChainExtent.width, swapChain.swapChainExtent.height, 1, msaaSamples, colorFormat,
+		swapChain->swapChainExtent.width, swapChain->swapChainExtent.height, 1, msaaSamples, colorFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		colorImage, colorImageMemory);
 	colorImageView = imageView.createImageView(device, colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain swapChain, ImageView imageView, 
+void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView, 
 	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
 	VkFormat depthFormat = findDepthFormat(physicalDevice->m_Device);
 
-	createImage(device, physicalDevice, swapChain.swapChainExtent.width, swapChain.swapChainExtent.height,
+	createImage(device, physicalDevice, swapChain->swapChainExtent.width, swapChain->swapChainExtent.height,
 		1, msaaSamples, depthFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

@@ -13,24 +13,24 @@
 #include <stdexcept>
 
 
-void DescriptorSet::createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain swapChain,
-	DescriptorSetLayout* descriptorSetLayout, DescriptorPool descriptorPool, Image image, Sampler* sampler)
+void DescriptorSet::createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain* swapChain,
+	DescriptorSetLayout* descriptorSetLayout, DescriptorPool* descriptorPool, Image image, Sampler* sampler)
 {
-	std::vector<VkDescriptorSetLayout> layouts(swapChain.swapChainImages.size(), descriptorSetLayout->m_DescriptorSetLayout);
+	std::vector<VkDescriptorSetLayout> layouts(swapChain->swapChainImages.size(), descriptorSetLayout->m_DescriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = descriptorPool.descriptorPool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChain.swapChainImages.size());
+	allocInfo.descriptorPool = descriptorPool->m_DescriptorPool;
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChain->swapChainImages.size());
 	allocInfo.pSetLayouts = layouts.data();
 
-	descriptorSets.resize(swapChain.swapChainImages.size());
+	descriptorSets.resize(swapChain->swapChainImages.size());
 
 	if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSets.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to allocate descriptor sets!");
 	}
 
-	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
+	for (size_t i = 0; i < swapChain->swapChainImages.size(); i++)
 	{
 		VkDescriptorBufferInfo bufferInfo = {};
 		bufferInfo.buffer = uniformBuffer.uniformBuffers[i];

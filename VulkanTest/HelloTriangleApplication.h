@@ -74,16 +74,14 @@ private:
 	Image image;
 	ImageView imageView;
 	ShaderModule shaderModule;
-	DescriptorPool descriptorPool;
 	DescriptorSet descriptorSet;
-	SwapChain swapChain;
 	Framebuffer framebuffer;
 	Format format;
 	CommandBuffer commandBuffer;
 
 	// RAII
-	Window* window;
 	Debug* debug;
+	Window* window;
 	Instance* instance;
 	Surface* surface;
 	Loader* loader;
@@ -96,6 +94,8 @@ private:
 	Sampler* textureSampler;
 	CommandPool* commandPool;
 	DescriptorSetLayout* descriptorSetLayout;
+	DescriptorPool* descriptorPool;
+	SwapChain* swapChain;
 	RenderPass* renderPass;
 	GraphicsPipeline* graphicsPipeline;
 
