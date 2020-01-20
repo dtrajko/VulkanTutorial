@@ -17,26 +17,26 @@ void HelloTriangleApplication::initVulkan()
 	surface = new Surface(instance->hInstance, window->m_Window);
 	loader = new Loader();
 	physicalDevice = new PhysicalDevice(instance->hInstance, surface->m_surfaceKHR, swapChain, image.msaaSamples);
-	logicalDevice.createLogicalDevice(physicalDevice, device, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
-	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
-	swapChain.createImageViews(device, imageView);
-	renderPass = new RenderPass(physicalDevice, device, swapChain, image);
-	descriptorSetLayout = new DescriptorSetLayout(device);
-	graphicsPipeline = new GraphicsPipeline(device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
-	commandPool = new CommandPool(physicalDevice, device, surface->m_surfaceKHR);
-	image.createColorResources(device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
-	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
-	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device, physicalDevice, commandBuffer, commandPool, format, graphicsQueue);
-	imageView.createTextureImageView(device, image.textureImage, image.mipLevels);
-	textureSampler = new Sampler(device, image.mipLevels);
+	device = new Device(physicalDevice, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
+	swapChain.createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
+	swapChain.createImageViews(device->m_Device, imageView);
+	renderPass = new RenderPass(physicalDevice, device->m_Device, swapChain, image);
+	descriptorSetLayout = new DescriptorSetLayout(device->m_Device);
+	graphicsPipeline = new GraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
+	commandPool = new CommandPool(physicalDevice, device->m_Device, surface->m_surfaceKHR);
+	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
+	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
+	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device->m_Device, physicalDevice, commandBuffer, commandPool, format, graphicsQueue);
+	imageView.createTextureImageView(device->m_Device, image.textureImage, image.mipLevels);
+	textureSampler = new Sampler(device->m_Device, image.mipLevels);
 	loader->loadModel();
-	vertexBuffer = new VertexBuffer(physicalDevice, device, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
-	indexBuffer = new IndexBuffer(physicalDevice, device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
-	uniformBuffer.createUniformBuffers(physicalDevice, device, swapChain);
- 	descriptorPool.createDescriptorPool(device, swapChain);
-	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
-	commandPool->createCommandBuffers(device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers,
+	vertexBuffer = new VertexBuffer(physicalDevice, device->m_Device, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
+	indexBuffer = new IndexBuffer(physicalDevice, device->m_Device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
+	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
+ 	descriptorPool.createDescriptorPool(device->m_Device, swapChain);
+	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
+	commandPool->createCommandBuffers(device->m_Device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers,
 		graphicsPipeline->m_Pipeline, graphicsPipeline->m_PipelineLayout->m_PipelineLayout, vertexBuffer, indexBuffer, descriptorSet);
 	createSyncObjects();
 }
@@ -55,9 +55,9 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 	ubo.proj[1][1] *= -1;
 
 	void* data;
-	vkMapMemory(device, uniformBuffer.uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
+	vkMapMemory(device->m_Device, uniformBuffer.uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(device, uniformBuffer.uniformBuffersMemory[currentImage]);
+	vkUnmapMemory(device->m_Device, uniformBuffer.uniformBuffersMemory[currentImage]);
 }
 
 void HelloTriangleApplication::createSyncObjects()
@@ -76,17 +76,17 @@ void HelloTriangleApplication::createSyncObjects()
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS)
+		if (vkCreateSemaphore(device->m_Device, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a VkSemaphore ('imageAvailableSemaphore')!");
 		}
 
-		if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS)
+		if (vkCreateSemaphore(device->m_Device, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a VkSemaphore ('renderFinishedSemaphore')!");
 		}
 
-		if (vkCreateFence(device, &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
+		if (vkCreateFence(device->m_Device, &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a VkFence object!");
 		}
@@ -103,21 +103,21 @@ void HelloTriangleApplication::recreateSwapChain()
 		glfwWaitEvents();
 	}
 
-	vkDeviceWaitIdle(device);
+	vkDeviceWaitIdle(device->m_Device);
 
 	cleanupSwapChain(uniformBuffer);
 
-	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
-	swapChain.createImageViews(device, imageView);
-	renderPass->createRenderPass(physicalDevice, device, swapChain, image);
-	graphicsPipeline->createGraphicsPipeline(device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
-	image.createColorResources(device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
-	framebuffer.createFramebuffers(device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
-	uniformBuffer.createUniformBuffers(physicalDevice, device, swapChain);
-	descriptorPool.createDescriptorPool(device, swapChain);
-	descriptorSet.createDescriptorSets(device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
-	commandPool->createCommandBuffers(device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers,
+	swapChain.createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
+	swapChain.createImageViews(device->m_Device, imageView);
+	renderPass->createRenderPass(physicalDevice, device->m_Device, swapChain, image);
+	graphicsPipeline->createGraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
+	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
+	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
+	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
+	descriptorPool.createDescriptorPool(device->m_Device, swapChain);
+	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
+	commandPool->createCommandBuffers(device->m_Device, loader, renderPass->m_RenderPass, swapChain, framebuffer.swapChainFramebuffers,
 		graphicsPipeline->m_Pipeline, graphicsPipeline->m_PipelineLayout->m_PipelineLayout, vertexBuffer, indexBuffer, descriptorSet);
 }
 
@@ -129,16 +129,16 @@ void HelloTriangleApplication::mainLoop()
 		drawFrame();
 	}
 
-	vkDeviceWaitIdle(device);
+	vkDeviceWaitIdle(device->m_Device);
 }
 
 void HelloTriangleApplication::drawFrame()
 {
-	vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+	vkWaitForFences(device->m_Device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
 	// Acquiring an image from the swap chain
 	uint32_t imageIndex;
-	VkResult result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(device->m_Device, swapChain.swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -156,7 +156,7 @@ void HelloTriangleApplication::drawFrame()
 	// Check if a previous frame is using this image (i.e. there is its fence to wait on)
 	if (imagesInFlight[imageIndex] != VK_NULL_HANDLE)
 	{
-		vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+		vkWaitForFences(device->m_Device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 	}
 
 	// Mark the image as now being in use by this frame
@@ -178,7 +178,7 @@ void HelloTriangleApplication::drawFrame()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	vkResetFences(device, 1, &inFlightFences[currentFrame]);
+	vkResetFences(device->m_Device, 1, &inFlightFences[currentFrame]);
 
 	if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
 	{
@@ -207,27 +207,25 @@ void HelloTriangleApplication::drawFrame()
 		throw std::runtime_error("Failed to present swap chain image!");
 	}
 
-	// vkQueueWaitIdle(presentQueue);
-
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 {
-	vkDestroyImageView(device, image.colorImageView, nullptr);
-	vkDestroyImage(device, image.colorImage, nullptr);
-	vkFreeMemory(device, image.colorImageMemory, nullptr);
+	vkDestroyImageView(device->m_Device, image.colorImageView, nullptr);
+	vkDestroyImage(device->m_Device, image.colorImage, nullptr);
+	vkFreeMemory(device->m_Device, image.colorImageMemory, nullptr);
 
-	vkDestroyImageView(device, image.depthImageView, nullptr);
-	vkDestroyImage(device, image.depthImage, nullptr);
-	vkFreeMemory(device, image.depthImageMemory, nullptr);
+	vkDestroyImageView(device->m_Device, image.depthImageView, nullptr);
+	vkDestroyImage(device->m_Device, image.depthImage, nullptr);
+	vkFreeMemory(device->m_Device, image.depthImageMemory, nullptr);
 
 	for (auto framebuffer : framebuffer.swapChainFramebuffers)
 	{
-		vkDestroyFramebuffer(device, framebuffer, nullptr);
+		vkDestroyFramebuffer(device->m_Device, framebuffer, nullptr);
 	}
 
-	vkFreeCommandBuffers(device, commandPool->commandPool, static_cast<uint32_t>(commandPool->commandBuffers.size()), commandPool->commandBuffers.data());
+	vkFreeCommandBuffers(device->m_Device, commandPool->commandPool, static_cast<uint32_t>(commandPool->commandBuffers.size()), commandPool->commandBuffers.data());
 
 	graphicsPipeline->cleanUp();
 
@@ -235,18 +233,18 @@ void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 
 	for (auto imageView : swapChain.swapChainImageViews)
 	{
-		vkDestroyImageView(device, imageView, nullptr);
+		vkDestroyImageView(device->m_Device, imageView, nullptr);
 	}
 
-	vkDestroySwapchainKHR(device, swapChain.swapChain, nullptr);
+	vkDestroySwapchainKHR(device->m_Device, swapChain.swapChain, nullptr);
 
 	for (size_t i = 0; i < swapChain.swapChainImages.size(); i++)
 	{
-		vkDestroyBuffer(device, uniformBuffer.uniformBuffers[i], nullptr);
-		vkFreeMemory(device, uniformBuffer.uniformBuffersMemory[i], nullptr);
+		vkDestroyBuffer(device->m_Device, uniformBuffer.uniformBuffers[i], nullptr);
+		vkFreeMemory(device->m_Device, uniformBuffer.uniformBuffersMemory[i], nullptr);
 	}
 
-	vkDestroyDescriptorPool(device, descriptorPool.descriptorPool, nullptr);
+	vkDestroyDescriptorPool(device->m_Device, descriptorPool.descriptorPool, nullptr);
 }
 
 void HelloTriangleApplication::cleanup()
@@ -254,30 +252,25 @@ void HelloTriangleApplication::cleanup()
 	cleanupSwapChain(uniformBuffer);
 
 	delete textureSampler;
-
-	vkDestroyImageView(device, imageView.m_ImageView, nullptr);
-	vkDestroyImage(device, image.textureImage, nullptr);
-	vkFreeMemory(device, image.textureImageMemory, nullptr);
+	vkDestroyImageView(device->m_Device, imageView.m_ImageView, nullptr);
+	vkDestroyImage(device->m_Device, image.textureImage, nullptr);
+	vkFreeMemory(device->m_Device, image.textureImageMemory, nullptr);
 
 	delete descriptorSetLayout;
-
 	delete indexBuffer;
 	delete vertexBuffer;
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-		vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-		vkDestroyFence(device, inFlightFences[i], nullptr);
+		vkDestroySemaphore(device->m_Device, renderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(device->m_Device, imageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(device->m_Device, inFlightFences[i], nullptr);
 	}
 
 	delete commandPool;
-
 	delete graphicsPipeline;
 	delete renderPass;
-
-	vkDestroyDevice(device, nullptr);
-
+	delete device;
 	delete loader;
 	delete surface;
 	delete debug;

@@ -12,8 +12,12 @@ class Device
 
 public:
 
-	// logical device
-	void createLogicalDevice(PhysicalDevice* physicalDevice, VkDevice& device,
-		VkSurfaceKHR surfaceKHR, bool enableValidationLayers, VkQueue& graphicsQueue, VkQueue& presentQueue);
+	VkDevice m_Device;
+
+public:
+
+	Device(PhysicalDevice* physicalDevice, VkSurfaceKHR surfaceKHR, bool enableValidationLayers, VkQueue& graphicsQueue, VkQueue& presentQueue);
+
+	~Device();
 
 };

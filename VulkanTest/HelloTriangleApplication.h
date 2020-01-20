@@ -63,7 +63,6 @@ public:
 private:
 
 	// Vulkan logical device
-	VkDevice device;
 	VkQueue graphicsQueue;
 
 	// Presentation queue
@@ -86,7 +85,6 @@ private:
 	SwapChain swapChain;
 	Framebuffer framebuffer;
 	Format format;
-	Device logicalDevice;
 	CommandBuffer commandBuffer;
 
 	// RAII
@@ -96,6 +94,7 @@ private:
 	Surface* surface;
 	Loader* loader;
 	PhysicalDevice* physicalDevice;
+	Device* device;
 	Buffer* buffer;
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
