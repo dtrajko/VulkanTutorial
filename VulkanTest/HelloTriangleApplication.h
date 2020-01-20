@@ -40,6 +40,7 @@
 #include "engine/vulkan/PipelineLayout.h"
 #include "engine/vulkan/Instance.h"
 #include "engine/vulkan/RenderPass.h"
+#include "engine/vulkan/GraphicsPipeline.h"
 
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -68,9 +69,6 @@ private:
 	// Presentation queue
 	VkQueue presentQueue;
 
-	// Graphics pipeline
-	VkPipeline graphicsPipeline;
-
 	// Semaphores (for synchronizing swap chain events)
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -83,7 +81,6 @@ private:
 	Image image;
 	ImageView imageView;
 	ShaderModule shaderModule;
-	DescriptorSetLayout descriptorSetLayout;
 	DescriptorPool descriptorPool;
 	DescriptorSet descriptorSet;
 	SwapChain swapChain;
@@ -105,8 +102,9 @@ private:
 	UniformBuffer uniformBuffer;
 	Sampler* textureSampler;
 	CommandPool* commandPool;
-	PipelineLayout* pipelineLayout;
+	DescriptorSetLayout descriptorSetLayout;
 	RenderPass* renderPass;
+	GraphicsPipeline* graphicsPipeline;
 
 
 private:
@@ -116,9 +114,6 @@ private:
 	// Swap chain support
 	void cleanupSwapChain(UniformBuffer uniformBuffer);
 	void recreateSwapChain();
-
-	// Graphics pipeline
-	void createGraphicsPipeline();
 
 	// Semaphores (for synchronizing swap chain events)
 	void createSyncObjects();

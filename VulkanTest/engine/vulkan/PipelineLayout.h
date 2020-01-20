@@ -12,7 +12,7 @@ class PipelineLayout
 
 public:
 	
-	VkPipelineLayout pipelineLayout;
+	VkPipelineLayout m_PipelineLayout;
 	VkDevice m_device;
 
 

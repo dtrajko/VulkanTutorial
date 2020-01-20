@@ -14,7 +14,7 @@ PipelineLayout::PipelineLayout(VkDevice device, DescriptorSetLayout descriptorSe
 
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create pipeline layout");
 	}
@@ -22,5 +22,5 @@ PipelineLayout::PipelineLayout(VkDevice device, DescriptorSetLayout descriptorSe
 
 PipelineLayout::~PipelineLayout()
 {
-	vkDestroyPipelineLayout(m_device, pipelineLayout, nullptr);
+	vkDestroyPipelineLayout(m_device, m_PipelineLayout, nullptr);
 }
