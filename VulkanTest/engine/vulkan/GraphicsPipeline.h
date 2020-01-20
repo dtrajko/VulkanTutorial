@@ -25,10 +25,10 @@ public:
 public:
 
 	GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain swapChain, Image image,
-		DescriptorSetLayout descriptorSetLayout, RenderPass* renderPass);
+		DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass);
 
 	void createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain swapChain, Image image,
-		DescriptorSetLayout descriptorSetLayout, RenderPass* renderPass);
+		DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass);
 	void cleanUp();
 	~GraphicsPipeline();
 

@@ -102,7 +102,7 @@ private:
 	UniformBuffer uniformBuffer;
 	Sampler* textureSampler;
 	CommandPool* commandPool;
-	DescriptorSetLayout descriptorSetLayout;
+	DescriptorSetLayout* descriptorSetLayout;
 	RenderPass* renderPass;
 	GraphicsPipeline* graphicsPipeline;
 

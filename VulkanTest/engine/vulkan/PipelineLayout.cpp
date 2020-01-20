@@ -5,12 +5,12 @@
 #include <stdexcept>
 
 
-PipelineLayout::PipelineLayout(VkDevice device, DescriptorSetLayout descriptorSetLayout) : m_device(device)
+PipelineLayout::PipelineLayout(VkDevice device, DescriptorSetLayout* descriptorSetLayout) : m_device(device)
 {
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout.descriptorSetLayout;
+	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout->m_DescriptorSetLayout;
 
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 

@@ -21,8 +21,7 @@ void HelloTriangleApplication::initVulkan()
 	swapChain.createSwapChain(window->m_Window, physicalDevice, device, surface);
 	swapChain.createImageViews(device, imageView);
 	renderPass = new RenderPass(physicalDevice, device, swapChain, image);
-	descriptorSetLayout.createDescriptorSetLayout(device);
-	// descriptorSetLayout = new DescriptorSetLayout(device);
+	descriptorSetLayout = new DescriptorSetLayout(device);
 	graphicsPipeline = new GraphicsPipeline(device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	commandPool = new CommandPool(physicalDevice, device, surface->m_surfaceKHR);
 	image.createColorResources(device, physicalDevice, swapChain, imageView);
@@ -260,7 +259,7 @@ void HelloTriangleApplication::cleanup()
 	vkDestroyImage(device, image.textureImage, nullptr);
 	vkFreeMemory(device, image.textureImageMemory, nullptr);
 
-	vkDestroyDescriptorSetLayout(device, descriptorSetLayout.descriptorSetLayout, nullptr);
+	delete descriptorSetLayout;
 
 	delete indexBuffer;
 	delete vertexBuffer;

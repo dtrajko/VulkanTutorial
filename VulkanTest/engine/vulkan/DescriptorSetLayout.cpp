@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <array>
 
-void DescriptorSetLayout::createDescriptorSetLayout(VkDevice device)
+DescriptorSetLayout::DescriptorSetLayout(VkDevice device) : m_Device(device)
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 	uboLayoutBinding.binding = 0;
@@ -26,8 +26,13 @@ void DescriptorSetLayout::createDescriptorSetLayout(VkDevice device)
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 	layoutInfo.pBindings = bindings.data();
 
-	if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
+	if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create descriptor set layout!");
 	}
+}
+
+DescriptorSetLayout::~DescriptorSetLayout()
+{
+	vkDestroyDescriptorSetLayout(m_Device, m_DescriptorSetLayout, nullptr);
 }

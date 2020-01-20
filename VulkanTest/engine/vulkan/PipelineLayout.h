@@ -18,7 +18,7 @@ public:
 
 public:
 
-	PipelineLayout(VkDevice device, DescriptorSetLayout descriptorSetLayout);
+	PipelineLayout(VkDevice device, DescriptorSetLayout* descriptorSetLayout);
 	~PipelineLayout();
 
 };

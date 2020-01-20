@@ -12,13 +12,13 @@
 
 
 GraphicsPipeline::GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain swapChain, Image image,
-	DescriptorSetLayout descriptorSetLayout, RenderPass* renderPass) : m_Device(device)
+	DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass) : m_Device(device)
 {
 	createGraphicsPipeline(device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 }
 
 void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain swapChain, Image image,
-	DescriptorSetLayout descriptorSetLayout, RenderPass* renderPass)
+	DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass)
 {
 	auto vertShaderCode = Loader::readFile("shaders/shader_vertex.spv");
 	auto fragShaderCode = Loader::readFile("shaders/shader_fragment.spv");

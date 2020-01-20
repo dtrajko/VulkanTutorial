@@ -14,9 +14,9 @@
 
 
 void DescriptorSet::createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain swapChain,
-	DescriptorSetLayout descriptorSetLayout, DescriptorPool descriptorPool, ImageView imageView, Sampler* sampler)
+	DescriptorSetLayout* descriptorSetLayout, DescriptorPool descriptorPool, ImageView imageView, Sampler* sampler)
 {
-	std::vector<VkDescriptorSetLayout> layouts(swapChain.swapChainImages.size(), descriptorSetLayout.descriptorSetLayout);
+	std::vector<VkDescriptorSetLayout> layouts(swapChain.swapChainImages.size(), descriptorSetLayout->m_DescriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = descriptorPool.descriptorPool;

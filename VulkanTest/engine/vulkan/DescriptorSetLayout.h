@@ -9,8 +9,12 @@ class DescriptorSetLayout
 
 public:
 
-	VkDescriptorSetLayout descriptorSetLayout;
+	VkDescriptorSetLayout m_DescriptorSetLayout;
+	VkDevice m_Device;
 
-	void createDescriptorSetLayout(VkDevice device);
+public:
+
+	DescriptorSetLayout(VkDevice device);
+	~DescriptorSetLayout();
 
 };
