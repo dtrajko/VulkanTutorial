@@ -212,13 +212,7 @@ void HelloTriangleApplication::drawFrame(Device* device)
 
 void HelloTriangleApplication::cleanupSwapChain(UniformBuffer uniformBuffer)
 {
-	vkDestroyImageView(device->m_Device, image.colorImageView, nullptr);
-	vkDestroyImage(device->m_Device, image.colorImage, nullptr);
-	vkFreeMemory(device->m_Device, image.colorImageMemory, nullptr);
-
-	vkDestroyImageView(device->m_Device, image.depthImageView, nullptr);
-	vkDestroyImage(device->m_Device, image.depthImage, nullptr);
-	vkFreeMemory(device->m_Device, image.depthImageMemory, nullptr);
+	image.cleanUp(device->m_Device);
 
 	for (auto framebuffer : framebuffer.swapChainFramebuffers)
 	{
@@ -252,10 +246,6 @@ void HelloTriangleApplication::cleanup()
 	cleanupSwapChain(uniformBuffer);
 
 	delete textureSampler;
-	vkDestroyImageView(device->m_Device, image.textureImageView, nullptr);
-	vkDestroyImage(device->m_Device, image.textureImage, nullptr);
-	vkFreeMemory(device->m_Device, image.textureImageMemory, nullptr);
-
 	delete descriptorSetLayout;
 	delete indexBuffer;
 	delete vertexBuffer;

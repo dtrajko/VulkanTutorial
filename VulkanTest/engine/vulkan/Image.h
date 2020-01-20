@@ -21,6 +21,8 @@ class Image
 {
 public:
 
+	VkDevice m_Device;
+
 	// Multisampling (MSAA)
 	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 	VkImage colorImage;
@@ -70,4 +72,5 @@ public:
 	void generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, CommandBuffer commandBuffer, CommandPool* commandPool,
 		VkQueue graphicsQueue, VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
+	void cleanUp(VkDevice m_Device);
 };

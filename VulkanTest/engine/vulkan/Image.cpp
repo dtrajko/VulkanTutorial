@@ -294,6 +294,21 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
 }
 
+void Image::cleanUp(VkDevice device)
+{
+	vkDestroyImageView(device, colorImageView, nullptr);
+	vkDestroyImage(device, colorImage, nullptr);
+	vkFreeMemory(device, colorImageMemory, nullptr);
+
+	vkDestroyImageView(device, depthImageView, nullptr);
+	vkDestroyImage(device, depthImage, nullptr);
+	vkFreeMemory(device, depthImageMemory, nullptr);
+
+	vkDestroyImageView(device, textureImageView, nullptr);
+	vkDestroyImage(device, textureImage, nullptr);
+	vkFreeMemory(device, textureImageMemory, nullptr);
+}
+
 void Image::createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice* physicalDevice,
 	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
