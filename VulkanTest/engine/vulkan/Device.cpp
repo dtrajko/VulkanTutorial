@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 
-Device::Device(PhysicalDevice* physicalDevice, VkSurfaceKHR surfaceKHR, bool enableValidationLayers, VkQueue& graphicsQueue, VkQueue& presentQueue)
+Device::Device(PhysicalDevice* physicalDevice, VkSurfaceKHR surfaceKHR, bool enableValidationLayers)
 {
 	QueueFamilyIndices indices = physicalDevice->findQueueFamilies(physicalDevice->m_Device, surfaceKHR);
 

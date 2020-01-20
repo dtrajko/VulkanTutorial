@@ -62,12 +62,6 @@ public:
 
 private:
 
-	// Vulkan logical device
-	VkQueue graphicsQueue;
-
-	// Presentation queue
-	VkQueue presentQueue;
-
 	// Semaphores (for synchronizing swap chain events)
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -121,7 +115,7 @@ private:
 	void updateUniformBuffer(uint32_t currentImage, UniformBuffer uniformBuffer);
 
 	void mainLoop();
-	void drawFrame();
+	void drawFrame(Device* device);
 
 	void cleanup();
 

@@ -14,9 +14,15 @@ public:
 
 	VkDevice m_Device;
 
+	// Vulkan logical device
+	VkQueue graphicsQueue;
+
+	// Presentation queue
+	VkQueue presentQueue;
+
 public:
 
-	Device(PhysicalDevice* physicalDevice, VkSurfaceKHR surfaceKHR, bool enableValidationLayers, VkQueue& graphicsQueue, VkQueue& presentQueue);
+	Device(PhysicalDevice* physicalDevice, VkSurfaceKHR surfaceKHR, bool enableValidationLayers);
 
 	~Device();
 

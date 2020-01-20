@@ -17,7 +17,7 @@ void HelloTriangleApplication::initVulkan()
 	surface = new Surface(instance->hInstance, window->m_Window);
 	loader = new Loader();
 	physicalDevice = new PhysicalDevice(instance->hInstance, surface->m_surfaceKHR, swapChain, image.msaaSamples);
-	device = new Device(physicalDevice, surface->m_surfaceKHR, enableValidationLayers, graphicsQueue, presentQueue);
+	device = new Device(physicalDevice, surface->m_surfaceKHR, enableValidationLayers);
 	swapChain.createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
 	swapChain.createImageViews(device->m_Device, imageView);
 	renderPass = new RenderPass(physicalDevice, device->m_Device, swapChain, image);
@@ -25,14 +25,14 @@ void HelloTriangleApplication::initVulkan()
 	graphicsPipeline = new GraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	commandPool = new CommandPool(physicalDevice, device->m_Device, surface->m_surfaceKHR);
 	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, device->graphicsQueue);
 	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
-	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device->m_Device, physicalDevice, commandBuffer, commandPool, format, graphicsQueue);
+	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device->m_Device, physicalDevice, commandBuffer, commandPool, format, device->graphicsQueue);
 	imageView.createTextureImageView(device->m_Device, image.textureImage, image.mipLevels);
 	textureSampler = new Sampler(device->m_Device, image.mipLevels);
 	loader->loadModel();
-	vertexBuffer = new VertexBuffer(physicalDevice, device->m_Device, loader, indexBuffer, graphicsQueue, commandBuffer, commandPool);
-	indexBuffer = new IndexBuffer(physicalDevice, device->m_Device, loader, buffer, graphicsQueue, commandBuffer, commandPool);
+	vertexBuffer = new VertexBuffer(physicalDevice, device->m_Device, loader, indexBuffer, device->graphicsQueue, commandBuffer, commandPool);
+	indexBuffer = new IndexBuffer(physicalDevice, device->m_Device, loader, buffer, device->graphicsQueue, commandBuffer, commandPool);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
  	descriptorPool.createDescriptorPool(device->m_Device, swapChain);
 	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, imageView, textureSampler);
@@ -112,7 +112,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	renderPass->createRenderPass(physicalDevice, device->m_Device, swapChain, image);
 	graphicsPipeline->createGraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, graphicsQueue);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, device->graphicsQueue);
 	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
 	descriptorPool.createDescriptorPool(device->m_Device, swapChain);
@@ -126,13 +126,13 @@ void HelloTriangleApplication::mainLoop()
 	while (!glfwWindowShouldClose(window->m_Window))
 	{
 		glfwPollEvents();
-		drawFrame();
+		drawFrame(device);
 	}
 
 	vkDeviceWaitIdle(device->m_Device);
 }
 
-void HelloTriangleApplication::drawFrame()
+void HelloTriangleApplication::drawFrame(Device* device)
 {
 	vkWaitForFences(device->m_Device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -180,7 +180,7 @@ void HelloTriangleApplication::drawFrame()
 
 	vkResetFences(device->m_Device, 1, &inFlightFences[currentFrame]);
 
-	if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
+	if (vkQueueSubmit(device->graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to submit draw command buffer!");
 	}
@@ -196,7 +196,7 @@ void HelloTriangleApplication::drawFrame()
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr; // Optional
 
-	result = vkQueuePresentKHR(presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(device->presentQueue, &presentInfo);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window->framebufferResized)
 	{
 		window->framebufferResized = false;
