@@ -5,12 +5,12 @@
 
 Debug::Debug(VkInstance instance, bool enableValidationLayers) : m_Instance(instance), m_EnableValidationLayers(enableValidationLayers)
 {
-	setupDebugMessenger(instance, enableValidationLayers);
+	setupDebugMessenger(instance);
 }
 
-void Debug::setupDebugMessenger(VkInstance instance, bool enableValidationLayers)
+void Debug::setupDebugMessenger(VkInstance instance)
 {
-	if (!enableValidationLayers)
+	if (!m_EnableValidationLayers)
 	{
 		return;
 	}
