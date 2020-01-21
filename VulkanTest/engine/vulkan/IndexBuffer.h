@@ -21,11 +21,11 @@ public:
 	VkDevice m_Device;
 
 	IndexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Loader* loader, Buffer* buffer,
-		VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool);
+		VkQueue graphicsQueue, CommandPool* commandPool);
 
 	~IndexBuffer();
 
-	void copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool,
+	void copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandPool* commandPool,
 		VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 };

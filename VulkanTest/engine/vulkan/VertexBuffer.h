@@ -23,7 +23,8 @@ public:
 	VkDevice m_device;
 
 	VertexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Loader* loader, IndexBuffer* indexBuffer,
-		VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool);
+		VkQueue graphicsQueue, CommandPool* commandPool);
+
 	~VertexBuffer();
 
 };

@@ -25,14 +25,14 @@ void HelloTriangleApplication::initVulkan()
 	graphicsPipeline = new GraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	commandPool = new CommandPool(physicalDevice, device->m_Device, surface->m_surfaceKHR);
 	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, device->graphicsQueue);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandPool, format, device->graphicsQueue);
 	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
-	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device->m_Device, physicalDevice, commandBuffer, commandPool, format, device->graphicsQueue);
+	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device->m_Device, physicalDevice, commandPool, format, device->graphicsQueue);
 	image.createTextureImageView(device->m_Device, image.textureImage, image.mipLevels);
 	textureSampler = new Sampler(device->m_Device, image.mipLevels);
 	loader->loadModel();
-	vertexBuffer = new VertexBuffer(physicalDevice, device->m_Device, loader, indexBuffer, device->graphicsQueue, commandBuffer, commandPool);
-	indexBuffer = new IndexBuffer(physicalDevice, device->m_Device, loader, buffer, device->graphicsQueue, commandBuffer, commandPool);
+	vertexBuffer = new VertexBuffer(physicalDevice, device->m_Device, loader, indexBuffer, device->graphicsQueue, commandPool);
+	indexBuffer = new IndexBuffer(physicalDevice, device->m_Device, loader, buffer, device->graphicsQueue, commandPool);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
 	descriptorPool = new DescriptorPool(device->m_Device, swapChain);
 	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, image, textureSampler);
@@ -112,7 +112,7 @@ void HelloTriangleApplication::recreateSwapChain()
 	renderPass->createRenderPass(physicalDevice, device->m_Device, swapChain, image);
 	graphicsPipeline->createGraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandBuffer, commandPool, format, device->graphicsQueue);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandPool, format, device->graphicsQueue);
 	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
 	descriptorPool->createDescriptorPool();

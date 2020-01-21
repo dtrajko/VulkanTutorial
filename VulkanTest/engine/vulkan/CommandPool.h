@@ -12,6 +12,7 @@ class SwapChain;
 class VertexBuffer;
 class IndexBuffer;
 class DescriptorSet;
+class CommandBuffer;
 
 
 class CommandPool
@@ -34,5 +35,13 @@ public:
 	void createCommandBuffers(VkDevice device, Loader* loader, VkRenderPass renderPass, SwapChain* swapChain,
 		std::vector<VkFramebuffer> swapChainFramebuffers, VkPipeline graphicsPipeline, VkPipelineLayout pipelineLayout,
 		VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet descriptorSet);
+
+	// From CommandBuffer
+	VkCommandBuffer beginSingleTimeCommands(VkDevice device);
+
+	void endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBuffer, VkQueue graphicsQueue);
+
+	void copyBufferToImage(VkDevice device, VkQueue graphicsQueue, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
 
 };

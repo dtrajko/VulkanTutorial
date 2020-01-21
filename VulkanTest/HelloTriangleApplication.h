@@ -77,7 +77,6 @@ private:
 	DescriptorSet descriptorSet;
 	Framebuffer framebuffer;
 	Format format;
-	CommandBuffer commandBuffer;
 
 	// RAII
 	Debug* debug;

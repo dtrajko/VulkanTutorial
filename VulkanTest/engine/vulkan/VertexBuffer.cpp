@@ -9,7 +9,7 @@
 
 
 VertexBuffer::VertexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Loader* loader, IndexBuffer* indexBuffer,
-	VkQueue graphicsQueue, CommandBuffer commandBuffer, CommandPool* commandPool) : m_device(device)
+	VkQueue graphicsQueue, CommandPool* commandPool) : m_device(device)
 {
 	VkDeviceSize bufferSize = sizeof(loader->vertices[0]) * loader->vertices.size();
 
@@ -35,7 +35,7 @@ VertexBuffer::VertexBuffer(PhysicalDevice* physicalDevice, VkDevice device, Load
 	m_Buffer = oVertexBuffer->m_Buffer;
 	m_Memory = oVertexBuffer->m_Memory;
 
-	indexBuffer->copyBuffer(device, graphicsQueue, commandBuffer, commandPool, stagingBuffer, m_Buffer, bufferSize);
+	indexBuffer->copyBuffer(device, graphicsQueue, commandPool, stagingBuffer, m_Buffer, bufferSize);
 
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);

@@ -105,7 +105,7 @@ void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice
 }
 
 void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView, 
-	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
+	CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
 	VkFormat depthFormat = findDepthFormat(physicalDevice->m_Device);
 
@@ -117,7 +117,7 @@ void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice
 
 	depthImageView = imageView.createImageView(device, depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
-	transitionImageLayout(device, commandBuffer, commandPool, depthImage, depthFormat,
+	transitionImageLayout(device, commandPool, depthImage, depthFormat,
 		VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, format, graphicsQueue);
 }
 
@@ -127,10 +127,10 @@ void Image::createTextureImageView(VkDevice device, VkImage image, uint32_t mipL
 	textureImageView = imageView.createImageView(device, image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
 }
 
-void Image::transitionImageLayout(VkDevice device, CommandBuffer commandBuffer, CommandPool* commandPool, VkImage image, VkFormat imageFormat,
+void Image::transitionImageLayout(VkDevice device, CommandPool* commandPool, VkImage image, VkFormat imageFormat,
 	VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, Format format, VkQueue graphicsQueue)
 {
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool->commandPool);
+	VkCommandBuffer cmdBuffer = commandPool->beginSingleTimeCommands(device);
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -201,10 +201,10 @@ void Image::transitionImageLayout(VkDevice device, CommandBuffer commandBuffer, 
 		1, &barrier
 	);
 
-	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
+	commandPool->endSingleTimeCommands(device, cmdBuffer, graphicsQueue);
 }
 
-void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, CommandBuffer commandBuffer, CommandPool* commandPool,
+void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, CommandPool* commandPool,
 	VkQueue graphicsQueue, VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	VkFormatProperties formatProperties;
@@ -215,7 +215,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 		throw std::runtime_error("Texture image format does not support linear blitting!");
 	}
 
-	VkCommandBuffer cmdBuffer = commandBuffer.beginSingleTimeCommands(device, commandPool->commandPool);
+	VkCommandBuffer cmdBuffer = commandPool->beginSingleTimeCommands(device);
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -291,7 +291,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 		0, nullptr,
 		1, &barrier);
 
-	commandBuffer.endSingleTimeCommands(device, cmdBuffer, graphicsQueue, commandPool->commandPool);
+	commandPool->endSingleTimeCommands(device, cmdBuffer, graphicsQueue);
 }
 
 void Image::cleanUp(VkDevice device)
@@ -310,7 +310,7 @@ void Image::cleanUp(VkDevice device)
 }
 
 void Image::createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice* physicalDevice,
-	CommandBuffer commandBuffer, CommandPool* commandPool, Format format, VkQueue graphicsQueue)
+	CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
 	int texWidth, texHeight, texChannels;
 
@@ -343,13 +343,13 @@ void Image::createTextureImage(const char* texFilepath, VkDevice device, Physica
 		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 
-	transitionImageLayout(device, commandBuffer, commandPool, textureImage,
+	transitionImageLayout(device, commandPool, textureImage,
 		VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		mipLevels, format, graphicsQueue);
-	commandBuffer.copyBufferToImage(device, graphicsQueue, commandPool, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	commandPool->copyBufferToImage(device, graphicsQueue, stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 
 	vkDestroyBuffer(device, stagingBuffer, nullptr);
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
 
-	generateMipmaps(physicalDevice->m_Device, device, commandBuffer, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
+	generateMipmaps(physicalDevice->m_Device, device, commandPool, graphicsQueue, textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 }
