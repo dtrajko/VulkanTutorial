@@ -130,7 +130,7 @@ void Image::createTextureImageView(VkDevice device, VkImage image, uint32_t mipL
 void Image::transitionImageLayout(VkDevice device, CommandPool* commandPool, VkImage image, VkFormat imageFormat,
 	VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, Format format, VkQueue graphicsQueue)
 {
-	VkCommandBuffer cmdBuffer = commandPool->beginSingleTimeCommands(device);
+	CommandBuffer* commandBuffer = commandPool->beginSingleTimeCommands(device);
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -193,7 +193,7 @@ void Image::transitionImageLayout(VkDevice device, CommandPool* commandPool, VkI
 	}
 
 	vkCmdPipelineBarrier(
-		cmdBuffer,
+		commandBuffer->m_CommandBuffer,
 		sourceStage, destinationStage,
 		0,
 		0, nullptr,
@@ -201,7 +201,7 @@ void Image::transitionImageLayout(VkDevice device, CommandPool* commandPool, VkI
 		1, &barrier
 	);
 
-	commandPool->endSingleTimeCommands(device, cmdBuffer, graphicsQueue);
+	commandPool->endSingleTimeCommands(device, commandBuffer, graphicsQueue);
 }
 
 void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, CommandPool* commandPool,
@@ -215,7 +215,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 		throw std::runtime_error("Texture image format does not support linear blitting!");
 	}
 
-	VkCommandBuffer cmdBuffer = commandPool->beginSingleTimeCommands(device);
+	CommandBuffer* commandBuffer = commandPool->beginSingleTimeCommands(device);
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -238,7 +238,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-		vkCmdPipelineBarrier(cmdBuffer,
+		vkCmdPipelineBarrier(commandBuffer->m_CommandBuffer,
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
@@ -258,7 +258,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 		blit.dstSubresource.baseArrayLayer = 0;
 		blit.dstSubresource.layerCount = 1;
 
-		vkCmdBlitImage(cmdBuffer,
+		vkCmdBlitImage(commandBuffer->m_CommandBuffer,
 			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 			image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1, &blit,
@@ -269,7 +269,7 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-		vkCmdPipelineBarrier(cmdBuffer,
+		vkCmdPipelineBarrier(commandBuffer->m_CommandBuffer,
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
@@ -285,13 +285,13 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-	vkCmdPipelineBarrier(cmdBuffer,
+	vkCmdPipelineBarrier(commandBuffer->m_CommandBuffer,
 		VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 		0, nullptr,
 		0, nullptr,
 		1, &barrier);
 
-	commandPool->endSingleTimeCommands(device, cmdBuffer, graphicsQueue);
+	commandPool->endSingleTimeCommands(device, commandBuffer, graphicsQueue);
 }
 
 void Image::cleanUp(VkDevice device)

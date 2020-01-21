@@ -5,6 +5,7 @@
 #include "IndexBuffer.h"
 #include "DescriptorSet.h"
 #include "SwapChain.h"
+#include "CommandBuffer.h"
 
 #include <stdexcept>
 
@@ -97,44 +98,21 @@ void CommandPool::createCommandBuffers(VkDevice device, Loader* loader, VkRender
 	}
 }
 
-VkCommandBuffer CommandPool::beginSingleTimeCommands(VkDevice device)
+CommandBuffer* CommandPool::beginSingleTimeCommands(VkDevice device)
 {
-	VkCommandBufferAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandPool = commandPool;
-	allocInfo.commandBufferCount = 1;
-
-	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
-
-	VkCommandBufferBeginInfo beginInfo = {};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
+	CommandBuffer* commandBuffer = new CommandBuffer(device, commandPool, 1);
+	commandBuffer->Record();
 	return commandBuffer;
 }
 
-void CommandPool::endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBuffer, VkQueue graphicsQueue)
+void CommandPool::endSingleTimeCommands(VkDevice device, CommandBuffer* commandBuffer, VkQueue graphicsQueue)
 {
-	vkEndCommandBuffer(cmdBuffer);
-
-	VkSubmitInfo submitInfo = {};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &cmdBuffer;
-
-	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(graphicsQueue);
-
-	vkFreeCommandBuffers(device, commandPool, 1, &cmdBuffer);
+	commandBuffer->QueueSubmit(graphicsQueue, 1);
 }
 
 void CommandPool::copyBufferToImage(VkDevice device, VkQueue graphicsQueue, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 {
-	VkCommandBuffer cmdBuffer = beginSingleTimeCommands(device);
+	CommandBuffer* commandBuffer = beginSingleTimeCommands(device);
 
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
@@ -149,7 +127,7 @@ void CommandPool::copyBufferToImage(VkDevice device, VkQueue graphicsQueue, VkBu
 	region.imageOffset = { 0, 0, 0 };
 	region.imageExtent = { width, height, 1 };
 
-	vkCmdCopyBufferToImage(cmdBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+	vkCmdCopyBufferToImage(commandBuffer->m_CommandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-	endSingleTimeCommands(device, cmdBuffer, graphicsQueue);
+	endSingleTimeCommands(device, commandBuffer, graphicsQueue);
 }

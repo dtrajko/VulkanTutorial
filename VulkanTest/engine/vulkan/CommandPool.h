@@ -37,9 +37,9 @@ public:
 		VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, DescriptorSet descriptorSet);
 
 	// From CommandBuffer
-	VkCommandBuffer beginSingleTimeCommands(VkDevice device);
+	CommandBuffer* beginSingleTimeCommands(VkDevice device);
 
-	void endSingleTimeCommands(VkDevice device, VkCommandBuffer cmdBuffer, VkQueue graphicsQueue);
+	void endSingleTimeCommands(VkDevice device, CommandBuffer* commandBuffer, VkQueue graphicsQueue);
 
 	void copyBufferToImage(VkDevice device, VkQueue graphicsQueue, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 

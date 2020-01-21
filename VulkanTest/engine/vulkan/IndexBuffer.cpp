@@ -52,11 +52,11 @@ IndexBuffer::~IndexBuffer()
 void IndexBuffer::copyBuffer(VkDevice device, VkQueue graphicsQueue, CommandPool* commandPool,
 	VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
-	VkCommandBuffer cmdBuffer = commandPool->beginSingleTimeCommands(device);
+	CommandBuffer* commandBuffer = commandPool->beginSingleTimeCommands(device);
 
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
-	vkCmdCopyBuffer(cmdBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+	vkCmdCopyBuffer(commandBuffer->m_CommandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-	commandPool->endSingleTimeCommands(device, cmdBuffer, graphicsQueue);
+	commandPool->endSingleTimeCommands(device, commandBuffer, graphicsQueue);
 }
