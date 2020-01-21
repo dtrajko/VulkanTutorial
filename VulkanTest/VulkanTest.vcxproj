@@ -105,6 +105,7 @@
     <None Include="shaders\vert.spv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="engine\Input.cpp" />
     <ClCompile Include="engine\vulkan\DescriptorSet.cpp" />
     <ClCompile Include="engine\vulkan\DescriptorPool.cpp" />
     <ClCompile Include="engine\vulkan\Device.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="engine\vulkan\RenderPass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\Input.h" />
     <ClInclude Include="engine\vulkan\DescriptorSet.h" />
     <ClInclude Include="engine\vulkan\DescriptorPool.h" />
     <ClInclude Include="engine\Print.h" />

@@ -49,11 +49,6 @@ Instance::Instance(bool enableValidationLayers, const std::vector<const char*> v
 	}
 }
 
-Instance::~Instance()
-{
-	vkDestroyInstance(hInstance, nullptr);
-}
-
 std::vector<const char*> Instance::getRequiredExtensions(bool enableValidationLayers)
 {
 	uint32_t glfwExtensionCount = 0;
@@ -68,4 +63,9 @@ std::vector<const char*> Instance::getRequiredExtensions(bool enableValidationLa
 	}
 
 	return extensions;
+}
+
+Instance::~Instance()
+{
+	vkDestroyInstance(hInstance, nullptr);
 }

@@ -3,15 +3,6 @@
 
 Window::Window()
 {
-	initWindow();
-}
-
-Window::~Window()
-{
-}
-
-void Window::initWindow()
-{
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -25,4 +16,8 @@ void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height
 {
 	auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 	app->framebufferResized = true;
+}
+
+Window::~Window()
+{
 }
