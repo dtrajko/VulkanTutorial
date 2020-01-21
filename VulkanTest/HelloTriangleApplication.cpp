@@ -19,14 +19,14 @@ void HelloTriangleApplication::initVulkan()
 	physicalDevice = new PhysicalDevice(instance->hInstance, surface->m_surfaceKHR, swapChain, image.msaaSamples);
 	device = new Device(physicalDevice, surface->m_surfaceKHR, enableValidationLayers);
 	swapChain = new SwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
-	swapChain->createImageViews(device->m_Device, imageView);
+	swapChain->createImageViews(device->m_Device);
 	renderPass = new RenderPass(physicalDevice, device->m_Device, swapChain, image);
 	descriptorSetLayout = new DescriptorSetLayout(device->m_Device);
 	graphicsPipeline = new GraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
 	commandPool = new CommandPool(physicalDevice, device->m_Device, surface->m_surfaceKHR);
-	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandPool, format, device->graphicsQueue);
-	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
+	image.createColorResources(device->m_Device, physicalDevice, swapChain);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, commandPool, format, device->graphicsQueue);
+	framebuffer.createFramebuffers(device->m_Device, swapChain, image, renderPass->m_RenderPass);
 	image.createTextureImage(loader->TEXTURE_PATH.c_str(), device->m_Device, physicalDevice, commandPool, format, device->graphicsQueue);
 	image.createTextureImageView(device->m_Device, image.textureImage, image.mipLevels);
 	textureSampler = new Sampler(device->m_Device, image.mipLevels);
@@ -108,12 +108,12 @@ void HelloTriangleApplication::recreateSwapChain()
 	cleanupSwapChain(uniformBuffer);
 
 	swapChain->createSwapChain(window->m_Window, physicalDevice, device->m_Device, surface);
-	swapChain->createImageViews(device->m_Device, imageView);
+	swapChain->createImageViews(device->m_Device);
 	renderPass->createRenderPass(physicalDevice, device->m_Device, swapChain, image);
 	graphicsPipeline->createGraphicsPipeline(device->m_Device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
-	image.createColorResources(device->m_Device, physicalDevice, swapChain, imageView);
-	image.createDepthResources(device->m_Device, physicalDevice, swapChain, imageView, commandPool, format, device->graphicsQueue);
-	framebuffer.createFramebuffers(device->m_Device, swapChain, image.colorImageView, image.depthImageView, renderPass->m_RenderPass);
+	image.createColorResources(device->m_Device, physicalDevice, swapChain);
+	image.createDepthResources(device->m_Device, physicalDevice, swapChain, commandPool, format, device->graphicsQueue);
+	framebuffer.createFramebuffers(device->m_Device, swapChain, image, renderPass->m_RenderPass);
 	uniformBuffer.createUniformBuffers(physicalDevice, device->m_Device, swapChain);
 	descriptorPool->createDescriptorPool();
 	descriptorSet.createDescriptorSets(device->m_Device, uniformBuffer, swapChain, descriptorSetLayout, descriptorPool, image, textureSampler);

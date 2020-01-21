@@ -9,6 +9,12 @@ class ImageView
 
 public:
 
-	VkImageView createImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	VkImageView m_ImageView;
+	VkDevice m_Device;
+
+public:
+
+	ImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	~ImageView();
 
 };

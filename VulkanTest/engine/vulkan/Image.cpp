@@ -93,7 +93,7 @@ VkFormat Image::findSupportedFormat(VkPhysicalDevice hPhysicalDevice, const std:
 	return VkFormat::VK_FORMAT_UNDEFINED;
 }
 
-void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView)
+void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain)
 {
 	VkFormat colorFormat = swapChain->swapChainImageFormat;
 
@@ -101,10 +101,10 @@ void Image::createColorResources(VkDevice device, PhysicalDevice* physicalDevice
 		swapChain->swapChainExtent.width, swapChain->swapChainExtent.height, 1, msaaSamples, colorFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		colorImage, colorImageMemory);
-	colorImageView = imageView.createImageView(device, colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+	m_ImageViewColor = new ImageView(device, colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView, 
+void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, 
 	CommandPool* commandPool, Format format, VkQueue graphicsQueue)
 {
 	VkFormat depthFormat = findDepthFormat(physicalDevice->m_Device);
@@ -115,7 +115,7 @@ void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		depthImage, depthImageMemory);
 
-	depthImageView = imageView.createImageView(device, depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+	m_ImageViewDepth = new ImageView(device, depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
 	transitionImageLayout(device, commandPool, depthImage, depthFormat,
 		VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, format, graphicsQueue);
@@ -123,8 +123,7 @@ void Image::createDepthResources(VkDevice device, PhysicalDevice* physicalDevice
 
 void Image::createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels)
 {
-	ImageView imageView;
-	textureImageView = imageView.createImageView(device, image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+	m_ImageViewTexture = new ImageView(device, image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
 }
 
 void Image::transitionImageLayout(VkDevice device, CommandPool* commandPool, VkImage image, VkFormat imageFormat,
@@ -296,15 +295,15 @@ void Image::generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, C
 
 void Image::cleanUp(VkDevice device)
 {
-	vkDestroyImageView(device, colorImageView, nullptr);
+	delete m_ImageViewColor;
 	vkDestroyImage(device, colorImage, nullptr);
 	vkFreeMemory(device, colorImageMemory, nullptr);
 
-	vkDestroyImageView(device, depthImageView, nullptr);
+	delete m_ImageViewDepth;
 	vkDestroyImage(device, depthImage, nullptr);
 	vkFreeMemory(device, depthImageMemory, nullptr);
 
-	vkDestroyImageView(device, textureImageView, nullptr);
+	delete m_ImageViewTexture;
 	vkDestroyImage(device, textureImage, nullptr);
 	vkFreeMemory(device, textureImageMemory, nullptr);
 }

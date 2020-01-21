@@ -39,6 +39,6 @@ public:
 
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surfaceKHR);
 
-	void createImageViews(VkDevice device, ImageView imageView);
+	void createImageViews(VkDevice device);
 
 };

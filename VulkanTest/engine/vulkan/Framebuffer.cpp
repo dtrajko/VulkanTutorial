@@ -1,20 +1,22 @@
 #include "Framebuffer.h"
 
 #include "SwapChain.h"
+#include "Image.h"
+#include "ImageView.h"
 
 #include <array>
 #include <stdexcept>
 
 
-void Framebuffer::createFramebuffers(VkDevice device, SwapChain* swapChain, VkImageView colorImageView, VkImageView depthImageView, VkRenderPass renderPass)
+void Framebuffer::createFramebuffers(VkDevice device, SwapChain* swapChain, Image image, VkRenderPass renderPass)
 {
 	swapChainFramebuffers.resize(swapChain->swapChainImageViews.size());
 
 	for (size_t i = 0; i < swapChain->swapChainImageViews.size(); i++)
 	{
 		std::array<VkImageView, 3> attachments = {
-			colorImageView,
-			depthImageView,
+			image.m_ImageViewColor->m_ImageView,
+			image.m_ImageViewDepth->m_ImageView,
 			swapChain->swapChainImageViews[i],
 		};
 

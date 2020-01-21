@@ -7,6 +7,7 @@
 
 
 class SwapChain;
+class Image;
 
 
 class Framebuffer
@@ -17,6 +18,6 @@ public:
 
 public:
 
-	void createFramebuffers(VkDevice device, SwapChain* swapChain, VkImageView colorImageView, VkImageView depthImageView, VkRenderPass renderPass);
+	void createFramebuffers(VkDevice device, SwapChain* swapChain, Image image, VkRenderPass renderPass);
 
 };

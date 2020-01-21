@@ -6,6 +6,7 @@
 #include "DescriptorSetLayout.h"
 #include "DescriptorPool.h"
 #include "Image.h"
+#include "ImageView.h"
 #include "Sampler.h"
 
 #include <vector>
@@ -39,7 +40,7 @@ void DescriptorSet::createDescriptorSets(VkDevice device, UniformBuffer uniformB
 
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = image.textureImageView;
+		imageInfo.imageView = image.m_ImageViewTexture->m_ImageView;
 		imageInfo.sampler = sampler->m_Sampler;
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};

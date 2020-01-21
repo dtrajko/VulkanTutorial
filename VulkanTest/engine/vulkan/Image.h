@@ -27,18 +27,17 @@ public:
 	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 	VkImage colorImage;
 	VkDeviceMemory colorImageMemory;
-	VkImageView colorImageView;
+	ImageView* m_ImageViewColor;
 
 	// Depth resources
 	VkImage depthImage;
 	VkDeviceMemory depthImageMemory;
-	VkImageView depthImageView;
+	ImageView* m_ImageViewDepth;
 
 	// Textures
 	VkImage textureImage;
 	VkDeviceMemory textureImageMemory;
-
-	VkImageView textureImageView;
+	ImageView* m_ImageViewTexture;
 
 	// Mipmaps
 	uint32_t mipLevels;
@@ -58,10 +57,10 @@ public:
 		CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	// Multisampling (MSAA)
-	void createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView);
+	void createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain);
 
 	// Depth resources
-	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain, ImageView imageView,
+	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain,
 		CommandPool* commandPool, Format format, VkQueue graphicsQueue);
 
 	void createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels);

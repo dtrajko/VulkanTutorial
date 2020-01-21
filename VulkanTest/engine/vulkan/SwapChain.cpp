@@ -98,12 +98,13 @@ SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice device
 	return details;
 }
 
-void SwapChain::createImageViews(VkDevice device, ImageView imageView)
+void SwapChain::createImageViews(VkDevice device)
 {
 	swapChainImageViews.resize(swapChainImages.size());
 
 	for (size_t i = 0; i < swapChainImages.size(); i++)
 	{
-		swapChainImageViews[i] = imageView.createImageView(device, swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		ImageView* imageView = new ImageView(device, swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		swapChainImageViews[i] = imageView->m_ImageView;
 	}
 }

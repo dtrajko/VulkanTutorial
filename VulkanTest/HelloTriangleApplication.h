@@ -72,7 +72,6 @@ private:
 	// Refactoring
 	ValidationLayer validationLayer;
 	Image image;
-	ImageView imageView;
 	ShaderModule shaderModule;
 	DescriptorSet descriptorSet;
 	Framebuffer framebuffer;

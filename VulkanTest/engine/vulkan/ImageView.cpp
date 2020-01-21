@@ -3,7 +3,8 @@
 #include <stdexcept>
 
 
-VkImageView ImageView::createImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+ImageView::ImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+	: m_Device(device)
 {
 	VkImageViewCreateInfo viewInfo = {};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -16,11 +17,13 @@ VkImageView ImageView::createImageView(VkDevice device, VkImage image, VkFormat 
 	viewInfo.subresourceRange.baseArrayLayer = 0;
 	viewInfo.subresourceRange.layerCount = 1;
 
-	VkImageView imageView;
-	if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+	if (vkCreateImageView(m_Device, &viewInfo, nullptr, &m_ImageView) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create image views!");
 	}
+}
 
-	return imageView;
+ImageView::~ImageView()
+{
+	vkDestroyImageView(m_Device, m_ImageView, nullptr);
 }
