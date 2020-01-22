@@ -12,7 +12,7 @@ SwapChain::SwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevic
 
 void SwapChain::createSwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevice device, Surface* surface)
 {
-	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice->m_Device, surface->m_surfaceKHR);
+	SwapChainSupportDetails swapChainSupport = physicalDevice->querySwapChainSupport(physicalDevice->m_Device, surface->m_surfaceKHR);
 
 	VkSurfaceFormatKHR surfaceFormat = surface->chooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = surface->chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -66,36 +66,6 @@ void SwapChain::createSwapChain(GLFWwindow* window, PhysicalDevice* physicalDevi
 
 	swapChainImageFormat = surfaceFormat.format;
 	swapChainExtent = extent;
-}
-
-SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surfaceKHR)
-{
-	SwapChainSupportDetails details;
-
-	// Step 1
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surfaceKHR, &details.capabilities);
-
-	// Step 2
-	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surfaceKHR, &formatCount, nullptr);
-
-	if (formatCount != 0)
-	{
-		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surfaceKHR, &formatCount, details.formats.data());
-	}
-
-	// Step 3
-	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surfaceKHR, &presentModeCount, nullptr);
-
-	if (presentModeCount != 0)
-	{
-		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surfaceKHR, &presentModeCount, details.presentModes.data());
-	}
-
-	return details;
 }
 
 void SwapChain::createImageViews(VkDevice device)

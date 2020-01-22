@@ -1,14 +1,13 @@
 #include "PhysicalDevice.h"
 
 #include "../Print.h"
-#include "SwapChain.h"
 
 #include <stdexcept>
 #include <string>
 #include <set>
 
 
-PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain* swapChain, VkSampleCountFlagBits& msaaSamples)
+PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, VkSampleCountFlagBits& msaaSamples)
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -24,7 +23,7 @@ PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, Swa
 
 	for (const auto& phyDevice : phyDevices)
 	{
-		if (isDeviceSuitable(phyDevice, surfaceKHR, swapChain))
+		if (isDeviceSuitable(phyDevice, surfaceKHR))
 		{
 			m_Device = phyDevice;
 			msaaSamples = getMaxUsableSampleCount();
@@ -42,7 +41,7 @@ PhysicalDevice::~PhysicalDevice()
 {
 }
 
-bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain* swapChain)
+bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR)
 {
 	QueueFamilyIndices indices = findQueueFamilies(hPhysicalDevice, surfaceKHR);
 
@@ -53,7 +52,7 @@ bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfac
 
 	if (extensionsSupported)
 	{
-		swapChainSupport = swapChain->querySwapChainSupport(hPhysicalDevice, surfaceKHR);
+		swapChainSupport = querySwapChainSupport(hPhysicalDevice, surfaceKHR);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
@@ -63,6 +62,36 @@ bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfac
 	Print::printSwapChainSupport(swapChainAdequate, swapChainSupport);
 
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+}
+
+SwapChainSupportDetails PhysicalDevice::querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surfaceKHR)
+{
+	SwapChainSupportDetails details;
+
+	// Step 1
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surfaceKHR, &details.capabilities);
+
+	// Step 2
+	uint32_t formatCount;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surfaceKHR, &formatCount, nullptr);
+
+	if (formatCount != 0)
+	{
+		details.formats.resize(formatCount);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surfaceKHR, &formatCount, details.formats.data());
+	}
+
+	// Step 3
+	uint32_t presentModeCount;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surfaceKHR, &presentModeCount, nullptr);
+
+	if (presentModeCount != 0)
+	{
+		details.presentModes.resize(presentModeCount);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surfaceKHR, &presentModeCount, details.presentModes.data());
+	}
+
+	return details;
 }
 
 bool PhysicalDevice::checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevice)

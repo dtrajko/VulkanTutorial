@@ -23,53 +23,18 @@ public:
 
 	VkDevice m_Device;
 
-	// Multisampling (MSAA)
-	VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-	VkImage colorImage;
-	VkDeviceMemory colorImageMemory;
-	ImageView* m_ImageViewColor;
-
-	// Depth resources
-	VkImage depthImage;
-	VkDeviceMemory depthImageMemory;
-	ImageView* m_ImageViewDepth;
-
-	// Textures
-	VkImage textureImage;
-	VkDeviceMemory textureImageMemory;
-	ImageView* m_ImageViewTexture;
-
-	// Mipmaps
-	uint32_t mipLevels;
+	VkImage m_Image;
+	VkDeviceMemory m_ImageMemory;
+	ImageView* m_ImageView;
 
 
 public:
 
-	void createImage(VkDevice device, PhysicalDevice* physicalDevice,
+	Image(VkDevice device, PhysicalDevice* physicalDevice,
 		uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
-		VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+		VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
 
-	void transitionImageLayout(VkDevice device, CommandPool* commandPool, VkImage image, VkFormat imageFormat,
-		VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, Format format, VkQueue graphicsQueue);
+	ImageView* createImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
-	// Texture mapping
-	void createTextureImage(const char* texFilepath, VkDevice device, PhysicalDevice* physicalDevice,
-		CommandPool* commandPool, Format format, VkQueue graphicsQueue);
-
-	// Multisampling (MSAA)
-	void createColorResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain);
-
-	// Depth resources
-	void createDepthResources(VkDevice device, PhysicalDevice* physicalDevice, SwapChain* swapChain,
-		CommandPool* commandPool, Format format, VkQueue graphicsQueue);
-
-	void createTextureImageView(VkDevice device, VkImage image, uint32_t mipLevels);
-
-	VkFormat findSupportedFormat(VkPhysicalDevice hPhysicalDevice, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-	VkFormat findDepthFormat(VkPhysicalDevice hPhysicalDevice);
-
-	void generateMipmaps(VkPhysicalDevice hPhysicalDevice, VkDevice device, CommandPool* commandPool,
-		VkQueue graphicsQueue, VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
-
-	void cleanUp(VkDevice m_Device);
+	~Image();
 };

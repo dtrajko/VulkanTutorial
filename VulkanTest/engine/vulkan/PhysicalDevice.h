@@ -24,8 +24,12 @@ struct QueueFamilyIndices
 	}
 };
 
-
-class SwapChain;
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::vector<VkPresentModeKHR> presentModes;
+};
 
 
 class PhysicalDevice
@@ -38,11 +42,13 @@ public:
 
 public:
 
-	PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, SwapChain* swapChain, VkSampleCountFlagBits& msaaSamples);
+	PhysicalDevice(VkInstance instance, VkSurfaceKHR surfaceKHR, VkSampleCountFlagBits& msaaSamples);
 
 	~PhysicalDevice();
 
-	bool isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR, SwapChain* swapChain);
+	bool isDeviceSuitable(VkPhysicalDevice hPhysicalDevice, VkSurfaceKHR surfaceKHR);
+
+	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surfaceKHR);
 
 	bool checkDeviceExtensionSupport(VkPhysicalDevice hPhysicalDevice);
 

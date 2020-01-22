@@ -13,13 +13,12 @@ public:
 
 	VkDevice m_Device;
 	VkDescriptorPool m_DescriptorPool;
-	SwapChain* m_SwapChain;
 
 public:
 
 	DescriptorPool(VkDevice device, SwapChain* swapChain);
 
-	void createDescriptorPool();
+	void createDescriptorPool(VkDevice device, SwapChain* swapChain);
 
 	~DescriptorPool();
 

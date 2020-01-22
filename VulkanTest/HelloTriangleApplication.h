@@ -28,6 +28,7 @@
 #include "engine/vulkan/CommandBuffer.h"
 #include "engine/vulkan/CommandPool.h"
 #include "engine/vulkan/Image.h"
+#include "engine/vulkan/ImageFactory.h"
 #include "engine/vulkan/ImageView.h"
 #include "engine/vulkan/Format.h"
 #include "engine/vulkan/Sampler.h"
@@ -71,7 +72,6 @@ private:
 
 	// Refactoring
 	ValidationLayer validationLayer;
-	Image image;
 	ShaderModule shaderModule;
 	DescriptorSet descriptorSet;
 	Framebuffer framebuffer;
@@ -89,6 +89,8 @@ private:
 	VertexBuffer* vertexBuffer;
 	IndexBuffer* indexBuffer;
 	UniformBuffer uniformBuffer;
+	Image* image;
+	ImageFactory* imageFactory;
 	Sampler* textureSampler;
 	CommandPool* commandPool;
 	DescriptorSetLayout* descriptorSetLayout;

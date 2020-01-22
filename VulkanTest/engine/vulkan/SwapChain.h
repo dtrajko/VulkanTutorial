@@ -9,14 +9,6 @@
 #include "Surface.h"
 
 
-struct SwapChainSupportDetails
-{
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
-};
-
-
 class ImageView;
 
 
@@ -36,8 +28,6 @@ public:
 	~SwapChain();
 
 	void createSwapChain(GLFWwindow* window, PhysicalDevice* physicalDevice, VkDevice device, Surface* surface);
-
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surfaceKHR);
 
 	void createImageViews(VkDevice device);
 

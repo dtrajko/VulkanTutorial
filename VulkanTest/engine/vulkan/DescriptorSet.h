@@ -22,7 +22,7 @@ public:
 	std::vector<VkDescriptorSet> descriptorSets;
 
 	void createDescriptorSets(VkDevice device, UniformBuffer uniformBuffer, SwapChain* swapChain,
-		DescriptorSetLayout* descriptorSetLayout, DescriptorPool* descriptorPool, Image image, Sampler* sampler);
+		DescriptorSetLayout* descriptorSetLayout, DescriptorPool* descriptorPool, VkImageView imageViewTexture, Sampler* sampler);
 
 
 };

@@ -3,7 +3,7 @@
 #include "../Loader.h"
 #include "ShaderModule.h"
 #include "SwapChain.h"
-#include "Image.h"
+#include "ImageFactory.h"
 #include "DescriptorSetLayout.h"
 #include "RenderPass.h"
 #include "PipelineLayout.h"
@@ -11,13 +11,13 @@
 #include <iostream>
 
 
-GraphicsPipeline::GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, Image image,
+GraphicsPipeline::GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, ImageFactory* imageFactory,
 	DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass) : m_Device(device)
 {
-	createGraphicsPipeline(device, shaderModule, swapChain, image, descriptorSetLayout, renderPass);
+	createGraphicsPipeline(device, shaderModule, swapChain, imageFactory, descriptorSetLayout, renderPass);
 }
 
-void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, Image image,
+void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, ImageFactory* imageFactory,
 	DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass)
 {
 	auto vertShaderCode = Loader::readFile("shaders/shader_vertex.spv");
@@ -99,7 +99,7 @@ void GraphicsPipeline::createGraphicsPipeline(VkDevice device, ShaderModule shad
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_TRUE; // enable sample shading in the pipeline
 	multisampling.minSampleShading = 0.2f; // min fraction for sample shading; closer to one is smoother
-	multisampling.rasterizationSamples = image.msaaSamples;
+	multisampling.rasterizationSamples = imageFactory->msaaSamples;
 
 	VkPipelineDepthStencilStateCreateInfo depthStencil = {};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;

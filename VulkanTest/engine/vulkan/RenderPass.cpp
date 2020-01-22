@@ -2,15 +2,15 @@
 
 #include "PhysicalDevice.h"
 #include "SwapChain.h"
-#include "Image.h"
+#include "ImageFactory.h"
 
 #include <array>
 #include <stdexcept>
 
 
-RenderPass::RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image) : m_Device(device)
+RenderPass::RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, ImageFactory* imageFactory) : m_Device(device)
 {
-	createRenderPass(physicalDevice, device, swapChain, image);
+	createRenderPass(physicalDevice, device, swapChain, imageFactory);
 }
 
 void RenderPass::cleanUp()
@@ -22,12 +22,12 @@ RenderPass::~RenderPass()
 {
 }
 
-void RenderPass::createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image)
+void RenderPass::createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, ImageFactory* imageFactory)
 {
 	// Attachment description
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = swapChain->swapChainImageFormat;
-	colorAttachment.samples = image.msaaSamples;
+	colorAttachment.samples = imageFactory->msaaSamples;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -36,8 +36,8 @@ void RenderPass::createRenderPass(PhysicalDevice* physicalDevice, VkDevice devic
 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentDescription depthAttachment = {};
-	depthAttachment.format = image.findDepthFormat(physicalDevice->m_Device);
-	depthAttachment.samples = image.msaaSamples;
+	depthAttachment.format = imageFactory->findDepthFormat(physicalDevice->m_Device);
+	depthAttachment.samples = imageFactory->msaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;

@@ -125,6 +125,7 @@
     <ClCompile Include="engine\vulkan\IndexBuffer.cpp" />
     <ClCompile Include="engine\vulkan\Image.cpp" />
     <ClCompile Include="engine\vulkan\Instance.cpp" />
+    <ClCompile Include="engine\vulkan\ImageFactory.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="engine\vulkan\PhysicalDevice.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="engine\vulkan\Instance.h" />
     <ClInclude Include="engine\Window.h" />
     <ClInclude Include="engine\vulkan\RenderPass.h" />
+    <ClInclude Include="engine\vulkan\ImageFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

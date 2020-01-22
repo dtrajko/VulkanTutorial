@@ -6,7 +6,7 @@
 
 class ShaderModule;
 class SwapChain;
-class Image;
+class ImageFactory;
 class DescriptorSetLayout;
 class RenderPass;
 class PipelineLayout;
@@ -24,10 +24,10 @@ public:
 
 public:
 
-	GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, Image image,
+	GraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, ImageFactory* imageFactory,
 		DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass);
 
-	void createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, Image image,
+	void createGraphicsPipeline(VkDevice device, ShaderModule shaderModule, SwapChain* swapChain, ImageFactory* imageFactory,
 		DescriptorSetLayout* descriptorSetLayout, RenderPass* renderPass);
 	void cleanUp();
 	~GraphicsPipeline();

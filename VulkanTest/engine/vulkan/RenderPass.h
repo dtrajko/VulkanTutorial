@@ -6,7 +6,7 @@
 
 class PhysicalDevice;
 class SwapChain;
-class Image;
+class ImageFactory;
 
 
 class RenderPass
@@ -21,9 +21,9 @@ public:
 
 public:
 
-	RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image);
+	RenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, ImageFactory* imageFactory);
 
-	void createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, Image image);
+	void createRenderPass(PhysicalDevice* physicalDevice, VkDevice device, SwapChain* swapChain, ImageFactory* imageFactory);
 
 	void cleanUp();
 
