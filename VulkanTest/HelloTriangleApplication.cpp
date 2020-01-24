@@ -1,10 +1,13 @@
 #include "HelloTriangleApplication.h"
 #include "engine/Print.h"
 
+#include "engine/Input.h"
+
 
 void HelloTriangleApplication::run()
 {
 	window = new Window();
+
 	initVulkan();
 	mainLoop();
 	cleanup();
@@ -50,9 +53,35 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+	// std::cout << "Input mouseX: " << Input::get()->mouseX << ", mouseY: " << Input::get()->mouseY << std::endl;
+
+	if (Input::get()->isKeyPressed(GLFW_KEY_A))
+	{
+		std::cout << "Move LEFT" << std::endl;
+		positionX -= 0.1f;
+	}
+
+	if (Input::get()->isKeyPressed(GLFW_KEY_D))
+	{
+		std::cout << "Move RIGHT" << std::endl;
+		positionX += 0.1f;
+	}
+
+	if (Input::get()->isKeyPressed(GLFW_KEY_W))
+	{
+		std::cout << "Move UP" << std::endl;
+		positionZ -= 0.1f;
+	}
+
+	if (Input::get()->isKeyPressed(GLFW_KEY_S))
+	{
+		std::cout << "Move DOWN" << std::endl;
+		positionZ += 0.1f;
+	}
+
 	UniformBufferObject ubo = {};
-	ubo.model = glm::rotate(glm::mat4(0.1f), time * glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	ubo.view = glm::lookAt(glm::vec3(3.2f, 3.2f, 0.0f), glm::vec3(0.0f, 0.15f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	ubo.model = glm::rotate(glm::mat4(0.1f), time * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f + positionZ), glm::vec3(0.0f + positionX, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	ubo.proj = glm::perspective(glm::radians(45.0f), (float)swapChain->swapChainExtent.width / (float)swapChain->swapChainExtent.height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
@@ -100,6 +129,7 @@ void HelloTriangleApplication::mainLoop()
 	while (!glfwWindowShouldClose(window->m_Window))
 	{
 		glfwPollEvents();
+		Input::get()->update();
 		drawFrame(device);
 	}
 

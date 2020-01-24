@@ -114,7 +114,7 @@
     <ClCompile Include="engine\vulkan\CommandBuffer.cpp" />
     <ClCompile Include="engine\vulkan\Buffer.cpp" />
     <ClCompile Include="engine\Debug.cpp" />
-    <ClCompile Include="engine\InputSystem.cpp" />
+    <ClCompile Include="temp\InputSystem.cpp" />
     <ClCompile Include="engine\Timer.cpp" />
     <ClCompile Include="engine\vulkan\Framebuffer.cpp" />
     <ClCompile Include="engine\vulkan\Format.cpp" />
@@ -139,6 +139,7 @@
     <ClCompile Include="engine\vulkan\PipelineLayout.cpp" />
     <ClCompile Include="engine\Window.cpp" />
     <ClCompile Include="engine\vulkan\RenderPass.cpp" />
+    <ClCompile Include="temp\InputTemp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Input.h" />
@@ -151,9 +152,9 @@
     <ClInclude Include="engine\vulkan\CommandBuffer.h" />
     <ClInclude Include="engine\vulkan\Buffer.h" />
     <ClInclude Include="engine\Debug.h" />
-    <ClInclude Include="engine\InputListener.h" />
-    <ClInclude Include="engine\InputSystem.h" />
-    <ClInclude Include="engine\Point.h" />
+    <ClInclude Include="temp\InputListener.h" />
+    <ClInclude Include="temp\InputSystem.h" />
+    <ClInclude Include="temp\Point.h" />
     <ClInclude Include="engine\Timer.h" />
     <ClInclude Include="engine\Vertex.h" />
     <ClInclude Include="engine\vulkan\Framebuffer.h" />
@@ -177,6 +178,7 @@
     <ClInclude Include="engine\Window.h" />
     <ClInclude Include="engine\vulkan\RenderPass.h" />
     <ClInclude Include="engine\vulkan\ImageFactory.h" />
+    <ClInclude Include="temp\InputTemp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

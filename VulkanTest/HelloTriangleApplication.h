@@ -17,6 +17,7 @@
 #include "engine/Debug.h"
 #include "engine/Loader.h"
 #include "engine/Window.h"
+#include "engine/Input.h"
 #include "engine/vulkan/PhysicalDevice.h"
 #include "engine/vulkan/ValidationLayer.h"
 #include "engine/vulkan/Surface.h"
@@ -99,6 +100,9 @@ private:
 	RenderPass* renderPass;
 	GraphicsPipeline* graphicsPipeline;
 
+	// movement
+	float positionX = 0.0f;
+	float positionZ = 0.0f;
 
 private:
 

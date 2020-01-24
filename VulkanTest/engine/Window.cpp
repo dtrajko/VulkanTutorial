@@ -1,5 +1,7 @@
 #include "Window.h"
 
+#include "Input.h"
+
 #include <iostream>
 
 
@@ -32,6 +34,8 @@ Window::Window()
 		{
 			auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
+			Input::get()->m_Keys[key] = action != GLFW_RELEASE;
+
 			switch (action)
 			{
 				case GLFW_PRESS:
@@ -55,6 +59,8 @@ Window::Window()
 	glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int modes)
 		{
 			auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+
+			Input::get()->m_MouseButtons[button] = action != GLFW_RELEASE;
 
 			switch (action)
 			{
@@ -81,6 +87,8 @@ Window::Window()
 	glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
 		{
 			auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+
+			Input::get()->setMousePosition((float)xPos, (float)yPos);
 
 			app->OnMouseMoved((float)xPos, (float)yPos);
 			// TODO
