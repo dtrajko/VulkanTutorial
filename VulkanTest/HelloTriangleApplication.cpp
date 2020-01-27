@@ -55,25 +55,25 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 
 	// std::cout << "Input mouseX: " << Input::get()->mouseX << ", mouseY: " << Input::get()->mouseY << std::endl;
 
-	if (Input::get()->isKeyPressed(GLFW_KEY_A))
+	if (Input::Get()->IsKeyPressed(GLFW_KEY_A))
 	{
 		std::cout << "Move LEFT" << std::endl;
 		positionX -= 0.1f;
 	}
 
-	if (Input::get()->isKeyPressed(GLFW_KEY_D))
+	if (Input::Get()->IsKeyPressed(GLFW_KEY_D))
 	{
 		std::cout << "Move RIGHT" << std::endl;
 		positionX += 0.1f;
 	}
 
-	if (Input::get()->isKeyPressed(GLFW_KEY_W))
+	if (Input::Get()->IsKeyPressed(GLFW_KEY_W))
 	{
 		std::cout << "Move UP" << std::endl;
 		positionZ -= 0.1f;
 	}
 
-	if (Input::get()->isKeyPressed(GLFW_KEY_S))
+	if (Input::Get()->IsKeyPressed(GLFW_KEY_S))
 	{
 		std::cout << "Move DOWN" << std::endl;
 		positionZ += 0.1f;
@@ -129,7 +129,6 @@ void HelloTriangleApplication::mainLoop()
 	while (!glfwWindowShouldClose(window->m_Window))
 	{
 		glfwPollEvents();
-		Input::get()->update();
 		drawFrame(device);
 	}
 

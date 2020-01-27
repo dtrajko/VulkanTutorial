@@ -1,35 +1,30 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
-#include <glm/glm.hpp>
-
-
-#define MAX_KEYS  1024
-#define MAX_BUTTONS 32
+#include <utility>
 
 
 class Input
 {
 public:
 
-	bool m_Keys[MAX_KEYS];
-	bool m_MouseButtons[MAX_BUTTONS];
-	float mouseX;
-	float mouseY;
-	float m_MouseWheelOffsetX;
-	float m_MouseWheelOffsetY;
-	glm::vec2 currentPosition;
+	static Input* Get();
+	inline static bool IsKeyPressed(int keycode) { return s_Instance->IsKeyPressedImpl(keycode); }
+	inline static bool IsMouseButtonPressed(int button) { return s_Instance->IsMouseButtonPressedImpl(button); };
+	inline static std::pair<float, float> GetMousePosition() { return s_Instance->GetMousePositionImpl(); };
+	inline static float GetMouseX() { return s_Instance->GetMouseXImpl(); };
+	inline static float GetMouseY() { return s_Instance->GetMouseYImpl(); };
 
-public:
+protected:
 
-	Input();
-	static Input* get();
-	void update();
+	virtual bool IsKeyPressedImpl(int keycode);
+	virtual bool IsMouseButtonPressedImpl(int button);
+	virtual std::pair<float, float> GetMousePositionImpl();
+	virtual float GetMouseXImpl();
+	virtual float GetMouseYImpl();
 
-	bool isKeyPressed(unsigned int keyCode) const;
-	bool isMouseButtonPressed(unsigned int button) const;
-	void setMousePosition(float xpos, float ypos);
-	virtual ~Input();
+private:
+
+	static Input* s_Instance;
+
 
 };

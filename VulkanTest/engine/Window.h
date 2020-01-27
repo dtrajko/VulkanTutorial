@@ -12,6 +12,8 @@ public:
 	// GLFW
 	GLFWwindow* m_Window;
 
+	static Window* s_Instance;
+
 	const int WIDTH = 1280;
 	const int HEIGHT = 720;
 
@@ -22,6 +24,8 @@ public:
 public:
 
 	Window();
+
+	static Window* Get();
 
 	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 

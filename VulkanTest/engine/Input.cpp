@@ -1,58 +1,46 @@
 #include "Input.h"
+#include "Window.h"
 
 
-Input::Input()
+#include <GLFW/glfw3.h>
+
+
+Input* Input::s_Instance = new Input();
+
+Input* Input::Get()
 {
-	currentPosition = glm::vec2();
-	mouseX = 0.0;
-	mouseY = 0.0;
+	return s_Instance;
 }
 
-Input* Input::get()
+bool Input::IsKeyPressedImpl(int keycode)
 {
-	static Input input;
-	return &input;
+	auto window = Window::Get()->m_Window;
+	auto state = glfwGetKey(window, keycode);
+	return state == GLFW_PRESS || state == GLFW_REPEAT;
+}
+bool Input::IsMouseButtonPressedImpl(int button)
+{
+	auto window = Window::Get()->m_Window;;
+	auto state = glfwGetMouseButton(window, button);
+	return state == GLFW_PRESS;
 }
 
-void Input::update()
+std::pair<float, float> Input::GetMousePositionImpl()
 {
-	for (int indexKey = 0; indexKey < GLFW_KEY_LAST; indexKey++)
-	{
-		m_Keys[indexKey] = isKeyPressed(indexKey);
-	}
-	for (int indexButton = 0; indexButton < GLFW_MOUSE_BUTTON_LAST; indexButton++)
-	{
-		m_MouseButtons[indexButton] = isMouseButtonPressed(indexButton);
-	}
+	auto window = Window::Get()->m_Window;
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	return { (float)xpos, (float)ypos };
 }
 
-bool Input::isKeyPressed(unsigned int keyCode) const
+float Input::GetMouseXImpl()
 {
-	if (keyCode >= MAX_KEYS)
-	{
-		return false;
-	}
-	return m_Keys[keyCode];
+	auto [x, y] = GetMousePositionImpl();
+	return x;
 }
 
-bool Input::isMouseButtonPressed(unsigned int buttonCode) const
+float Input::GetMouseYImpl()
 {
-	if (buttonCode >= MAX_BUTTONS)
-	{
-		return false;
-	}
-	return m_MouseButtons[buttonCode];
-}
-
-void Input::setMousePosition(float xpos, float ypos)
-{
-	mouseX = xpos;
-	mouseY = ypos;
-	currentPosition.x = xpos;
-	currentPosition.y = ypos;
-}
-
-Input::~Input()
-{
-
+	auto [x, y] = GetMousePositionImpl();
+	return y;
 }
