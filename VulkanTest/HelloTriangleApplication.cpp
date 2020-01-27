@@ -2,6 +2,7 @@
 #include "engine/Print.h"
 
 #include "engine/Input.h"
+#include "engine/Math.h"
 
 
 void HelloTriangleApplication::run()
@@ -58,30 +59,31 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 	if (Input::Get()->IsKeyPressed(GLFW_KEY_A))
 	{
 		std::cout << "Move LEFT" << std::endl;
-		positionX -= 0.1f;
+		positionX -= movementSpeed;
 	}
 
 	if (Input::Get()->IsKeyPressed(GLFW_KEY_D))
 	{
 		std::cout << "Move RIGHT" << std::endl;
-		positionX += 0.1f;
+		positionX += movementSpeed;
 	}
 
 	if (Input::Get()->IsKeyPressed(GLFW_KEY_W))
 	{
 		std::cout << "Move UP" << std::endl;
-		positionZ -= 0.1f;
+		positionZ -= movementSpeed;
 	}
 
 	if (Input::Get()->IsKeyPressed(GLFW_KEY_S))
 	{
 		std::cout << "Move DOWN" << std::endl;
-		positionZ += 0.1f;
+		positionZ += movementSpeed;
 	}
 
 	UniformBufferObject ubo = {};
 	ubo.model = glm::rotate(glm::mat4(0.1f), time * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f + positionZ), glm::vec3(0.0f + positionX, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	// ubo.view = Math::createViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	ubo.proj = glm::perspective(glm::radians(45.0f), (float)swapChain->swapChainExtent.width / (float)swapChain->swapChainExtent.height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 

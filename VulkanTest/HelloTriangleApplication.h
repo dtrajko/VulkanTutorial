@@ -50,7 +50,7 @@ const int MAX_FRAMES_IN_FLIGHT = 2;
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
 #else
-	const bool enableValidationLayers = true;
+	const bool enableValidationLayers = false;
 #endif // NDEBUG
 
 
@@ -101,6 +101,7 @@ private:
 	GraphicsPipeline* graphicsPipeline;
 
 	// movement
+	float movementSpeed = 0.002f;
 	float positionX = 0.0f;
 	float positionZ = 0.0f;
 

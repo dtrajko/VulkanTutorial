@@ -23,6 +23,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -143,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\Input.h" />
+    <ClInclude Include="engine\Math.h" />
     <ClInclude Include="engine\vulkan\DescriptorSet.h" />
     <ClInclude Include="engine\vulkan\DescriptorPool.h" />
     <ClInclude Include="engine\Print.h" />

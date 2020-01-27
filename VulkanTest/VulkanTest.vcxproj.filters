@@ -245,5 +245,8 @@
     <ClInclude Include="temp\Point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine\Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
