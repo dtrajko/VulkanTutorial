@@ -103,7 +103,7 @@ private:
 	// movement
 	float movementSpeed = 0.001f;
 	float positionX = 0.0f;
-	float positionZ = -2.0f;
+	float positionZ = 0.0f;
 
 private:
 

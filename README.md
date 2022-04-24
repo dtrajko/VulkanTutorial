@@ -6,4 +6,4 @@ https://vulkan-tutorial.com
 
 ## Screenshots
 
-![image](https://raw.githubusercontent.com/dtrajko/VulkanTutorial/master/screenshots/2022-04-24-08-56.jpg)
+![image](./screenshots/2022-04-24-08-56.jpg)
