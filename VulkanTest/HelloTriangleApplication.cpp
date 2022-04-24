@@ -81,7 +81,14 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage, Unifor
 	}
 
 	UniformBufferObject ubo = {};
-	ubo.model = glm::rotate(glm::mat4(0.1f), time * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::mat4 model = glm::mat4(0.1f);
+	model = glm::translate(model, glm::vec3(0.0f, -0.5f, 0.0f));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, time * glm::radians(20.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = model;
+
 	ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f + positionZ), glm::vec3(0.0f + positionX, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	// ubo.view = Math::createViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	ubo.proj = glm::perspective(glm::radians(45.0f), (float)swapChain->swapChainExtent.width / (float)swapChain->swapChainExtent.height, 0.1f, 10.0f);
